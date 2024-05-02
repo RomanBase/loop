@@ -1,0 +1,17 @@
+name: ci
+description: "A new Flutter project."
+version: 0.0.1
+publish_to: none
+
+environment:
+  sdk: '>=3.2.4 <4.0.0'
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # https://github.com/RomanBase/control_shell
+  control_shell:
+    git:
+      url: https://github.com/RomanBase/control_shell

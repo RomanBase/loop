@@ -25,7 +25,7 @@ class LoopPlayground extends ControlWidget {
 
     context.c1.getTransform<DeltaPosition>()?.setReverse(true);
     context.c1.getTransform<DeltaPosition>()?.setLoopBehavior(LoopBehavior.reverseLoop);
-    context.c1.getTransform<DeltaScale>()?.setLoopBehavior(LoopBehavior.reverseLoop);
+    context.c1.getTransform<DeltaScale>()?.setLoopBehavior(LoopBehavior.loop);
 
     context.c2
       ..origin = const Offset(24.0, 24.0)

@@ -43,8 +43,6 @@ class SceneComponent with ObservableLoopComponent {
 
   double? get deltaRotation => getTransform<DeltaRotation>()?.value;
 
-  Size? get deltaSize => getTransform<DeltaSize>()?.value;
-
   Color? get deltaColor => getTransform<DeltaColor>()?.value;
 
   double? get deltaOpacity => getTransform<DeltaOpacity>()?.value;
@@ -128,16 +126,6 @@ class SceneComponent with ObservableLoopComponent {
           duration: duration,
           begin: begin != null ? begin * _toRadian : transform.rotation,
           end: degree * _toRadian,
-        ),
-        reset: reset);
-  }
-
-  DeltaSize size(Size size, {Size begin = const Size(1.0, 1.0), Duration duration = const Duration(seconds: 1), bool reset = false}) {
-    return applyTransform(
-        DeltaSize(
-          duration: duration,
-          begin: begin,
-          end: size,
         ),
         reset: reset);
   }

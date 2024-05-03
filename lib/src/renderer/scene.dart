@@ -23,9 +23,10 @@ class Scene extends SceneWidget {
   static SceneState of(BuildContext context) => context.findRootAncestorStateOfType<SceneState>()!;
 
   @override
-  Widget build(BuildContext context, double dt) {
+  Widget build(BuildContext context, Widget render, double dt) {
     return Stack(
       children: [
+        render,
         ...builders.map((e) => e(context, dt)),
         ...children,
       ],
@@ -48,7 +49,7 @@ abstract class SceneWidget extends StatefulWidget {
   @override
   SceneState createState() => SceneState();
 
-  Widget build(BuildContext context, double dt);
+  Widget build(BuildContext context, Widget render, double dt);
 }
 
 class SceneState extends State<SceneWidget> {
@@ -98,7 +99,20 @@ class SceneState extends State<SceneWidget> {
   }
 
   @override
-  Widget build(BuildContext context) => widget.build(context, dt);
+  Widget build(BuildContext context) {
+    return widget.build(
+      context,
+      LayoutBuilder(builder: (context, constrains) {
+        return CustomPaint(
+          painter: RenderPainter(
+            component: loop,
+          ),
+          size: (constrains.hasBoundedWidth && constrains.hasBoundedHeight) ? Size(constrains.maxWidth, constrains.maxHeight) : Size.zero,
+        );
+      }),
+      dt,
+    );
+  }
 
   @override
   void dispose() {

@@ -94,6 +94,8 @@ class ControlLoop with ObservableLoop {
 mixin ObservableLoop implements ObservableValue<double>, ObservableNotifier, Disposable {
   final _observable = ControlObservable<double>(0.0);
 
+  double timeDilation = 1.0;
+
   @override
   dynamic internalData;
 
@@ -101,7 +103,7 @@ mixin ObservableLoop implements ObservableValue<double>, ObservableNotifier, Dis
   double get value => _observable.value;
 
   void setValue(double value, {bool notify = true}) => _observable.setValue(
-        value,
+        value * timeDilation,
         notify: notify,
         forceNotify: notify,
       );

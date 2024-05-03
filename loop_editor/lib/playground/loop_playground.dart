@@ -1,11 +1,47 @@
+import 'dart:math';
+
 import 'package:flutter_control/control.dart';
 import 'package:loop/loop.dart';
 import 'package:loop_editor/resources/theme.dart';
+
+final r = Random();
 
 extension _LoopPlaygroundComponent on CoreContext {
   SceneComponent get c1 => use(key: 'c1', value: () => SceneComponent())!;
 
   SceneComponent get c2 => use(key: 'c2', value: () => SceneComponent())!;
+
+  SceneComponent operator [](dynamic key) => use(
+      key: key,
+      value: () {
+        final c = SceneComponent();
+
+        final d = Duration(milliseconds: 1000 + r.nextInt(9000));
+        final x = UITheme.device.width * r.nextDouble();
+        final s = 1.0 + r.nextInt(2);
+
+        c.origin = const Offset(32.0, 32.0);
+        c.translate(Offset(x, 0.0), begin: Offset(x, UITheme.device.height), duration: d);
+        c.rotate(r.nextDouble() * 720.0, duration: d);
+        c.scale(Offset(s, s), duration: d);
+        c.color(Color(r.nextInt(4294967295)), begin: Color(r.nextInt(4294967295)), duration: d);
+
+        c.updateLoopBehavior(LoopBehavior.loop);
+
+        return c;
+      })!;
+
+  LoopScene get scene => use(
+      key: 'scene',
+      value: () {
+        final loop = LoopScene();
+        loop.add(Sprite(asset: Asset.get('assets/placeholder.png'))
+          ..size = Size(64.0, 64.0)
+          ..translate(Offset(240.0, 240.0))
+          ..updateLoopBehavior(LoopBehavior.reverseLoop));
+
+        return loop;
+      })!;
 }
 
 class LoopPlayground extends ControlWidget {
@@ -56,10 +92,25 @@ class LoopPlayground extends ControlWidget {
     return Scaffold(
       body: Stack(
         children: [
+          Padding(
+            padding: const EdgeInsets.all(64.0),
+            child: Scene(
+              children: [
+                SceneComponentBuilder(
+                  component: context.c2,
+                  builder: (_, dt) => Container(
+                    width: 48.0,
+                    height: 48.0,
+                    color: context.c2.deltaColor,
+                  ),
+                ),
+              ],
+            ),
+          ),
           Scene.builder(
             builders: [
               (_, dt) {
-                //context.c1.tick(dt);
+                context.c1.tick(dt);
                 return Transform(
                   transform: context.c1.transform.matrix,
                   child: Container(
@@ -72,19 +123,70 @@ class LoopPlayground extends ControlWidget {
             ],
           ),
           Scene(
-            children: [
-              SceneComponentBuilder(
-                component: context.c2,
-                builder: (_, dt) => Container(
-                  width: 48.0,
-                  height: 48.0,
-                  color: context.c2.deltaColor,
-                ),
-              ),
-            ],
+            loop: context.scene,
           ),
-          const FpsView(),
+          const FpsView(
+            alignment: Alignment.bottomLeft,
+          ),
         ],
+      ),
+    );
+  }
+}
+
+class PerformanceTest extends ControlWidget {
+  final bool builder;
+  final int count;
+
+  const PerformanceTest({
+    super.key,
+    this.builder = false,
+    this.count = 100,
+  });
+
+  @override
+  Widget build(CoreElement context) {
+    if (builder) {
+      return Scene.builder(
+        builders: List.generate(
+            count,
+            (index) => (_, dt) {
+                  context[index].tick(dt);
+
+                  return Transform(
+                    transform: context[index].transform.matrix,
+                    origin: context[index].origin,
+                    child: Container(
+                      width: 64.0,
+                      height: 64.0,
+                      color: context[index].deltaColor,
+                      child: Center(
+                        child: Image.asset(
+                          'assets/placeholder.png',
+                          width: 32.0,
+                          height: 32.0,
+                        ),
+                      ),
+                    ),
+                  );
+                }),
+      );
+    }
+
+    return Scene(
+      children: List.generate(
+        count,
+        (index) => SceneComponentBuilder(
+          component: context[index],
+          builder: (_, dt) => Container(
+            width: 24.0,
+            height: 24.0,
+            color: context[index].deltaColor,
+            child: Center(
+              child: Text('$index'),
+            ),
+          ),
+        ),
       ),
     );
   }

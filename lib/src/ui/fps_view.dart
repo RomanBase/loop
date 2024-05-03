@@ -20,18 +20,24 @@ class FpsView extends StatelessWidget {
 
     return Align(
       alignment: alignment,
-      child: Scene.builder(
-        control: control,
-        loop: loop,
-        builders: [
-          (context, dt) => Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  '${ticker.fps}',
-                  style: style,
+      child: SizedBox(
+        width: 32.0,
+        height: 32.0,
+        child: Scene.builder(
+          control: control,
+          loop: loop,
+          builders: [
+            (context, dt) => Center(
+                  child: Container(
+                    color: ticker.fps < 30 ? Colors.red : Colors.white30,
+                    child: Text(
+                      '${ticker.fps}',
+                      style: style,
+                    ),
+                  ),
                 ),
-              ),
-        ],
+          ],
+        ),
       ),
     );
   }

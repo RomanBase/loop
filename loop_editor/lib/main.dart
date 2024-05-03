@@ -18,11 +18,15 @@ class MyApp extends StatelessWidget {
     Control.initControl(
       entries: {
         EditorControl: EditorControl(),
+        AssetFactory: AssetFactory()..loadImage('assets/placeholder.png'),
       },
       modules: [
         ConfigModule(),
         RoutingModule([]),
       ],
+      initAsync: () async {
+        await AssetFactory().loadImage('assets/placeholder.png');
+      },
       debug: true,
     );
 

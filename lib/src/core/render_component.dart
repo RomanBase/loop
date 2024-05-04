@@ -34,6 +34,18 @@ mixin RenderComponent on LoopComponent {
   }
 }
 
+mixin RenderQueue on LoopComponent {
+  final componentQueue = <RenderComponent>[];
+
+  void renderQueue(Canvas canvas, Rect rect) {
+    for (final element in componentQueue) {
+      element.render(canvas, rect);
+    }
+
+    componentQueue.clear();
+  }
+}
+
 class RenderPainter extends CustomPainter {
   final RenderComponent component;
   final Offset offset;
@@ -54,11 +66,11 @@ class RenderPainter extends CustomPainter {
 }
 
 class BBoxComponent extends SceneComponent with LoopComponent, RenderComponent {
-  late LoopComponent _parent;
+  late LoopComponent _boxParent;
 
   @override
   void onAttach(LoopComponent component) {
-    _parent = component;
+    _boxParent = component;
 
     if (component is RenderComponent) {
       size = component.size;
@@ -75,16 +87,16 @@ class BBoxComponent extends SceneComponent with LoopComponent, RenderComponent {
 
   @override
   void render(Canvas canvas, Rect rect) {
-    if (_parent is LoopScene) {
-      _renderBBox(canvas, '$_parent', rect);
+    if (_boxParent is LoopScene) {
+      _renderBBox(canvas, '$_boxParent', rect);
 
-      for (final element in (_parent as LoopScene).items) {
+      for (final element in (_boxParent as LoopScene).items) {
         _renderComponent(element, canvas, rect);
       }
     }
 
-    if (_parent is SceneComponent) {
-      _renderComponent(_parent as SceneComponent, canvas, rect);
+    if (_boxParent is SceneComponent) {
+      _renderComponent(_boxParent as SceneComponent, canvas, rect);
     }
   }
 
@@ -96,12 +108,12 @@ class BBoxComponent extends SceneComponent with LoopComponent, RenderComponent {
     if (component is RenderComponent) {
       rect = component.transform.position & (component.transform.scale & (component as RenderComponent).size);
 
-      _renderBBox(canvas, '$component', rect, component.transform.rotation, Offset(component.origin.dx * component.transform.scale.width, component.origin.dy * component.transform.scale.height));
+      _renderBBox(canvas, '$component', rect, component.transform.rotation, Offset(component.transform.origin.dx * component.transform.scale.width, component.transform.origin.dy * component.transform.scale.height));
     }
 
     component.components.forEach((key, value) {
       if (value is SceneComponent) {
-        _renderComponent(component, canvas, rect);
+        _renderComponent(value, canvas, rect);
       }
     });
   }

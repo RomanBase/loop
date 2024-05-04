@@ -122,7 +122,7 @@ class SceneComponentState extends State<SceneComponentWidget> {
   Widget build(BuildContext context) {
     return Transform(
       transform: component.transform.matrix,
-      origin: component.origin,
+      origin: component.transform.origin,
       filterQuality: widget.filterQuality,
       child: Opacity(
         opacity: component.deltaOpacity ?? 1.0,

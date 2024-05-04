@@ -15,18 +15,32 @@ extension _LoopPlaygroundComponent on CoreContext {
       key: 'scene',
       value: () {
         final loop = LoopScene();
+
         loop.add(Sprite(asset: Asset.get('assets/placeholder.png'))
           ..size = const Size(64.0, 64.0)
           ..translate(const Offset(240.0, 240.0))
-          ..updateLoopBehavior(LoopBehavior.reverseLoop));
+          ..updateLoopBehavior(LoopBehavior.loop));
 
         loop.add(Sprite(asset: Asset.get('assets/placeholder.png'))
           ..size = const Size(32.0, 32.0)
-          ..origin = const Offset(16.0, 16.0)
+          ..transform.origin = const Offset(16.0, 16.0)
           ..translate(const Offset(240.0, 240.0), begin: const Offset(240.0, 120.0))
           ..rotate(360.0)
-          ..scale(const Scale.of(1.5))
+          ..scale(const Scale.of(3.0))
+          ..attach(Sprite(asset: Asset.get('assets/placeholder.png'))
+            ..size = const Size(24.0, 24.0)
+            ..transform.origin = const Offset(12.0, 12.0)
+            ..transform.position = const Offset(28.0, 0.0)
+            ..attach(Sprite(asset: Asset.get('assets/placeholder.png'))
+              ..transform.origin = const Offset(8.0, 8.0)
+              ..size = const Size(16.0, 16.0)
+              ..transform.position = const Offset(20.0, 0.0)
+              //..translate(const Offset(64.0, 0.0)).setLoopBehavior(LoopBehavior.reverseLoop)
+              //..scale(const Scale.of(2.0)).setLoopBehavior(LoopBehavior.reverseLoop)
+              ..rotate(360).setLoopBehavior(LoopBehavior.reverseLoop)
+            ))
           ..updateLoopBehavior(LoopBehavior.reverseLoop));
+        loop.timeDilation = 0.25;
 
         loop.add(Sprite(
           asset: Asset.get('assets/mc.png'),
@@ -55,7 +69,7 @@ extension _LoopPlaygroundComponent on CoreContext {
         final x = UITheme.device.width * r.nextDouble();
         final s = 1.0 + r.nextInt(2);
 
-        c.origin = const Offset(32.0, 32.0);
+        c.transform.origin = const Offset(32.0, 32.0);
         c.translate(Offset(x, 0.0), begin: Offset(x, UITheme.device.height), duration: d);
         c.rotate(r.nextDouble() * 720.0, duration: d);
         c.scale(Scale.of(s), duration: d);
@@ -87,7 +101,7 @@ class LoopPlayground extends ControlWidget {
     context.c1.getTransform<DeltaScale>()?.setLoopBehavior(LoopBehavior.loop);
 
     context.c2
-      ..origin = const Offset(24.0, 24.0)
+      ..transform.origin = const Offset(24.0, 24.0)
       ..translate(Offset(UITheme.device.width * 0.5, UITheme.device.height * 0.25), begin: Offset(UITheme.device.width * 0.75, 0.0))
       ..translate(Offset(UITheme.device.width * 0.75, UITheme.device.height * 0.25)).until(
         postpone: WaitCondition(duration: const Duration(milliseconds: 1000)),
@@ -127,7 +141,7 @@ class LoopPlayground extends ControlWidget {
       ),
       body: Stack(
         children: [
-          Scene(
+          /*Scene(
             children: [
               SceneComponentBuilder(
                 component: context.c2,
@@ -153,7 +167,7 @@ class LoopPlayground extends ControlWidget {
                 );
               },
             ],
-          ),
+          ),*/
           Padding(
             padding: const EdgeInsets.all(64.0),
             child: Scene(
@@ -190,7 +204,7 @@ class PerformanceTest extends ControlWidget {
 
                   return Transform(
                     transform: context[index].transform.matrix,
-                    origin: context[index].origin,
+                    origin: context[index].transform.origin,
                     child: Container(
                       width: 64.0,
                       height: 64.0,

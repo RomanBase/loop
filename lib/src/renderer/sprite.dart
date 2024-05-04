@@ -86,8 +86,12 @@ class Sprite extends SceneComponent with RenderComponent {
 
   @override
   void render(Canvas canvas, Rect rect) {
-    final dst = transform.position & Size(size.width * transform.scale.width, size.height * transform.scale.height);
-    final dstOrigin = Offset(origin.dx * transform.scale.width, origin.dy * transform.scale.height);
+    final matrix = globalTransform;
+    final sx = matrix.scaleX;
+    final sy = matrix.scaleY;
+
+    final dstOrigin = Offset(transform.origin.dx * sx, transform.origin.dy * sy);
+    final dst = (matrix.position - dstOrigin) & Size(size.width * sx, size.height * sy);
 
     if (action != null && action!.blend != null && blend > 0.0 && frame < sequence.end) {
       renderRotated(canvas, dst, dstOrigin, transform.rotation, (dst) {
@@ -100,14 +104,24 @@ class Sprite extends SceneComponent with RenderComponent {
       });
     }
 
-    renderRotated(canvas, dst, dstOrigin, transform.rotation, (dst) {
-      canvas.drawImageRect(
-        asset,
-        asset.tile(frame, action),
-        dst,
-        Paint(),
-      );
-    });
+    renderRotated(
+      canvas,
+      dst,
+      dstOrigin,
+      matrix.angle,
+      (dst) {
+        canvas.drawImageRect(
+          asset,
+          asset.tile(frame, action),
+          dst,
+          Paint(),
+        );
+      },
+    );
+
+    canvas.drawCircle(matrix.position, 4.0, Paint()..color = Colors.red);
+
+    renderQueue(canvas, rect);
   }
 }
 

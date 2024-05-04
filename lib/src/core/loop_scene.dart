@@ -32,7 +32,7 @@ class LoopScene extends BaseControl with ObservableLoop, LoopComponent, RenderCo
 
     for (final element in items) {
       if (element.active) {
-        element.tick(dt);
+        element.tick(value);
       }
     }
   }

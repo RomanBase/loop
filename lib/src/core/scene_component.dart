@@ -1,7 +1,23 @@
 part of '../../loop.dart';
 
+extension Matrix4Ext on Matrix4 {
+  double get scaleX => Vector3(this[0], this[1], this[2]).length;
+
+  double get scaleY => Vector3(this[4], this[5], this[6]).length;
+
+  Offset get position => Offset(this[12], this[13]);
+
+  double get angle {
+    final v = getRotation().right;
+
+    return math.atan2(v[1], v[0]);
+  }
+}
+
 class BaseTransform {
   final _matrix = Matrix4.identity();
+
+  Offset origin = Offset.zero;
 
   Offset position = Offset.zero;
   Scale scale = Scale.one;
@@ -16,28 +32,36 @@ class BaseTransform {
   double get scaleY => scale.height;
 
   Matrix4 get matrix {
-    _matrix.setIdentity();
+    double s = math.sin(rotation);
+    double c = math.cos(rotation);
 
-    if (rotation != 0.0) {
-      _matrix.setRotationZ(rotation);
-    }
+    _matrix[0] = c * scaleX;
+    _matrix[1] = s * scaleX;
 
-    if (!scale.isOne) {
-      _matrix.scale(scale.width, scale.height, 1.0);
-    }
+    _matrix[4] = -s * scaleY;
+    _matrix[5] = c * scaleY;
 
-    if (!position.isZero) {
-      _matrix.setTranslationRaw(position.dx, position.dy, 0.0);
-    }
+    _matrix[12] = x;
+    _matrix[13] = y;
 
     return _matrix;
   }
+
+  Matrix4 of(SceneComponent? parent) {
+    if (parent == null) {
+      return matrix;
+    }
+
+    return parent.globalTransform.multiplied(matrix);
+  }
 }
 
-class SceneComponent with ObservableLoopComponent {
+class SceneComponent with ObservableLoopComponent, RenderQueue {
   final components = <Type, LoopComponent>{};
 
   final transform = BaseTransform();
+
+  Matrix4 get globalTransform => transform.of(parent);
 
   LoopScene? _loop;
 
@@ -57,13 +81,21 @@ class SceneComponent with ObservableLoopComponent {
 
   Offset? get deltaCurve => getTransform<DeltaCurve>()?.value;
 
-  Offset origin = Offset.zero;
-
   bool notifyOnTick = true;
 
-  void onAttach(LoopComponent component) {}
+  SceneComponent? parent;
 
-  void onDetach() {}
+  void onAttach(LoopComponent component) {
+    if (component is SceneComponent) {
+      assert(parent == null, 'Can\'t attach to multiple transform object');
+
+      parent = component;
+    }
+  }
+
+  void onDetach() {
+    parent = null;
+  }
 
   void onTick(double dt) {}
 
@@ -72,6 +104,10 @@ class SceneComponent with ObservableLoopComponent {
     components.forEach((key, value) {
       if (value.active) {
         value.tick(dt);
+
+        if (value is RenderComponent) {
+          componentQueue.add(value);
+        }
       }
     });
 

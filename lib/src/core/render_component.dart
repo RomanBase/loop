@@ -32,6 +32,16 @@ mixin RenderComponent on LoopComponent {
     canvas.translate(-rect.left - origin.dx, -rect.top - origin.dy);
     canvas.restore();
   }
+
+  void renderTransformed(Canvas canvas, Rect rect, Matrix4 matrix, Offset origin, void Function(Rect dst) render) {
+    final sx = matrix.scaleX;
+    final sy = matrix.scaleY;
+
+    final dstOrigin = Offset(origin.dx * sx, origin.dy * sy);
+    final dst = (matrix.position - dstOrigin) & Size(size.width * sx, size.height * sy);
+
+    renderRotated(canvas, dst, dstOrigin, matrix.angle, render);
+  }
 }
 
 mixin RenderQueue on LoopComponent {

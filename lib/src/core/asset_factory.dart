@@ -3,9 +3,9 @@ part of '../../loop.dart';
 class Asset {
   const Asset._();
 
-  static AssetFactory get _instance => Control.get<AssetFactory>()!;
+  static AssetFactory get instance => Control.get<AssetFactory>()!;
 
-  static T get<T>(String asset) => _instance.factory.get<T>(key: asset)!;
+  static T get<T>(String asset) => instance.factory.get<T>(key: asset)!;
 }
 
 class AssetFactory {

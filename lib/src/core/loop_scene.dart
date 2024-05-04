@@ -1,20 +1,20 @@
 part of '../../loop.dart';
 
 class LoopScene extends BaseControl with ObservableLoop, LoopComponent, RenderComponent, LoopLeaf {
-  final _items = <SceneComponent>[];
+  final items = <SceneComponent>[];
 
   void add(SceneComponent component) {
     assert(!component.isMounted, 'Can\'t use one Component in multiple Scenes');
 
-    _items.add(component);
+    items.add(component);
     component._loop = this;
-    component.onAttach();
+    component.onAttach(this);
 
     notify();
   }
 
   void remove(SceneComponent component) {
-    if (component.isMounted && _items.remove(component)) {
+    if (component.isMounted && items.remove(component)) {
       component._loop = null;
       component.onDetach();
 
@@ -30,7 +30,7 @@ class LoopScene extends BaseControl with ObservableLoop, LoopComponent, RenderCo
 
     setValue(dt);
 
-    for (final element in _items) {
+    for (final element in items) {
       if (element.active) {
         element.tick(dt);
       }
@@ -43,7 +43,7 @@ class LoopScene extends BaseControl with ObservableLoop, LoopComponent, RenderCo
       return;
     }
 
-    for (final element in _items) {
+    for (final element in items) {
       if (element is RenderComponent) {
         final render = element as RenderComponent;
 
@@ -52,19 +52,17 @@ class LoopScene extends BaseControl with ObservableLoop, LoopComponent, RenderCo
         }
       }
     }
-
-    super.render(canvas, rect); //debug bounds
   }
 
   @override
   void dispose() {
     super.dispose();
 
-    for (final element in _items) {
+    for (final element in items) {
       element._loop = null;
       element.dispose();
     }
 
-    _items.clear();
+    items.clear();
   }
 }

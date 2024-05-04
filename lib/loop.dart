@@ -2,6 +2,8 @@ library loop;
 
 import 'dart:ui' as ui;
 import 'dart:math' as math;
+import 'package:flutter/animation.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter/widgets.dart';

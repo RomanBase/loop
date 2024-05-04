@@ -346,6 +346,8 @@ class DeltaCurve extends DeltaDuration<Offset> {
 }
 
 class DeltaSequence extends DeltaDuration<int> {
+  double morph = 0.0;
+
   DeltaSequence({
     super.begin = 0,
     super.end = 60,
@@ -365,5 +367,28 @@ class DeltaSequence extends DeltaDuration<int> {
         );
 
   @override
-  int lerp(int a, int b, double t) => (a + (b - a) * t).toInt();
+  int transform(int a, int b, double t) {
+    t = reverse ? (1.0 - t) : t;
+
+    if (t <= 0.0) {
+      morph = 0.0;
+      return componentValue = a;
+    }
+
+    if (t >= 1.0) {
+      morph = 0.0;
+      return componentValue = b;
+    }
+
+    return componentValue = lerp(a, b, t);
+  }
+
+  @override
+  int lerp(int a, int b, double t) {
+    final value = (a + (b - a) * t);
+    final index = value.toInt();
+
+    morph = curve.transform(value - index);
+    return index;
+  }
 }

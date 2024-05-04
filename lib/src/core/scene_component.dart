@@ -53,7 +53,7 @@ class SceneComponent with ObservableLoopComponent {
 
   bool notifyOnTick = true;
 
-  void onAttach() {}
+  void onAttach(LoopComponent component) {}
 
   void onDetach() {}
 
@@ -83,6 +83,22 @@ class SceneComponent with ObservableLoopComponent {
 
     if (notifyOnTick) {
       notify();
+    }
+  }
+
+  void attach(LoopComponent component, {dynamic socket}) {
+    components[socket ?? component.runtimeType] = component;
+
+    if (component is SceneComponent) {
+      component.onAttach(this);
+    }
+  }
+
+  void detach(LoopComponent component, {dynamic socket}) {
+    components.remove(socket ?? component.runtimeType);
+
+    if (component is SceneComponent) {
+      component.onDetach();
     }
   }
 

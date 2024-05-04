@@ -36,9 +36,24 @@ extension _LoopPlaygroundComponent on CoreContext {
       value: () {
         final loop = LoopScene();
         loop.add(Sprite(asset: Asset.get('assets/placeholder.png'))
-          ..size = Size(64.0, 64.0)
-          ..translate(Offset(240.0, 240.0))
+          ..size = const Size(64.0, 64.0)
+          ..translate(const Offset(240.0, 240.0))
           ..updateLoopBehavior(LoopBehavior.reverseLoop));
+
+        loop.add(Sprite(asset: Asset.get('assets/placeholder.png'))
+          ..size = const Size(32.0, 32.0)
+          ..translate(const Offset(240.0, 240.0), begin: const Offset(240.0, 120.0))
+          ..updateLoopBehavior(LoopBehavior.reverseLoop));
+
+        loop.add(Sprite(
+          asset: Asset.get('assets/mc.png'),
+          actions: {
+            'fire': const SpriteAction(
+              count: 20,
+              axis: Axis.vertical,
+            ),
+          },
+        )..transform.position = const Offset(320.0, 320.0));
 
         return loop;
       })!;
@@ -90,22 +105,31 @@ class LoopPlayground extends ControlWidget {
   @override
   Widget build(CoreElement context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          final bbox = context.use<BBoxComponent>(value: () => BBoxComponent())!;
+
+          if (context.scene.items.contains(bbox)) {
+            context.scene.remove(bbox);
+          } else {
+            context.scene.add(bbox);
+          }
+        },
+        child: const Icon(Icons.border_all_rounded),
+      ),
       body: Stack(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(64.0),
-            child: Scene(
-              children: [
-                SceneComponentBuilder(
-                  component: context.c2,
-                  builder: (_, dt) => Container(
-                    width: 48.0,
-                    height: 48.0,
-                    color: context.c2.deltaColor,
-                  ),
+          Scene(
+            children: [
+              SceneComponentBuilder(
+                component: context.c2,
+                builder: (_, dt) => Container(
+                  width: 48.0,
+                  height: 48.0,
+                  color: context.c2.deltaColor,
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
           Scene.builder(
             builders: [
@@ -122,8 +146,11 @@ class LoopPlayground extends ControlWidget {
               },
             ],
           ),
-          Scene(
-            loop: context.scene,
+          Padding(
+            padding: const EdgeInsets.all(64.0),
+            child: Scene(
+              loop: context.scene,
+            ),
           ),
           const FpsView(
             alignment: Alignment.bottomLeft,

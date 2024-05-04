@@ -284,15 +284,15 @@ class DeltaPosition extends DeltaDuration<Offset> {
   Offset lerp(Offset a, Offset b, double t) => Offset.lerp(a, b, t)!;
 }
 
-class DeltaScale extends DeltaDuration<Offset> {
+class DeltaScale extends DeltaDuration<Scale> {
   DeltaScale({
-    super.begin = const Offset(1.0, 1.0),
-    super.end = const Offset(2.0, 2.0),
+    super.begin = const Scale(1.0, 1.0),
+    super.end = const Scale(2.0, 2.0),
     super.duration,
   });
 
   @override
-  Offset lerp(Offset a, Offset b, double t) => Offset.lerp(a, b, t)!;
+  Scale lerp(Scale a, Scale b, double t) => Scale.lerp(a, b, t);
 }
 
 class DeltaRotation extends DeltaDuration<double> {
@@ -346,7 +346,7 @@ class DeltaCurve extends DeltaDuration<Offset> {
 }
 
 class DeltaSequence extends DeltaDuration<int> {
-  double morph = 0.0;
+  double blend = 0.0;
 
   DeltaSequence({
     super.begin = 0,
@@ -371,12 +371,12 @@ class DeltaSequence extends DeltaDuration<int> {
     t = reverse ? (1.0 - t) : t;
 
     if (t <= 0.0) {
-      morph = 0.0;
+      blend = 0.0;
       return componentValue = a;
     }
 
     if (t >= 1.0) {
-      morph = 0.0;
+      blend = 0.0;
       return componentValue = b;
     }
 
@@ -388,7 +388,7 @@ class DeltaSequence extends DeltaDuration<int> {
     final value = (a + (b - a) * t);
     final index = value.toInt();
 
-    morph = curve.transform(value - index);
+    blend = curve.transform(value - index);
     return index;
   }
 }

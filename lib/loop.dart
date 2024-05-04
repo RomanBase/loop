@@ -41,15 +41,25 @@ extension Vector2Ext on Vector2 {
 }
 
 extension OffsetExt on Offset {
-  static const Offset one = Offset(1.0, 1.0);
-
   bool get isZero => dx == 0.0 && dy == 0.0;
 
   bool get isOne => dx == 1.0 && dy == 1.0;
 }
 
-class Scale {
-  static const Offset one = Offset(1.0, 1.0);
+extension SizeExt on Size {
+  bool get isZero => width == 0.0 && height == 0.0;
 
-  static Offset of(double value) => Offset(value, value);
+  bool get isOne => width == 1.0 && height == 1.0;
+}
+
+class Scale extends Size {
+  static const Scale one = Scale(1.0, 1.0);
+
+  const Scale(super.width, super.height);
+
+  const Scale.of(double value) : super(value, value);
+
+  operator &(Size other) => Scale(width * other.width, height * other.height);
+
+  static Scale lerp(Scale a, Scale b, double t) => Scale(a.width + (b.width - a.width) * t, a.height + (b.height - a.height) * t);
 }

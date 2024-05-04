@@ -4,8 +4,16 @@ class BaseTransform {
   final _matrix = Matrix4.identity();
 
   Offset position = Offset.zero;
-  Offset scale = Scale.one;
+  Scale scale = Scale.one;
   double rotation = 0.0;
+
+  double get x => position.dx;
+
+  double get y => position.dy;
+
+  double get scaleX => scale.width;
+
+  double get scaleY => scale.height;
 
   Matrix4 get matrix {
     _matrix.setIdentity();
@@ -15,7 +23,7 @@ class BaseTransform {
     }
 
     if (!scale.isOne) {
-      _matrix.scale(scale.dx, scale.dy, 1.0);
+      _matrix.scale(scale.width, scale.height, 1.0);
     }
 
     if (!position.isZero) {
@@ -39,7 +47,7 @@ class SceneComponent with ObservableLoopComponent {
 
   Offset? get deltaOffset => getTransform<DeltaPosition>()?.value;
 
-  Offset? get deltaScale => getTransform<DeltaScale>()?.value;
+  Scale? get deltaScale => getTransform<DeltaScale>()?.value;
 
   double? get deltaRotation => getTransform<DeltaRotation>()?.value;
 
@@ -49,7 +57,7 @@ class SceneComponent with ObservableLoopComponent {
 
   Offset? get deltaCurve => getTransform<DeltaCurve>()?.value;
 
-  Offset? origin;
+  Offset origin = Offset.zero;
 
   bool notifyOnTick = true;
 
@@ -126,7 +134,7 @@ class SceneComponent with ObservableLoopComponent {
         reset: reset);
   }
 
-  DeltaScale scale(Offset scale, {Offset? begin, Duration duration = const Duration(seconds: 1), bool reset = false}) {
+  DeltaScale scale(Scale scale, {Scale? begin, Duration duration = const Duration(seconds: 1), bool reset = false}) {
     return applyTransform(
         DeltaScale(
           duration: duration,

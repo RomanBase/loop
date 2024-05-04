@@ -7,14 +7,16 @@ class SpriteAction {
   final int fps;
   final LoopBehavior loop;
   final Axis axis;
+  final Curve? blend;
 
   const SpriteAction({
     this.offset = 0,
     this.count = 1,
     this.size = 256.0,
-    this.fps = 4,
+    this.fps = 20,
     this.loop = LoopBehavior.loop,
     this.axis = Axis.horizontal,
+    this.blend,
   });
 
   Rect tile(int index, int width, int height) {
@@ -37,12 +39,8 @@ class SpriteAction {
 
     return Rect.fromLTWH(x * size, y * size, size, size);
   }
-}
 
-extension SpriteImage on ui.Image {
-  Rect get src => Rect.fromLTRB(0.0, 0.0, width.toDouble(), height.toDouble());
-
-  Rect tile(int index, SpriteAction? action) => action == null ? src : action.tile(index, width, height);
+  Rect sheet(int index) => Rect.zero;
 }
 
 class Sprite extends SceneComponent with RenderComponent {
@@ -53,7 +51,7 @@ class Sprite extends SceneComponent with RenderComponent {
 
   int get frame => getTransform<DeltaSequence>()?.value ?? 0;
 
-  double get morph => getTransform<DeltaSequence>()?.morph ?? 0.0;
+  double get blend => getTransform<DeltaSequence>()?.blend ?? 0.0;
 
   SpriteAction? action;
 
@@ -78,7 +76,9 @@ class Sprite extends SceneComponent with RenderComponent {
           offset: action!.offset,
           count: action!.count,
           framesPerSecond: action!.fps,
-        )..setLoopBehavior(action!.loop),
+        )
+          ..setLoopBehavior(action!.loop)
+          ..curve = action!.blend ?? Curves.linear,
         reset: true);
   }
 
@@ -86,24 +86,33 @@ class Sprite extends SceneComponent with RenderComponent {
 
   @override
   void render(Canvas canvas, Rect rect) {
-    final dst = transform.position & size;
+    final dst = transform.position & Size(size.width * transform.scale.width, size.height * transform.scale.height);
+    final dstOrigin = Offset(origin.dx * transform.scale.width, origin.dy * transform.scale.height);
 
-    canvas.drawImageRect(
-      asset,
-      asset.tile(frame, action),
-      dst,
-      Paint(),
-    );
-
-    if (action != null) {
-      if (morph > 0.0 && frame < sequence.end) {
+    if (action != null && action!.blend != null && blend > 0.0 && frame < sequence.end) {
+      renderRotated(canvas, dst, dstOrigin, transform.rotation, (dst) {
         canvas.drawImageRect(
           asset,
           asset.tile(frame + 1, action),
           dst,
-          Paint()..color = Colors.white.withOpacity(morph),
+          Paint()..color = Color.fromRGBO(255, 255, 255, blend),
         );
-      }
+      });
     }
+
+    renderRotated(canvas, dst, dstOrigin, transform.rotation, (dst) {
+      canvas.drawImageRect(
+        asset,
+        asset.tile(frame, action),
+        dst,
+        Paint(),
+      );
+    });
   }
+}
+
+extension SpriteImage on ui.Image {
+  Rect get src => Rect.fromLTRB(0.0, 0.0, width.toDouble(), height.toDouble());
+
+  Rect tile(int index, SpriteAction? action) => action == null ? src : action.tile(index, width, height);
 }

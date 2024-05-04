@@ -11,6 +11,41 @@ extension _LoopPlaygroundComponent on CoreContext {
 
   SceneComponent get c2 => use(key: 'c2', value: () => SceneComponent())!;
 
+  LoopScene get scene => use(
+      key: 'scene',
+      value: () {
+        final loop = LoopScene();
+        loop.add(Sprite(asset: Asset.get('assets/placeholder.png'))
+          ..size = const Size(64.0, 64.0)
+          ..translate(const Offset(240.0, 240.0))
+          ..updateLoopBehavior(LoopBehavior.reverseLoop));
+
+        loop.add(Sprite(asset: Asset.get('assets/placeholder.png'))
+          ..size = const Size(32.0, 32.0)
+          ..origin = const Offset(16.0, 16.0)
+          ..translate(const Offset(240.0, 240.0), begin: const Offset(240.0, 120.0))
+          ..rotate(360.0)
+          ..scale(const Scale.of(1.5))
+          ..updateLoopBehavior(LoopBehavior.reverseLoop));
+
+        loop.add(Sprite(
+          asset: Asset.get('assets/mc.png'),
+          actions: {
+            'fire': const SpriteAction(
+              count: 24,
+              axis: Axis.vertical,
+              blend: Curves.easeInQuad,
+              fps: 8,
+            ),
+          },
+        )
+          ..transform.position = const Offset(320.0, 320.0)
+          ..translate(const Offset(320.0, 280.0)).setLoopBehavior(LoopBehavior.loop)
+          ..scale(const Scale.of(2.0)).setLoopBehavior(LoopBehavior.loop));
+
+        return loop;
+      })!;
+
   SceneComponent operator [](dynamic key) => use(
       key: key,
       value: () {
@@ -23,39 +58,12 @@ extension _LoopPlaygroundComponent on CoreContext {
         c.origin = const Offset(32.0, 32.0);
         c.translate(Offset(x, 0.0), begin: Offset(x, UITheme.device.height), duration: d);
         c.rotate(r.nextDouble() * 720.0, duration: d);
-        c.scale(Offset(s, s), duration: d);
+        c.scale(Scale.of(s), duration: d);
         c.color(Color(r.nextInt(4294967295)), begin: Color(r.nextInt(4294967295)), duration: d);
 
         c.updateLoopBehavior(LoopBehavior.loop);
 
         return c;
-      })!;
-
-  LoopScene get scene => use(
-      key: 'scene',
-      value: () {
-        final loop = LoopScene();
-        loop.add(Sprite(asset: Asset.get('assets/placeholder.png'))
-          ..size = const Size(64.0, 64.0)
-          ..translate(const Offset(240.0, 240.0))
-          ..updateLoopBehavior(LoopBehavior.reverseLoop));
-
-        loop.add(Sprite(asset: Asset.get('assets/placeholder.png'))
-          ..size = const Size(32.0, 32.0)
-          ..translate(const Offset(240.0, 240.0), begin: const Offset(240.0, 120.0))
-          ..updateLoopBehavior(LoopBehavior.reverseLoop));
-
-        loop.add(Sprite(
-          asset: Asset.get('assets/mc.png'),
-          actions: {
-            'fire': const SpriteAction(
-              count: 20,
-              axis: Axis.vertical,
-            ),
-          },
-        )..transform.position = const Offset(320.0, 320.0));
-
-        return loop;
       })!;
 }
 
@@ -70,9 +78,9 @@ class LoopPlayground extends ControlWidget {
       ..translate(Offset(320.0, UITheme.device.height * 0.5), duration: const Duration(seconds: 2)).curve = Curves.easeOutQuad
       ..translate(Offset(120.0, UITheme.device.height * 0.5)).curve = Curves.easeInCubic
       ..translate(Offset(120.0, UITheme.device.height * 0.65))
-      ..scale(const Offset(4.0, 2.0))
-      ..scale(const Offset(3.0, 3.0))
-      ..scale(const Offset(1.0, 1.0));
+      ..scale(const Scale(4.0, 2.0))
+      ..scale(const Scale(3.0, 3.0))
+      ..scale(const Scale(1.0, 1.0));
 
     context.c1.getTransform<DeltaPosition>()?.setReverse(true);
     context.c1.getTransform<DeltaPosition>()?.setLoopBehavior(LoopBehavior.reverseLoop);
@@ -87,9 +95,9 @@ class LoopPlayground extends ControlWidget {
         loopHold: LoopBehavior.reverseLoop,
       )
       ..translate(Offset(UITheme.device.width * 0.85, UITheme.device.height * 0.65))
-      ..scale(const Offset(3.0, 2.0))
-      ..scale(const Offset(1.5, 1.5))
-      ..scale(const Offset(0.5, 1.0))
+      ..scale(const Scale(3.0, 2.0))
+      ..scale(const Scale(1.5, 1.5))
+      ..scale(const Scale(0.5, 1.0))
       ..opacity(0.25)
       ..opacity(0.25)
       ..opacity(1.0)

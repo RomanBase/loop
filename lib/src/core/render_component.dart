@@ -16,6 +16,22 @@ mixin RenderComponent on LoopComponent {
         ..strokeWidth = 1.0,
     );
   }
+
+  void renderRotated(Canvas canvas, Rect rect, Offset origin, double rotation, void Function(Rect dst) render) {
+    if (rotation == 0.0) {
+      render(rect);
+      return;
+    }
+
+    canvas.save();
+    canvas.translate(rect.left + origin.dx, rect.top + origin.dy);
+    canvas.rotate(rotation);
+
+    render(Rect.fromLTRB(-origin.dx, -origin.dy, rect.width - origin.dx, rect.height - origin.dy));
+
+    canvas.translate(-rect.left - origin.dx, -rect.top - origin.dy);
+    canvas.restore();
+  }
 }
 
 class RenderPainter extends CustomPainter {
@@ -78,9 +94,9 @@ class BBoxComponent extends SceneComponent with LoopComponent, RenderComponent {
     }
 
     if (component is RenderComponent) {
-      rect = component.transform.position & (component as RenderComponent).size;
+      rect = component.transform.position & (component.transform.scale & (component as RenderComponent).size);
 
-      _renderBBox(canvas, '$component', rect);
+      _renderBBox(canvas, '$component', rect, component.transform.rotation, Offset(component.origin.dx * component.transform.scale.width, component.origin.dy * component.transform.scale.height));
     }
 
     component.components.forEach((key, value) {
@@ -90,26 +106,28 @@ class BBoxComponent extends SceneComponent with LoopComponent, RenderComponent {
     });
   }
 
-  void _renderBBox(Canvas canvas, String name, Rect rect) {
-    canvas.drawRect(
-      rect,
-      Paint()
-        ..color = Colors.red
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 3.0,
-    );
-
-    final text = TextPainter(textDirection: TextDirection.ltr)
-      ..text = TextSpan(
-        text: name.startsWith('Instance of') ? name.substring(name.indexOf('\'') + 1, name.length - 1) : name,
-        style: const TextStyle(
-          letterSpacing: 0.0,
-          fontSize: 10.0,
-          color: Colors.red,
-        ),
+  void _renderBBox(Canvas canvas, String name, Rect rect, [double rotation = 0.0, Offset origin = Offset.zero]) {
+    renderRotated(canvas, rect, origin, rotation, (rect) {
+      canvas.drawRect(
+        rect,
+        Paint()
+          ..color = Colors.red
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 3.0,
       );
 
-    text.layout(maxWidth: double.infinity);
-    text.paint(canvas, Offset(rect.left, rect.top - 12.0));
+      final text = TextPainter(textDirection: TextDirection.ltr)
+        ..text = TextSpan(
+          text: name.startsWith('Instance of') ? name.substring(name.indexOf('\'') + 1, name.length - 1) : name,
+          style: const TextStyle(
+            letterSpacing: 0.0,
+            fontSize: 10.0,
+            color: Colors.red,
+          ),
+        );
+
+      text.layout(maxWidth: double.infinity);
+      text.paint(canvas, Offset(rect.left, rect.top - 12.0));
+    });
   }
 }

@@ -82,44 +82,25 @@ class Sprite extends SceneComponent with RenderComponent {
         reset: true);
   }
 
-  void activateSequence(List<String> sequence) {}
-
   @override
   void render(Canvas canvas, Rect rect) {
-    final matrix = globalTransform;
-    final sx = matrix.scaleX;
-    final sy = matrix.scaleY;
-
-    final dstOrigin = Offset(transform.origin.dx * sx, transform.origin.dy * sy);
-    final dst = (matrix.position - dstOrigin) & Size(size.width * sx, size.height * sy);
-
-    if (action != null && action!.blend != null && blend > 0.0 && frame < sequence.end) {
-      renderRotated(canvas, dst, dstOrigin, transform.rotation, (dst) {
+    renderComponent(canvas, this, (dst) {
+      if (action != null && action!.blend != null && !sequence.atEdge) {
         canvas.drawImageRect(
           asset,
           asset.tile(frame + 1, action),
           dst,
           Paint()..color = Color.fromRGBO(255, 255, 255, blend),
         );
-      });
-    }
+      }
 
-    renderRotated(
-      canvas,
-      dst,
-      dstOrigin,
-      matrix.angle,
-      (dst) {
-        canvas.drawImageRect(
-          asset,
-          asset.tile(frame, action),
-          dst,
-          Paint(),
-        );
-      },
-    );
-
-    canvas.drawCircle(matrix.position, 4.0, Paint()..color = Colors.red);
+      canvas.drawImageRect(
+        asset,
+        asset.tile(frame, action),
+        dst,
+        Paint(),
+      );
+    });
 
     renderQueue(canvas, rect);
   }

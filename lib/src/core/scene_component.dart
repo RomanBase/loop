@@ -1,65 +1,9 @@
 part of '../../loop.dart';
 
-extension Matrix4Ext on Matrix4 {
-  double get scaleX => Vector3(this[0], this[1], this[2]).length;
-
-  double get scaleY => Vector3(this[4], this[5], this[6]).length;
-
-  Offset get position => Offset(this[12], this[13]);
-
-  double get angle {
-    final v = getRotation().right;
-
-    return math.atan2(v[1], v[0]);
-  }
-}
-
-class BaseTransform {
-  final _matrix = Matrix4.identity();
-
-  Offset origin = Offset.zero;
-
-  Offset position = Offset.zero;
-  Scale scale = Scale.one;
-  double rotation = 0.0;
-
-  double get x => position.dx;
-
-  double get y => position.dy;
-
-  double get scaleX => scale.width;
-
-  double get scaleY => scale.height;
-
-  Matrix4 get matrix {
-    double s = math.sin(rotation);
-    double c = math.cos(rotation);
-
-    _matrix[0] = c * scaleX;
-    _matrix[1] = s * scaleX;
-
-    _matrix[4] = -s * scaleY;
-    _matrix[5] = c * scaleY;
-
-    _matrix[12] = x;
-    _matrix[13] = y;
-
-    return _matrix;
-  }
-
-  Matrix4 of(SceneComponent? parent) {
-    if (parent == null) {
-      return matrix;
-    }
-
-    return parent.globalTransform.multiplied(matrix);
-  }
-}
-
 class SceneComponent with ObservableLoopComponent, RenderQueue {
   final components = <Type, LoopComponent>{};
 
-  final transform = BaseTransform();
+  final transform = TransformMatrix();
 
   Matrix4 get globalTransform => transform.of(parent);
 

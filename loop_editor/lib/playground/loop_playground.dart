@@ -102,7 +102,7 @@ class LoopPlayground extends ControlWidget {
 
     context.c2
       ..transform.origin = const Offset(24.0, 24.0)
-      ..translate(Offset(UITheme.device.width * 0.5, UITheme.device.height * 0.25), begin: Offset(UITheme.device.width * 0.75, 0.0))
+      ..translate(Offset(UITheme.device.width * 0.5, UITheme.device.height * 0.25))
       ..translate(Offset(UITheme.device.width * 0.75, UITheme.device.height * 0.25)).until(
         postpone: WaitCondition(duration: const Duration(milliseconds: 1000)),
         hold: CycleCondition(cycles: 2),
@@ -141,18 +141,7 @@ class LoopPlayground extends ControlWidget {
       ),
       body: Stack(
         children: [
-          /*Scene(
-            children: [
-              SceneComponentBuilder(
-                component: context.c2,
-                builder: (_, dt) => Container(
-                  width: 48.0,
-                  height: 48.0,
-                  color: context.c2.deltaColor,
-                ),
-              ),
-            ],
-          ),
+          /*
           Scene.builder(
             builders: [
               (_, dt) {
@@ -172,6 +161,16 @@ class LoopPlayground extends ControlWidget {
             padding: const EdgeInsets.all(64.0),
             child: Scene(
               loop: context.scene,
+              children: [
+                SceneComponentBuilder(
+                  component: context.c2,
+                  builder: (_, dt) => Container(
+                    width: 48.0,
+                    height: 48.0,
+                    color: context.c2.deltaColor,
+                  ),
+                ),
+              ],
             ),
           ),
           const FpsView(

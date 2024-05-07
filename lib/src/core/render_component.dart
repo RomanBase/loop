@@ -33,7 +33,18 @@ mixin RenderComponent on LoopComponent {
     canvas.restore();
   }
 
-  void renderTransformed(Canvas canvas, Rect rect, Matrix4 matrix, Offset origin, void Function(Rect dst) render) {
+  void renderComponent(Canvas canvas, SceneComponent component, void Function(Rect dst) render) {
+    final matrix = component.globalTransform;
+    final sx = matrix.scaleX;
+    final sy = matrix.scaleY;
+
+    final dstOrigin = Offset(component.transform.origin.dx * sx, component.transform.origin.dy * sy);
+    final dst = (matrix.position - dstOrigin) & Size(size.width * sx, size.height * sy);
+
+    renderRotated(canvas, dst, dstOrigin, matrix.angle, render);
+  }
+
+  void renderRaw(Canvas canvas, Matrix4 matrix, Offset origin, Size size, void Function(Rect dst) render) {
     final sx = matrix.scaleX;
     final sy = matrix.scaleY;
 
@@ -98,7 +109,7 @@ class BBoxComponent extends SceneComponent with LoopComponent, RenderComponent {
   @override
   void render(Canvas canvas, Rect rect) {
     if (_boxParent is LoopScene) {
-      _renderBBox(canvas, '$_boxParent', rect);
+      _renderBBox(canvas, '$_boxParent', Matrix4.identity());
 
       for (final element in (_boxParent as LoopScene).items) {
         _renderComponent(element, canvas, rect);
@@ -116,9 +127,13 @@ class BBoxComponent extends SceneComponent with LoopComponent, RenderComponent {
     }
 
     if (component is RenderComponent) {
-      rect = component.transform.position & (component.transform.scale & (component as RenderComponent).size);
-
-      _renderBBox(canvas, '$component', rect, component.transform.rotation, Offset(component.transform.origin.dx * component.transform.scale.width, component.transform.origin.dy * component.transform.scale.height));
+      _renderBBox(
+        canvas,
+        '$component',
+        component.globalTransform,
+        component.transform.origin,
+        (component as RenderComponent).size,
+      );
     }
 
     component.components.forEach((key, value) {
@@ -128,28 +143,42 @@ class BBoxComponent extends SceneComponent with LoopComponent, RenderComponent {
     });
   }
 
-  void _renderBBox(Canvas canvas, String name, Rect rect, [double rotation = 0.0, Offset origin = Offset.zero]) {
-    renderRotated(canvas, rect, origin, rotation, (rect) {
-      canvas.drawRect(
-        rect,
-        Paint()
-          ..color = Colors.red
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 3.0,
-      );
+  void _renderBBox(Canvas canvas, String name, Matrix4 matrix, [Offset origin = Offset.zero, Size? size]) {
+    renderRaw(
+      canvas,
+      matrix,
+      origin,
+      size ?? this.size,
+      (rect) {
+        canvas.drawCircle(
+            Offset(
+              rect.left + origin.dx * matrix.scaleX,
+              rect.top + origin.dy * matrix.scaleY,
+            ),
+            4.0,
+            Paint()..color = Colors.red);
 
-      final text = TextPainter(textDirection: TextDirection.ltr)
-        ..text = TextSpan(
-          text: name.startsWith('Instance of') ? name.substring(name.indexOf('\'') + 1, name.length - 1) : name,
-          style: const TextStyle(
-            letterSpacing: 0.0,
-            fontSize: 10.0,
-            color: Colors.red,
-          ),
+        canvas.drawRect(
+          rect,
+          Paint()
+            ..color = Colors.red
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = 3.0,
         );
 
-      text.layout(maxWidth: double.infinity);
-      text.paint(canvas, Offset(rect.left, rect.top - 12.0));
-    });
+        final text = TextPainter(textDirection: TextDirection.ltr)
+          ..text = TextSpan(
+            text: name.startsWith('Instance of') ? name.substring(name.indexOf('\'') + 1, name.length - 1) : name,
+            style: const TextStyle(
+              letterSpacing: 0.0,
+              fontSize: 10.0,
+              color: Colors.red,
+            ),
+          );
+
+        text.layout(maxWidth: double.infinity);
+        text.paint(canvas, Offset(rect.left, rect.top - 12.0));
+      },
+    );
   }
 }

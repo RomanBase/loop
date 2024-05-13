@@ -35,8 +35,8 @@ extension _LoopPlaygroundComponent on CoreContext {
               ..transform.origin = const Offset(8.0, 8.0)
               ..size = const Size(16.0, 16.0)
               ..transform.position = const Offset(20.0, 0.0)
-              //..translate(const Offset(64.0, 0.0)).setLoopBehavior(LoopBehavior.reverseLoop)
-              //..scale(const Scale.of(2.0)).setLoopBehavior(LoopBehavior.reverseLoop)
+              ..translate(const Offset(64.0, 0.0)).setLoopBehavior(LoopBehavior.reverseLoop)
+              ..scale(const Scale.of(2.0)).setLoopBehavior(LoopBehavior.reverseLoop)
               ..rotate(360).setLoopBehavior(LoopBehavior.reverseLoop)
             ))
           ..updateLoopBehavior(LoopBehavior.reverseLoop));

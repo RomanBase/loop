@@ -16,16 +16,25 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Control.initControl(
-      entries: {EditorControl: EditorControl(), AssetFactory: AssetFactory()},
+      debug: true,
+      entries: {
+        EditorControl: EditorControl(),
+        AssetFactory: AssetFactory(),
+      },
       modules: [
         ConfigModule(),
         RoutingModule([]),
       ],
       initAsync: () async {
-        await Asset.instance.loadImage('assets/placeholder.png');
-        await Asset.instance.loadImage('assets/mc.png');
+        await AssetLoader.load(
+          Asset.instance,
+          images: {
+            'placeholder': 'assets/placeholder.png',
+            'mc': 'assets/mc.png',
+          },
+          progress: (value) => printDebug('asset loading: $value'),
+        );
       },
-      debug: true,
     );
 
     return ControlRoot(

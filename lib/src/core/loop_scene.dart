@@ -1,6 +1,6 @@
 part of '../../loop.dart';
 
-class LoopScene extends BaseControl with ObservableLoop, LoopComponent, RenderComponent, LoopLeaf {
+class LoopScene extends BaseControl with ObservableLoop, LoopComponent, RenderComponent, RenderQueue, LoopLeaf {
   final items = <SceneComponent>[];
 
   void add(SceneComponent component) {
@@ -45,13 +45,11 @@ class LoopScene extends BaseControl with ObservableLoop, LoopComponent, RenderCo
 
     for (final element in items) {
       if (element is RenderComponent) {
-        final render = element as RenderComponent;
-
-        if (render.visible && render.checkBounds(rect)) {
-          render.render(canvas, rect);
-        }
+        pushRenderComponent(element as RenderComponent);
       }
     }
+
+    super.render(canvas, rect);
   }
 
   @override

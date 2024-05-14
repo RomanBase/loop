@@ -47,11 +47,11 @@ class Sprite extends SceneComponent with RenderComponent {
   final ui.Image asset;
   final Map<String, SpriteAction> actions;
 
-  DeltaSequence get sequence => getTransform<DeltaSequence>()!;
+  DeltaSequence get sequence => getComponent<DeltaSequence>()!;
 
-  int get frame => getTransform<DeltaSequence>()?.value ?? 0;
+  int get frame => getComponent<DeltaSequence>()?.value ?? 0;
 
-  double get blend => getTransform<DeltaSequence>()?.blend ?? 0.0;
+  double get blend => getComponent<DeltaSequence>()?.blend ?? 0.0;
 
   SpriteAction? action;
 
@@ -72,7 +72,7 @@ class Sprite extends SceneComponent with RenderComponent {
     }
 
     applyTransform(
-        DeltaSequence.sub(
+        DeltaSequence.of(
           offset: action!.offset,
           count: action!.count,
           framesPerSecond: action!.fps,
@@ -101,8 +101,6 @@ class Sprite extends SceneComponent with RenderComponent {
         Paint(),
       );
     });
-
-    renderQueue(canvas, rect);
   }
 }
 

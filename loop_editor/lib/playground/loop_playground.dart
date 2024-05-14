@@ -15,35 +15,35 @@ extension _LoopPlaygroundComponent on CoreContext {
       key: 'scene',
       value: () {
         final loop = LoopScene();
+        loop.timeDilation = 0.25;
 
-        loop.add(Sprite(asset: Asset.get('assets/placeholder.png'))
+        loop.add(Sprite(asset: Asset.get('placeholder'))
+          ..zIndex = -1
           ..size = const Size(64.0, 64.0)
           ..translate(const Offset(240.0, 240.0))
-          ..updateLoopBehavior(LoopBehavior.loop));
+          ..updateDeltaLoopBehavior(LoopBehavior.loop));
 
-        loop.add(Sprite(asset: Asset.get('assets/placeholder.png'))
+        loop.add(Sprite(asset: Asset.get('placeholder'))
           ..size = const Size(32.0, 32.0)
           ..transform.origin = const Offset(16.0, 16.0)
           ..translate(const Offset(240.0, 240.0), begin: const Offset(240.0, 120.0))
           ..rotate(360.0)
           ..scale(const Scale.of(3.0))
-          ..attach(Sprite(asset: Asset.get('assets/placeholder.png'))
+          ..attach(Sprite(asset: Asset.get('placeholder'))
             ..size = const Size(24.0, 24.0)
             ..transform.origin = const Offset(12.0, 12.0)
             ..transform.position = const Offset(28.0, 0.0)
-            ..attach(Sprite(asset: Asset.get('assets/placeholder.png'))
+            ..attach(Sprite(asset: Asset.get('placeholder'))
               ..transform.origin = const Offset(8.0, 8.0)
               ..size = const Size(16.0, 16.0)
               ..transform.position = const Offset(20.0, 0.0)
               ..translate(const Offset(64.0, 0.0)).setLoopBehavior(LoopBehavior.reverseLoop)
               ..scale(const Scale.of(2.0)).setLoopBehavior(LoopBehavior.reverseLoop)
-              ..rotate(360).setLoopBehavior(LoopBehavior.reverseLoop)
-            ))
-          ..updateLoopBehavior(LoopBehavior.reverseLoop));
-        loop.timeDilation = 0.25;
+              ..rotate(360).setLoopBehavior(LoopBehavior.reverseLoop)))
+          ..updateDeltaLoopBehavior(LoopBehavior.reverseLoop));
 
         loop.add(Sprite(
-          asset: Asset.get('assets/mc.png'),
+          asset: Asset.get('mc'),
           actions: {
             'fire': const SpriteAction(
               count: 24,
@@ -75,7 +75,7 @@ extension _LoopPlaygroundComponent on CoreContext {
         c.scale(Scale.of(s), duration: d);
         c.color(Color(r.nextInt(4294967295)), begin: Color(r.nextInt(4294967295)), duration: d);
 
-        c.updateLoopBehavior(LoopBehavior.loop);
+        c.updateDeltaLoopBehavior(LoopBehavior.loop);
 
         return c;
       })!;
@@ -96,9 +96,9 @@ class LoopPlayground extends ControlWidget {
       ..scale(const Scale(3.0, 3.0))
       ..scale(const Scale(1.0, 1.0));
 
-    context.c1.getTransform<DeltaPosition>()?.setReverse(true);
-    context.c1.getTransform<DeltaPosition>()?.setLoopBehavior(LoopBehavior.reverseLoop);
-    context.c1.getTransform<DeltaScale>()?.setLoopBehavior(LoopBehavior.loop);
+    context.c1.getComponent<DeltaPosition>()?.setReverse(true);
+    context.c1.getComponent<DeltaPosition>()?.setLoopBehavior(LoopBehavior.reverseLoop);
+    context.c1.getComponent<DeltaScale>()?.setLoopBehavior(LoopBehavior.loop);
 
     context.c2
       ..transform.origin = const Offset(24.0, 24.0)
@@ -117,11 +117,11 @@ class LoopPlayground extends ControlWidget {
       ..opacity(1.0)
       ..color(Colors.lightBlueAccent, begin: Colors.black)
       ..color(Colors.greenAccent)
-      ..color(Colors.orangeAccent, begin: Colors.red)
+      ..color(Colors.orangeAccent)
       ..rotate(360.0);
 
-    context.c2.updateLoopBehavior(LoopBehavior.reverseLoop);
-    context.c2.getTransform<DeltaRotation>()?.setLoopBehavior(LoopBehavior.loop);
+    context.c2.updateDeltaLoopBehavior(LoopBehavior.reverseLoop);
+    context.c2.getComponent<DeltaRotation>()?.setLoopBehavior(LoopBehavior.loop);
   }
 
   @override
@@ -129,7 +129,7 @@ class LoopPlayground extends ControlWidget {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          final bbox = context.use<BBoxComponent>(value: () => BBoxComponent())!;
+          final bbox = context.use<BBoxComponent>(value: () => BBoxComponent()..zIndex = 100)!;
 
           if (context.scene.items.contains(bbox)) {
             context.scene.remove(bbox);

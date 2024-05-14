@@ -5,16 +5,14 @@ mixin RenderComponent on LoopComponent {
 
   bool visible = true;
 
+  int zIndex = 0;
+
   bool checkBounds(Rect rect) => true;
 
   void render(Canvas canvas, Rect rect) {
-    canvas.drawRect(
-      rect,
-      Paint()
-        ..color = Colors.green
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 1.0,
-    );
+    if (this is RenderQueue) {
+      (this as RenderQueue).renderQueue(canvas, rect);
+    }
   }
 
   void renderRotated(Canvas canvas, Rect rect, Offset origin, double rotation, void Function(Rect dst) render) {
@@ -56,36 +54,24 @@ mixin RenderComponent on LoopComponent {
 }
 
 mixin RenderQueue on LoopComponent {
-  final componentQueue = <RenderComponent>[];
+  final _renderQueue = <RenderComponent>[];
+
+  void pushRenderComponent(RenderComponent component) {
+    final index = _renderQueue.lastIndexWhere((element) => element.zIndex <= component.zIndex) + 1;
+
+    _renderQueue.insert(index, component);
+  }
 
   void renderQueue(Canvas canvas, Rect rect) {
-    for (final element in componentQueue) {
+    for (final element in _renderQueue) {
       element.render(canvas, rect);
     }
 
-    componentQueue.clear();
+    _renderQueue.clear();
   }
 }
 
-class RenderPainter extends CustomPainter {
-  final RenderComponent component;
-  final Offset offset;
-
-  RenderPainter({
-    required this.component,
-    this.offset = Offset.zero,
-  });
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    component.size = size;
-    component.render(canvas, offset & size);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
-}
-
+/// Just for debug
 class BBoxComponent extends SceneComponent with LoopComponent, RenderComponent {
   late LoopComponent _boxParent;
 

@@ -47,7 +47,7 @@ class ComponentBuilderState extends State<ComponentWidget> {
     _sub = widget.component.subscribe(() {
       if (widget.component.isMounted) {
         setState(() {
-          dt = widget.component.loop.value;
+          dt = widget.component._loop!.value;
         });
       }
     });
@@ -126,7 +126,7 @@ class SceneComponentState extends State<SceneComponentWidget> {
       filterQuality: widget.filterQuality,
       child: Opacity(
         opacity: component.deltaOpacity ?? 1.0,
-        child: widget.build(context, component.loop.value),
+        child: widget.build(context, component._loop!.value),
       ),
     );
   }

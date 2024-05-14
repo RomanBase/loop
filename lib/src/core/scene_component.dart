@@ -1,43 +1,43 @@
 part of '../../loop.dart';
 
-class SceneComponent with ObservableLoopComponent, RenderQueue {
+class SceneComponent with ObservableLoopComponent {
   final components = <Type, LoopComponent>{};
 
   final transform = TransformMatrix();
 
   Matrix4 get globalTransform => transform.of(parent);
 
-  LoopScene? _loop;
+  SceneComponent? parent;
 
-  LoopScene get loop => _loop!;
+  LoopScene? _loop;
 
   bool get isMounted => _loop != null;
 
-  Offset? get deltaOffset => getTransform<DeltaPosition>()?.value;
-
-  Scale? get deltaScale => getTransform<DeltaScale>()?.value;
-
-  double? get deltaRotation => getTransform<DeltaRotation>()?.value;
-
-  Color? get deltaColor => getTransform<DeltaColor>()?.value;
-
-  double? get deltaOpacity => getTransform<DeltaOpacity>()?.value;
-
-  Offset? get deltaCurve => getTransform<DeltaCurve>()?.value;
-
   bool notifyOnTick = true;
 
-  SceneComponent? parent;
+  LoopScene? getLoop() {
+    if (_loop != null) {
+      return _loop;
+    }
+
+    if (parent is LoopScene) {
+      return _loop = parent as LoopScene;
+    }
+
+    return _loop = parent?.getLoop();
+  }
 
   void onAttach(LoopComponent component) {
     if (component is SceneComponent) {
-      assert(parent == null, 'Can\'t attach to multiple transform object');
+      assert(parent == null, 'Can\'t attach to multiple transform objects');
 
       parent = component;
+      _loop ??= getLoop();
     }
   }
 
   void onDetach() {
+    _loop = null;
     parent = null;
   }
 
@@ -50,7 +50,7 @@ class SceneComponent with ObservableLoopComponent, RenderQueue {
         value.tick(dt);
 
         if (value is RenderComponent) {
-          componentQueue.add(value);
+          getLoop()?.pushRenderComponent(value);
         }
       }
     });
@@ -90,96 +90,7 @@ class SceneComponent with ObservableLoopComponent, RenderQueue {
     }
   }
 
-  T? getTransform<T extends DeltaTransform>() => components.containsKey(T) ? components[T] as T : null;
-
-  T applyTransform<T extends DeltaTransform>(T transform, {bool reset = false}) {
-    final key = T == dynamic ? transform.runtimeType : T;
-
-    if (reset || !components.containsKey(key)) {
-      components[key] = transform;
-    } else {
-      components[key] = (components[key] as DeltaTransform).chain(transform);
-    }
-
-    return components[key] as T;
-  }
-
-  DeltaPosition translate(Offset location, {Offset? begin, Duration duration = const Duration(seconds: 1), bool reset = false}) {
-    return applyTransform(
-        DeltaPosition(
-          duration: duration,
-          begin: begin ?? transform.position,
-          end: location,
-        ),
-        reset: reset);
-  }
-
-  DeltaScale scale(Scale scale, {Scale? begin, Duration duration = const Duration(seconds: 1), bool reset = false}) {
-    return applyTransform(
-        DeltaScale(
-          duration: duration,
-          begin: begin ?? transform.scale,
-          end: scale,
-        ),
-        reset: reset);
-  }
-
-  DeltaRotation rotate(double degree, {double? begin, Duration duration = const Duration(seconds: 1), bool reset = false}) {
-    return applyTransform(
-        DeltaRotation(
-          duration: duration,
-          begin: begin != null ? begin * _toRadian : transform.rotation,
-          end: degree * _toRadian,
-        ),
-        reset: reset);
-  }
-
-  DeltaOpacity opacity(double opacity, {double begin = 1.0, Duration duration = const Duration(seconds: 1), bool reset = false}) {
-    return applyTransform(
-        DeltaOpacity(
-          duration: duration,
-          begin: begin,
-          end: opacity,
-        ),
-        reset: reset);
-  }
-
-  DeltaColor color(Color color, {Color begin = Colors.white, Duration duration = const Duration(seconds: 1), bool reset = false}) {
-    return applyTransform(
-        DeltaColor(
-          duration: duration,
-          begin: begin,
-          end: color,
-        ),
-        reset: reset);
-  }
-
-  DeltaCurve curve(Offset location, Offset controlPoint, {Offset begin = Offset.zero, Duration duration = const Duration(seconds: 1), bool reset = false}) {
-    return applyTransform(
-        DeltaCurve(
-          duration: duration,
-          begin: begin,
-          end: location,
-          cp: controlPoint,
-        ),
-        reset: reset);
-  }
-
-  void updateLoopBehavior(LoopBehavior loop) {
-    components.forEach((key, value) {
-      if (value is DeltaTransform) {
-        value.setLoopBehavior(loop);
-      }
-    });
-  }
-
-  void updateLoopReversion(bool reverse) {
-    components.forEach((key, value) {
-      if (value is DeltaTransform) {
-        value.setReverse(reverse);
-      }
-    });
-  }
+  T? getComponent<T>() => components.containsKey(T) ? components[T] as T : null;
 
   @override
   void dispose() {

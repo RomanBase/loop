@@ -69,7 +69,7 @@ class SceneState extends State<SceneWidget> {
     loop = widget.loop ?? LoopScene();
 
     if (!loop.isMounted) {
-      loop.mount(widget.control ?? ControlLoop.main());
+      loop.mount(widget.control);
     }
 
     _initTick();
@@ -102,14 +102,7 @@ class SceneState extends State<SceneWidget> {
   Widget build(BuildContext context) {
     return widget.build(
       context,
-      LayoutBuilder(builder: (context, constrains) {
-        return CustomPaint(
-          painter: RenderPainter(
-            component: loop,
-          ),
-          size: (constrains.hasBoundedWidth && constrains.hasBoundedHeight) ? Size(constrains.maxWidth, constrains.maxHeight) : Size.zero,
-        );
-      }),
+      CanvasBuilder(component: loop),
       dt,
     );
   }

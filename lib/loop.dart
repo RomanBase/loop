@@ -22,6 +22,8 @@ part 'src/core/render_component.dart';
 
 part 'src/core/scene_component.dart';
 
+part 'src/core/scene_component_delta_transform.dart';
+
 part 'src/core/state_component.dart';
 
 part 'src/core/transform_component.dart';
@@ -29,6 +31,8 @@ part 'src/core/transform_component.dart';
 part 'src/core/transform_matrix.dart';
 
 part 'src/renderer/builder.dart';
+
+part 'src/renderer/canvas.dart';
 
 part 'src/renderer/scene.dart';
 

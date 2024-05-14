@@ -356,14 +356,14 @@ class DeltaSequence extends DeltaDuration<int> {
           duration: Duration(microseconds: ((end - begin).abs() * (1.0 / framesPerSecond) * Duration.microsecondsPerSecond).toInt()),
         );
 
-  DeltaSequence.sub({
+  DeltaSequence.of({
     int offset = 0,
     int count = 60,
     int framesPerSecond = 30,
-  }) : super(
+  }) : this(
           begin: offset,
           end: offset + count,
-          duration: Duration(microseconds: (count * (1.0 / framesPerSecond) * Duration.microsecondsPerSecond).toInt()),
+          framesPerSecond: framesPerSecond,
         );
 
   @override
@@ -386,7 +386,7 @@ class DeltaSequence extends DeltaDuration<int> {
   @override
   int lerp(int a, int b, double t) {
     final value = (a + (b - a) * t);
-    final index = value.toInt();
+    final index = value.floor();
 
     blend = curve.transform(value - index);
     return index;

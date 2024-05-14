@@ -32,10 +32,6 @@ class ControlLoop with ObservableLoop {
     Control.set<ControlLoop>(value: this);
   }
 
-  void mount(LoopLeaf leaf) => leaf.mount(this);
-
-  void unmount(LoopLeaf leaf) => leaf.unmount();
-
   void _tick(Duration elapsed) {
     deltaTime = (elapsed - _lastTick).inMicroseconds / Duration.microsecondsPerSecond;
     _lastTick = elapsed;
@@ -91,6 +87,15 @@ class ControlLoop with ObservableLoop {
   }
 }
 
+/// Base tick component.
+mixin LoopComponent {
+  bool active = true;
+
+  void tick(double dt);
+}
+
+/// 'Main' Loop dispatcher.
+/// Any Object can subscribe to be notified about deltaTime.
 mixin ObservableLoop implements ObservableValue<double>, ObservableNotifier, Disposable {
   final _observable = ControlObservable<double>(0.0);
 
@@ -130,6 +135,7 @@ mixin ObservableLoop implements ObservableValue<double>, ObservableNotifier, Dis
   }
 }
 
+/// 'Component' Loop dispatcher.
 mixin ObservableLoopComponent implements LoopComponent, ObservableChannel, Disposable {
   final _observable = ControlObservable.empty();
 
@@ -159,12 +165,7 @@ mixin ObservableLoopComponent implements LoopComponent, ObservableChannel, Dispo
   }
 }
 
-mixin LoopComponent {
-  bool active = true;
-
-  void tick(double dt);
-}
-
+/// 'Leaf' observer
 mixin LoopLeaf on LoopComponent implements Disposable {
   ControlLoop? _control;
   ControlSubscription? _sub;
@@ -173,11 +174,11 @@ mixin LoopLeaf on LoopComponent implements Disposable {
 
   bool get isMounted => _sub?.isValid ?? false;
 
-  void mount(ControlLoop loop) {
+  void mount([ControlLoop? loop]) {
     assert(!isMounted, 'Can\'t use one Scene for multiple Loops');
 
-    _control = loop;
-    _sub = loop.subscribe(tick);
+    _control = loop ?? ControlLoop.main();
+    _sub = _control!.subscribe(tick);
   }
 
   void unmount() {

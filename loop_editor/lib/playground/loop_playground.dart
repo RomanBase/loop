@@ -129,7 +129,7 @@ class LoopPlayground extends ControlWidget {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          final bbox = context.use<BBoxComponent>(value: () => BBoxComponent()..zIndex = 100)!;
+          final bbox = context.use<BBoxRenderComponent>(value: () => BBoxRenderComponent()..zIndex = 100)!;
 
           if (context.scene.items.contains(bbox)) {
             context.scene.remove(bbox);

@@ -31,7 +31,7 @@ extension SceneComponentDelta on SceneComponent {
           duration: duration,
           begin: begin ?? transform.position,
           end: location,
-        ),
+        )..onValue = (value) => transform.position = value,
         reset: reset);
   }
 
@@ -41,7 +41,7 @@ extension SceneComponentDelta on SceneComponent {
           duration: duration,
           begin: begin ?? transform.scale,
           end: scale,
-        ),
+        )..onValue = (value) => transform.scale = value,
         reset: reset);
   }
 
@@ -51,7 +51,7 @@ extension SceneComponentDelta on SceneComponent {
           duration: duration,
           begin: begin != null ? begin * _toRadian : transform.rotation,
           end: degree * _toRadian,
-        ),
+        )..onValue = (value) => transform.rotation = value,
         reset: reset);
   }
 

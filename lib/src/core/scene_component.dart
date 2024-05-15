@@ -55,18 +55,6 @@ class SceneComponent with ObservableLoopComponent {
       }
     });
 
-    if (deltaOffset != null) {
-      transform.position = deltaOffset!;
-    }
-
-    if (deltaRotation != null) {
-      transform.rotation = deltaRotation!;
-    }
-
-    if (deltaScale != null) {
-      transform.scale = deltaScale!;
-    }
-
     onTick(dt);
 
     if (notifyOnTick) {

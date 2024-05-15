@@ -43,6 +43,8 @@ abstract class DeltaTransform<T, U> extends TransformComponent<T> with LoopCompo
   double _overflowDelta = 0.0;
   DeltaTransform<T, U>? _parent;
 
+  Function(T value)? onValue;
+
   bool get atEdge => componentValue == begin || componentValue == end;
 
   bool get _isParentActive => _parent?._run ?? false;
@@ -80,6 +82,8 @@ abstract class DeltaTransform<T, U> extends TransformComponent<T> with LoopCompo
           break;
       }
     }
+
+    onValue?.call(value);
   }
 
   void _evaluateTick(double dt) {

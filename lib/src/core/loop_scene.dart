@@ -1,29 +1,20 @@
 part of '../../loop.dart';
 
-/// Just fake reversion Matrix that mimics orthographic projection when multiplied with local matrix.
-class SceneViewport {
-  final _transform = TransformMatrix();
-
-  Matrix4 get matrix => _transform.matrix;
-
-  Offset get position => -_transform.position;
-
-  set position(Offset value) => _transform.position = -value;
-
-  double get rotation => _transform.rotation;
-
-  set rotation(double value) => _transform.rotation = -value;
-
-  double get scale => _transform.scale.width;
-
-  set scale(double value) => _transform.scale = Scale.of(value);
-
-  Matrix4 combine(Matrix4 local) => matrix.multiplied(local);
-}
-
 class LoopScene extends BaseControl with ObservableLoop, LoopComponent, RenderComponent, RenderQueue, LoopLeaf {
   final viewport = SceneViewport();
   final items = <SceneComponent>[];
+  final components = <Type, LoopComponent>{};
+
+  /// We don't care about rotation during visibility test, so [_safePadding] extends viewport bounds.
+  Rect _safeZone = Rect.zero;
+
+  double get _safePadding => 32.0;
+
+  @override
+  set size(Size value) {
+    super.size = value;
+    _safeZone = Rect.fromLTRB(-_safePadding, -_safePadding, size.width + _safePadding, size.height + _safePadding);
+  }
 
   void add(SceneComponent component) {
     assert(!component.isMounted, 'Can\'t use one Component in multiple Scenes');
@@ -50,11 +41,21 @@ class LoopScene extends BaseControl with ObservableLoop, LoopComponent, RenderCo
       return;
     }
 
+    for (final element in components.entries) {
+      if (element.value.active) {
+        element.value.tick(value);
+      }
+    }
+
     setValue(dt);
 
     for (final element in items) {
       if (element.active) {
         element.tick(value);
+
+        if (element is RenderComponent) {
+          pushRenderComponent(element as RenderComponent);
+        }
       }
     }
   }
@@ -65,13 +66,16 @@ class LoopScene extends BaseControl with ObservableLoop, LoopComponent, RenderCo
       return;
     }
 
-    for (final element in items) {
-      if (element is RenderComponent) {
-        pushRenderComponent(element as RenderComponent);
-      }
+    renderQueue(canvas, rect);
+  }
+
+  @override
+  void pushRenderComponent(RenderComponent component) {
+    if (!component.isVisible(_safeZone)) {
+      return;
     }
 
-    super.render(canvas, rect);
+    super.pushRenderComponent(component);
   }
 
   @override

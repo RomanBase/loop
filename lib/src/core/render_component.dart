@@ -4,10 +4,27 @@ mixin RenderComponent on LoopComponent {
   Size size = const Size(100.0, 100.0);
 
   bool visible = true;
+  bool visibleClip = true;
 
   int zIndex = 0;
 
-  bool checkBounds(Rect rect) => true;
+  bool isVisible(Rect rect) => visible && (!visibleClip || renderBounds().overlaps(rect));
+
+  Rect renderBounds() {
+    if (this is SceneComponent) {
+      final component = this as SceneComponent;
+      final matrix = component.globalTransformMatrix;
+      final sx = matrix.scaleX;
+      final sy = matrix.scaleY;
+
+      final dstOrigin = Offset(component.transform.origin.dx * sx, component.transform.origin.dy * sy);
+      final dst = (matrix.position - dstOrigin) & Size(size.width * sx, size.height * sy);
+
+      return dst;
+    }
+
+    return Rect.fromLTWH(0.0, 0.0, size.width, size.height);
+  }
 
   void render(Canvas canvas, Rect rect) {
     if (this is RenderQueue) {
@@ -32,7 +49,7 @@ mixin RenderComponent on LoopComponent {
   }
 
   void renderComponent(Canvas canvas, SceneComponent component, void Function(Rect dst) render) {
-    final matrix = component.globalTransform;
+    final matrix = component.globalTransformMatrix;
     final sx = matrix.scaleX;
     final sy = matrix.scaleY;
 

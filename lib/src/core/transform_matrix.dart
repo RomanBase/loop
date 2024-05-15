@@ -12,8 +12,44 @@ extension Matrix4Ext on Matrix4 {
 
     return math.atan2(v[1], v[0]);
   }
+
+  Matrix4 multiplied2DTransform(Matrix4 other) {
+    final m00 = this[0];
+    final m01 = this[4];
+    final m03 = this[12];
+    final m10 = this[1];
+    final m11 = this[5];
+    final m13 = this[13];
+
+    final n00 = other[0];
+    final n01 = other[4];
+    final n03 = other[12];
+    final n10 = other[1];
+    final n11 = other[5];
+    final n13 = other[13];
+
+    return Matrix4(
+      (m00 * n00) + (m01 * n10),
+      (m10 * n00) + (m11 * n10),
+      0.0,
+      0.0,
+      (m00 * n01) + (m01 * n11),
+      (m10 * n01) + (m11 * n11),
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      (m00 * n03) + (m01 * n13) + m03,
+      (m10 * n03) + (m11 * n13) + m13,
+      0.0,
+      1.0,
+    );
+  }
 }
 
+/// Currently holds only local transforms
 class TransformMatrix {
   final _matrix = Matrix4.identity();
 
@@ -35,7 +71,7 @@ class TransformMatrix {
 
   set scale(Scale value) {
     _scale = value;
-    _markedForRebuild = true;
+    _rebuildMatrix = true;
   }
 
   double _rotation = 0.0;
@@ -44,17 +80,15 @@ class TransformMatrix {
 
   set rotation(double value) {
     _rotation = value;
-    _markedForRebuild = true;
+    _rebuildMatrix = true;
   }
 
-  bool _markedForRebuild = false;
-
   Matrix4 get matrix {
-    if (!_markedForRebuild) {
+    if (!_rebuildMatrix) {
       return _matrix;
     }
 
-    _markedForRebuild = false;
+    _rebuildMatrix = false;
 
     double s = math.sin(rotation);
     double c = math.cos(rotation);
@@ -68,16 +102,35 @@ class TransformMatrix {
     return _matrix;
   }
 
-  Rect rect(Size size) {
-    final dstOrigin = Offset(origin.dx * scale.width, origin.dy * scale.height);
-    return (matrix.position - dstOrigin) & Size(size.width * scale.width, size.height * scale.height);
-  }
+  bool _rebuildMatrix = false;
 
-  Matrix4 of(SceneComponent? parent, [SceneViewport? viewport]) {
+  Matrix4 multiply(SceneComponent? parent, [SceneViewport? viewport]) {
     if (parent == null) {
-      return viewport?.combine(matrix) ?? matrix;
+      return viewport?.multiply(matrix) ?? matrix;
     }
 
-    return parent.globalTransform.multiplied(matrix);
+    return parent.globalTransformMatrix.multiplied2DTransform(matrix);
   }
+}
+
+/// Just fake reversion Matrix that mimics orthographic projection when multiplied with model matrix.
+/// Viewport size is 'ignored' because we are using mobile space (dp) resolution and we don't deal with frustrum in pure 2d scene. With proper scaling we can fake world size.
+class SceneViewport {
+  final _transform = TransformMatrix();
+
+  Matrix4 get matrix => _transform.matrix;
+
+  Offset get position => -_transform.position;
+
+  set position(Offset value) => _transform.position = -value;
+
+  double get rotation => -_transform.rotation;
+
+  set rotation(double value) => _transform.rotation = -value;
+
+  double get scale => _transform.scale.width;
+
+  set scale(double value) => _transform.scale = Scale.of(value);
+
+  Matrix4 multiply(Matrix4 local) => matrix.multiplied2DTransform(local);
 }

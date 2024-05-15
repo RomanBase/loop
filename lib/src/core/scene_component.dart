@@ -5,7 +5,9 @@ class SceneComponent with ObservableLoopComponent {
 
   final transform = TransformMatrix();
 
-  Matrix4 get globalTransform => transform.of(parent, _loop?.viewport);
+  Matrix4? _globalMatrix;
+
+  Matrix4 get globalTransformMatrix => _globalMatrix ??= transform.multiply(parent, _loop?.viewport);
 
   SceneComponent? parent;
 
@@ -45,6 +47,8 @@ class SceneComponent with ObservableLoopComponent {
 
   @override
   void tick(double dt) {
+    _globalMatrix = null;
+
     components.forEach((key, value) {
       if (value.active) {
         value.tick(dt);

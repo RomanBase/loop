@@ -47,6 +47,9 @@ class RenderPainter extends CustomPainter {
 class BBoxRenderComponent extends SceneComponent with RenderComponent {
   late LoopComponent _boxParent;
 
+  @override
+  bool get visibleClip => false;
+
   Color color = Colors.red;
 
   @override
@@ -84,7 +87,7 @@ class BBoxRenderComponent extends SceneComponent with RenderComponent {
       _renderBBox(
         canvas,
         '$component',
-        component.globalTransform,
+        component.globalTransformMatrix,
         component.transform.origin,
         (component as RenderComponent).size,
       );

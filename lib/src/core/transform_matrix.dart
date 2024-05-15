@@ -20,23 +20,29 @@ class TransformMatrix {
   Offset origin = Offset.zero;
 
   Offset _position = Offset.zero;
+
   Offset get position => _position;
-  set position(Offset value){
+
+  set position(Offset value) {
     _position = value;
     _matrix[12] = value.dx;
     _matrix[13] = value.dy;
   }
 
   Scale _scale = Scale.one;
+
   Scale get scale => _scale;
-  set scale(Scale value){
+
+  set scale(Scale value) {
     _scale = value;
     _markedForRebuild = true;
   }
 
   double _rotation = 0.0;
+
   double get rotation => _rotation;
-  set rotation(double value){
+
+  set rotation(double value) {
     _rotation = value;
     _markedForRebuild = true;
   }
@@ -44,7 +50,7 @@ class TransformMatrix {
   bool _markedForRebuild = false;
 
   Matrix4 get matrix {
-    if(!_markedForRebuild){
+    if (!_markedForRebuild) {
       return _matrix;
     }
 
@@ -67,9 +73,9 @@ class TransformMatrix {
     return (matrix.position - dstOrigin) & Size(size.width * scale.width, size.height * scale.height);
   }
 
-  Matrix4 of(SceneComponent? parent) {
+  Matrix4 of(SceneComponent? parent, [SceneViewport? viewport]) {
     if (parent == null) {
-      return matrix;
+      return viewport?.combine(matrix) ?? matrix;
     }
 
     return parent.globalTransform.multiplied(matrix);

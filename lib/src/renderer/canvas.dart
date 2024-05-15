@@ -32,7 +32,10 @@ class RenderPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    component.size = size;
+    if (component.size != size) {
+      component.size = size;
+    }
+
     component.render(canvas, offset & size);
   }
 

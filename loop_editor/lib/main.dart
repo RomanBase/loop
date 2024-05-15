@@ -4,7 +4,7 @@ import 'package:flutter_control/control.dart';
 import 'package:loop/loop.dart';
 import 'package:loop_editor/editor/control/editor_control.dart';
 import 'package:loop_editor/editor/presentation/editor.dart';
-import 'package:loop_editor/playground/loop_playground.dart';
+import 'package:loop_editor/playground/playground.dart';
 import 'package:loop_editor/resources/theme.dart';
 
 void main() => runApp(const MyApp());
@@ -43,7 +43,7 @@ class MyApp extends StatelessWidget {
       ),
       states: [
         AppState.init.build((context) => InitLoader.of(builder: (_) => Container())),
-        AppState.main.build((context) => const LoopPlayground()),
+        AppState.main.build((context) => const Playground()),
       ],
       builder: (context, home) => MaterialApp(
         title: 'Flutter Demo',

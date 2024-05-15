@@ -2,11 +2,12 @@ import 'dart:math';
 
 import 'package:flutter_control/control.dart';
 import 'package:loop/loop.dart';
+import 'package:loop_editor/playground/viewport_view.dart';
 import 'package:loop_editor/resources/theme.dart';
 
 final r = Random();
 
-extension _LoopPlaygroundComponent on CoreContext {
+extension _PlaygroundComponent on CoreContext {
   SceneComponent get c1 => use(key: 'c1', value: () => SceneComponent())!;
 
   SceneComponent get c2 => use(key: 'c2', value: () => SceneComponent())!;
@@ -81,8 +82,8 @@ extension _LoopPlaygroundComponent on CoreContext {
       })!;
 }
 
-class LoopPlayground extends ControlWidget {
-  const LoopPlayground({super.key});
+class Playground extends ControlWidget {
+  const Playground({super.key});
 
   @override
   void onInit(Map args, CoreContext context) {
@@ -141,22 +142,6 @@ class LoopPlayground extends ControlWidget {
       ),
       body: Stack(
         children: [
-          /*
-          Scene.builder(
-            builders: [
-              (_, dt) {
-                context.c1.tick(dt);
-                return Transform(
-                  transform: context.c1.transform.matrix,
-                  child: Container(
-                    width: 32.0,
-                    height: 32.0,
-                    color: Colors.red,
-                  ),
-                );
-              },
-            ],
-          ),*/
           Padding(
             padding: const EdgeInsets.all(64.0),
             child: Scene(
@@ -175,6 +160,9 @@ class LoopPlayground extends ControlWidget {
           ),
           const FpsView(
             alignment: Alignment.bottomLeft,
+          ),
+          ViewportView(
+            control: context.scene,
           ),
         ],
       ),

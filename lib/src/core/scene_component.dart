@@ -5,7 +5,7 @@ class SceneComponent with ObservableLoopComponent {
 
   final transform = TransformMatrix();
 
-  Matrix4 get globalTransform => transform.of(parent);
+  Matrix4 get globalTransform => transform.of(parent, _loop?.viewport);
 
   SceneComponent? parent;
 

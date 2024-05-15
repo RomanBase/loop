@@ -14,11 +14,11 @@ mixin RenderComponent on LoopComponent {
     if (this is SceneComponent) {
       final component = this as SceneComponent;
       final matrix = component.globalTransformMatrix;
-      final sx = matrix.scaleX;
-      final sy = matrix.scaleY;
+      final sx = matrix.scaleX2D;
+      final sy = matrix.scaleY2D;
 
       final dstOrigin = Offset(component.transform.origin.dx * sx, component.transform.origin.dy * sy);
-      final dst = (matrix.position - dstOrigin) & Size(size.width * sx, size.height * sy);
+      final dst = (matrix.position2D - dstOrigin) & Size(size.width * sx, size.height * sy);
 
       return dst;
     }
@@ -50,23 +50,23 @@ mixin RenderComponent on LoopComponent {
 
   void renderComponent(Canvas canvas, SceneComponent component, void Function(Rect dst) render) {
     final matrix = component.globalTransformMatrix;
-    final sx = matrix.scaleX;
-    final sy = matrix.scaleY;
+    final sx = matrix.scaleX2D;
+    final sy = matrix.scaleY2D;
 
     final dstOrigin = Offset(component.transform.origin.dx * sx, component.transform.origin.dy * sy);
-    final dst = (matrix.position - dstOrigin) & Size(size.width * sx, size.height * sy);
+    final dst = (matrix.position2D - dstOrigin) & Size(size.width * sx, size.height * sy);
 
-    renderRotated(canvas, dst, dstOrigin, matrix.angle, render);
+    renderRotated(canvas, dst, dstOrigin, matrix.angle2D, render);
   }
 
   void renderRaw(Canvas canvas, Matrix4 matrix, Offset origin, Size size, void Function(Rect dst) render) {
-    final sx = matrix.scaleX;
-    final sy = matrix.scaleY;
+    final sx = matrix.scaleX2D;
+    final sy = matrix.scaleY2D;
 
     final dstOrigin = Offset(origin.dx * sx, origin.dy * sy);
-    final dst = (matrix.position - dstOrigin) & Size(size.width * sx, size.height * sy);
+    final dst = (matrix.position2D - dstOrigin) & Size(size.width * sx, size.height * sy);
 
-    renderRotated(canvas, dst, dstOrigin, matrix.angle, render);
+    renderRotated(canvas, dst, dstOrigin, matrix.angle2D, render);
   }
 }
 

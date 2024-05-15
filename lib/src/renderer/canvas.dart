@@ -109,8 +109,8 @@ class BBoxRenderComponent extends SceneComponent with RenderComponent {
       (rect) {
         canvas.drawCircle(
             Offset(
-              rect.left + origin.dx * matrix.scaleX,
-              rect.top + origin.dy * matrix.scaleY,
+              rect.left + origin.dx * matrix.scaleX2D,
+              rect.top + origin.dy * matrix.scaleY2D,
             ),
             4.0,
             Paint()..color = color);

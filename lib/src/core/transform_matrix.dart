@@ -1,17 +1,13 @@
 part of '../../loop.dart';
 
 extension Matrix4Ext on Matrix4 {
-  double get scaleX => Vector3(this[0], this[1], this[2]).length;
+  double get scaleX2D => Vector2(this[0], this[1]).length;
 
-  double get scaleY => Vector3(this[4], this[5], this[6]).length;
+  double get scaleY2D => Vector2(this[4], this[5]).length;
 
-  Offset get position => Offset(this[12], this[13]);
+  Offset get position2D => Offset(this[12], this[13]);
 
-  double get angle {
-    final v = getRotation().right;
-
-    return math.atan2(v[1], v[0]);
-  }
+  double get angle2D => math.atan2(this[1], this[0]);
 
   Matrix4 multiplied2DTransform(Matrix4 other) {
     final m00 = this[0];

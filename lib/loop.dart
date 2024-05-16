@@ -21,6 +21,8 @@ part 'src/core/loop_scene.dart';
 
 part 'src/core/render_component.dart';
 
+part 'src/core/scene_actor.dart';
+
 part 'src/core/scene_component.dart';
 
 part 'src/core/scene_component_delta_transform.dart';

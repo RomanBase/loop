@@ -1,9 +1,9 @@
 part of '../../loop.dart';
 
 extension Matrix4Ext on Matrix4 {
-  double get scaleX2D => Vector2(this[0], this[1]).length;
+  double get scaleX2D => math.sqrt(this[0] * this[0] + this[1] * this[1]);
 
-  double get scaleY2D => Vector2(this[4], this[5]).length;
+  double get scaleY2D => math.sqrt(this[4] * this[4] + this[5] * this[5]);
 
   Offset get position2D => Offset(this[12], this[13]);
 
@@ -86,8 +86,8 @@ class TransformMatrix {
 
     _rebuildMatrix = false;
 
-    double s = math.sin(rotation);
-    double c = math.cos(rotation);
+    final s = math.sin(rotation);
+    final c = math.cos(rotation);
 
     _matrix[0] = c * scale.width;
     _matrix[1] = s * scale.width;
@@ -99,17 +99,9 @@ class TransformMatrix {
   }
 
   bool _rebuildMatrix = false;
-
-  Matrix4 multiply(SceneComponent? parent, [SceneViewport? viewport]) {
-    if (parent == null) {
-      return viewport?.multiply(matrix) ?? matrix;
-    }
-
-    return parent.globalTransformMatrix.multiplied2DTransform(matrix);
-  }
 }
 
-/// Just fake reversion Matrix that mimics orthographic projection when multiplied with model matrix.
+/// Just fake inversion Matrix that mimics orthographic projection when multiplied with model matrix.
 /// Viewport size is 'ignored' because we are using mobile space (dp) resolution and we don't deal with frustrum in pure 2d scene. With proper scaling we can fake world size.
 class SceneViewport {
   final _transform = TransformMatrix();

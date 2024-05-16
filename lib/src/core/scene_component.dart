@@ -5,9 +5,12 @@ class SceneComponent with ObservableLoopComponent {
 
   final transform = TransformMatrix();
 
-  Matrix4? _globalMatrix;
+  Matrix4? _screenMatrix;
+  Matrix4? _worldMatrix;
 
-  Matrix4 get globalTransformMatrix => _globalMatrix ??= transform.multiply(parent, _loop?.viewport);
+  Matrix4 get screenMatrix => _screenMatrix ??= _screenSpace();
+
+  Matrix4 get worldMatrix => _worldMatrix ??= _worldSpace();
 
   SceneComponent? parent;
 
@@ -16,6 +19,22 @@ class SceneComponent with ObservableLoopComponent {
   bool get isMounted => _loop != null;
 
   bool notifyOnTick = true;
+
+  Matrix4 _screenSpace() {
+    if (parent == null) {
+      return getLoop()?.viewport.multiply(transform.matrix) ?? transform.matrix;
+    }
+
+    return parent!.screenMatrix.multiplied2DTransform(transform.matrix);
+  }
+
+  Matrix4 _worldSpace() {
+    if (parent == null) {
+      return transform.matrix;
+    }
+
+    return parent!.screenMatrix.multiplied2DTransform(transform.matrix);
+  }
 
   LoopScene? getLoop() {
     if (_loop != null) {
@@ -47,7 +66,8 @@ class SceneComponent with ObservableLoopComponent {
 
   @override
   void tick(double dt) {
-    _globalMatrix = null;
+    _worldMatrix = null;
+    _screenMatrix = null;
 
     components.forEach((key, value) {
       if (value.active) {

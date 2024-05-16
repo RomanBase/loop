@@ -13,7 +13,7 @@ mixin RenderComponent on LoopComponent {
   Rect renderBounds() {
     if (this is SceneComponent) {
       final component = this as SceneComponent;
-      final matrix = component.globalTransformMatrix;
+      final matrix = component.screenMatrix;
       final sx = matrix.scaleX2D;
       final sy = matrix.scaleY2D;
 
@@ -49,7 +49,7 @@ mixin RenderComponent on LoopComponent {
   }
 
   void renderComponent(Canvas canvas, SceneComponent component, void Function(Rect dst) render) {
-    final matrix = component.globalTransformMatrix;
+    final matrix = component.screenMatrix;
     final sx = matrix.scaleX2D;
     final sy = matrix.scaleY2D;
 

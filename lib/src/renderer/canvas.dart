@@ -87,7 +87,7 @@ class BBoxRenderComponent extends SceneComponent with RenderComponent {
       _renderBBox(
         canvas,
         '$component',
-        component.globalTransformMatrix,
+        component.screenMatrix,
         component.transform.origin,
         (component as RenderComponent).size,
       );

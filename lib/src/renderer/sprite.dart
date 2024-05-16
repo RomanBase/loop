@@ -58,9 +58,10 @@ class Sprite extends SceneComponent with RenderComponent {
   Sprite({
     required this.asset,
     this.actions = const {},
+    String? initialAction,
   }) {
     if (actions.isNotEmpty) {
-      activate(actions.keys.first);
+      activate(initialAction ?? actions.keys.first);
     }
   }
 

@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter_control/control.dart';
 import 'package:loop/loop.dart';
+import 'package:loop_editor/playground/mouse.dart';
 import 'package:loop_editor/playground/viewport_view.dart';
 import 'package:loop_editor/resources/theme.dart';
 
@@ -55,6 +56,8 @@ extension _PlaygroundComponent on CoreContext {
           ..transform.position = const Offset(320.0, 320.0)
           ..translate(const Offset(320.0, 280.0)).setLoopBehavior(LoopBehavior.loop)
           ..scale(const Scale.of(2.0)).setLoopBehavior(LoopBehavior.loop));
+
+        loop.add(Mouse());
 
         return loop;
       })!;

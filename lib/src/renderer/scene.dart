@@ -24,12 +24,19 @@ class Scene extends SceneWidget {
 
   @override
   Widget build(BuildContext context, Widget render, double dt) {
-    return Stack(
-      children: [
-        render,
-        ...builders.map((e) => e(context, dt)),
-        ...children,
-      ],
+    return Listener(
+      onPointerDown: (event) => loop?.onPointerDown(event),
+      onPointerMove: (event) => loop?.onPointerMove(event),
+      onPointerUp: (event) => loop?.onPointerUp(event),
+      onPointerCancel: (event) => loop?.onPointerCancel(event),
+      onPointerHover: (event) => loop?.onPointerHover(event),
+      child: Stack(
+        children: [
+          render,
+          ...builders.map((e) => e(context, dt)),
+          ...children,
+        ],
+      ),
     );
   }
 }
@@ -82,6 +89,9 @@ class SceneState extends State<SceneWidget> {
           dt = value;
         });
       });
+    } else {
+      _sub?.dispose();
+      _sub = null;
     }
   }
 
@@ -110,6 +120,8 @@ class SceneState extends State<SceneWidget> {
   @override
   void dispose() {
     loop.dispose();
+    _sub?.dispose();
+    _sub = null;
 
     super.dispose();
   }

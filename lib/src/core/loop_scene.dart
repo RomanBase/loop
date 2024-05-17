@@ -1,9 +1,8 @@
 part of '../../loop.dart';
 
-class LoopScene extends LoopActor with ObservableLoop, RenderComponent, RenderQueue, LoopLeaf {
+class LoopScene extends LoopActor with ObservableLoop, RenderComponent, RenderQueue, LoopLeaf implements PointerListener {
   final viewport = SceneViewport();
-  final items = <SceneComponent>[];
-  final components = <Type, LoopComponent>{};
+  final items = <LoopComponent>[];
 
   /// We don't care about rotation during visibility test, so [_safePadding] extends viewport bounds.
   Rect _safeZone = Rect.zero;
@@ -41,20 +40,15 @@ class LoopScene extends LoopActor with ObservableLoop, RenderComponent, RenderQu
       return;
     }
 
-    for (final element in components.entries) {
-      if (element.value.active) {
-        element.value.tick(value);
-      }
-    }
-
     setValue(dt);
+    dt = value;
 
     for (final element in items) {
       if (element.active) {
-        element.tick(value);
+        element.tick(dt);
 
         if (element is RenderComponent) {
-          pushRenderComponent(element as RenderComponent);
+          pushRenderComponent(element);
         }
       }
     }
@@ -79,12 +73,29 @@ class LoopScene extends LoopActor with ObservableLoop, RenderComponent, RenderQu
   }
 
   @override
+  bool onPointerDown(PointerEvent event) => PointerListener._proceed(items, event, (component) => component.onPointerDown(event));
+
+  @override
+  bool onPointerHover(PointerEvent event) => PointerListener._proceed(items, event, (component) => component.onPointerHover(event));
+
+  @override
+  bool onPointerUp(PointerEvent event) => PointerListener._proceed(items, event, (component) => component.onPointerUp(event));
+
+  @override
+  bool onPointerMove(PointerEvent event) => PointerListener._proceed(items, event, (component) => component.onPointerMove(event));
+
+  @override
+  bool onPointerCancel(PointerEvent event) => PointerListener._proceed(items, event, (component) => component.onPointerCancel(event));
+
+  @override
   void dispose() {
     super.dispose();
 
     for (final element in items) {
-      element._loop = null;
-      element.dispose();
+      if (element is SceneComponent) {
+        element._loop = null;
+        element.dispose();
+      }
     }
 
     items.clear();

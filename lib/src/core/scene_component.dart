@@ -1,7 +1,7 @@
 part of '../../loop.dart';
 
 class SceneComponent with ObservableLoopComponent {
-  final components = <Type, LoopComponent>{};
+  final components = <dynamic, LoopComponent>{};
 
   final transform = TransformMatrix();
 
@@ -87,7 +87,7 @@ class SceneComponent with ObservableLoopComponent {
   }
 
   void attach(LoopComponent component, {dynamic socket}) {
-    components[socket ?? component.runtimeType] = component;
+    components[socket ?? component.hashCode] = component;
 
     if (component is SceneComponent) {
       component.onAttach(this);
@@ -95,12 +95,14 @@ class SceneComponent with ObservableLoopComponent {
   }
 
   void detach(LoopComponent component, {dynamic socket}) {
-    components.remove(socket ?? component.runtimeType);
+    components.remove(socket ?? component.hashCode);
 
     if (component is SceneComponent) {
       component.onDetach();
     }
   }
+
+  void removeFromParent() => parent?.detach(this);
 
   T? getComponent<T>() => components.containsKey(T) ? components[T] as T : null;
 

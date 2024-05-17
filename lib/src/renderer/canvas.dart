@@ -86,7 +86,7 @@ class BBoxRenderComponent extends SceneComponent with RenderComponent {
     _boxParent = component;
 
     if (component is RenderComponent) {
-      size = (component as RenderComponent).size;
+      size = component.size;
     }
 
     printDebug('BBox ATTACHED to $component');
@@ -98,7 +98,9 @@ class BBoxRenderComponent extends SceneComponent with RenderComponent {
       _renderBBox(canvas, '$_boxParent', Matrix4.identity());
 
       for (final element in (_boxParent as LoopScene).items) {
-        _renderComponent(element, canvas, rect);
+        if(element is SceneComponent) {
+          _renderComponent(element, canvas, rect);
+        }
       }
     }
 

@@ -2,13 +2,7 @@ library loop;
 
 import 'dart:ui' as ui;
 import 'dart:math' as math;
-import 'package:flutter/animation.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/painting.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:flutter/widgets.dart';
 import 'package:vector_math/vector_math_64.dart' hide Colors;
 import 'package:control_core/core.dart';
 import 'package:flutter/material.dart';
@@ -43,6 +37,11 @@ part 'src/renderer/scene.dart';
 part 'src/renderer/sprite.dart';
 
 part 'src/ui/fps_view.dart';
+
+
+///
+/// TODO: Probably switch everything to Vector2
+///
 
 extension Vector2Ext on Vector2 {
   bool get isZero => x == 0.0 && y == 0.0;

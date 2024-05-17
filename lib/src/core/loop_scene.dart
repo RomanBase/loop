@@ -1,6 +1,6 @@
 part of '../../loop.dart';
 
-class LoopScene extends BaseControl with ObservableLoop, LoopComponent, RenderComponent, RenderQueue, LoopLeaf {
+class LoopScene extends LoopActor with ObservableLoop, RenderComponent, RenderQueue, LoopLeaf {
   final viewport = SceneViewport();
   final items = <SceneComponent>[];
   final components = <Type, LoopComponent>{};

@@ -8,17 +8,22 @@ mixin RenderComponent on LoopComponent {
 
   int zIndex = 0;
 
-  bool isVisible(Rect rect) => visible && (!visibleClip || renderBounds().overlaps(rect));
+  Rect? _screenBounds;
 
-  Rect renderBounds() {
+  Rect get screenBounds => _screenBounds ??= _renderBounds();
+
+  bool isVisible(Rect rect) => visible && (!visibleClip || screenBounds.overlaps(rect));
+
+  Rect _renderBounds() {
     if (this is SceneComponent) {
       final component = this as SceneComponent;
       final matrix = component.screenMatrix;
       final sx = matrix.scaleX2D;
       final sy = matrix.scaleY2D;
 
-      final dstOrigin = Offset(component.transform.origin.dx * sx, component.transform.origin.dy * sy);
-      final dst = (matrix.position2D - dstOrigin) & Size(size.width * sx, size.height * sy);
+      final size = Size(this.size.width * sx, this.size.height * sy);
+      final dstOrigin = Offset(component.transform.origin.dx * size.width, component.transform.origin.dy * size.height);
+      final dst = (matrix.position2D - dstOrigin) & size;
 
       return dst;
     }
@@ -26,51 +31,26 @@ mixin RenderComponent on LoopComponent {
     return Rect.fromLTWH(0.0, 0.0, size.width, size.height);
   }
 
-  void render(Canvas canvas, Rect rect) {
-    if (this is RenderQueue) {
-      (this as RenderQueue).renderQueue(canvas, rect);
-    }
+  @override
+  void tick(double dt) {
+    _screenBounds = null;
+    super.tick(dt);
   }
 
-  void renderRotated(Canvas canvas, Rect rect, Offset origin, double rotation, void Function(Rect dst) render) {
-    if (rotation == 0.0) {
-      render(rect);
-      return;
-    }
-
-    canvas.save();
-    canvas.translate(rect.left + origin.dx, rect.top + origin.dy);
-    canvas.rotate(rotation);
-
-    render(Rect.fromLTRB(-origin.dx, -origin.dy, rect.width - origin.dx, rect.height - origin.dy));
-
-    canvas.translate(-rect.left - origin.dx, -rect.top - origin.dy);
-    canvas.restore();
-  }
+  void render(Canvas canvas, Rect rect);
 
   void renderComponent(Canvas canvas, SceneComponent component, void Function(Rect dst) render) {
-    final matrix = component.screenMatrix;
-    final sx = matrix.scaleX2D;
-    final sy = matrix.scaleY2D;
-
-    final dstOrigin = Offset(component.transform.origin.dx * sx, component.transform.origin.dy * sy);
-    final dst = (matrix.position2D - dstOrigin) & Size(size.width * sx, size.height * sy);
-
-    renderRotated(canvas, dst, dstOrigin, matrix.angle2D, render);
-  }
-
-  void renderRaw(Canvas canvas, Matrix4 matrix, Offset origin, Size size, void Function(Rect dst) render) {
-    final sx = matrix.scaleX2D;
-    final sy = matrix.scaleY2D;
-
-    final dstOrigin = Offset(origin.dx * sx, origin.dy * sy);
-    final dst = (matrix.position2D - dstOrigin) & Size(size.width * sx, size.height * sy);
-
-    renderRotated(canvas, dst, dstOrigin, matrix.angle2D, render);
+    canvas.renderRotated(
+      canvas,
+      screenBounds,
+      Offset(screenBounds.width * component.transform.origin.dx, screenBounds.height * component.transform.origin.dy),
+      component.screenMatrix.angle2D,
+      render,
+    );
   }
 }
 
-mixin RenderQueue on LoopComponent {
+mixin RenderQueue {
   final _renderQueue = <RenderComponent>[];
 
   void pushRenderComponent(RenderComponent component) {

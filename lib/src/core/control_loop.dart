@@ -94,6 +94,12 @@ mixin LoopComponent {
   void tick(double dt);
 }
 
+/// Concrete implementation of LoopComponent
+class LoopActor with LoopComponent {
+  @override
+  void tick(double dt) {}
+}
+
 /// 'Main' Loop dispatcher.
 /// Any Object can subscribe to be notified about deltaTime.
 mixin ObservableLoop implements ObservableValue<double>, ObservableNotifier, Disposable {

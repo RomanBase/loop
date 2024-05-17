@@ -49,7 +49,7 @@ extension Matrix4Ext on Matrix4 {
 class TransformMatrix {
   final _matrix = Matrix4.identity();
 
-  Offset origin = Offset.zero;
+  Offset origin = const Offset(0.5, 0.5);
 
   Offset _position = Offset.zero;
 

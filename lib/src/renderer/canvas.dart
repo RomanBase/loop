@@ -1,5 +1,34 @@
 part of '../../loop.dart';
 
+extension CanvasRender on Canvas {
+  void renderRotated(Canvas canvas, Rect rect, Offset origin, double rotation, void Function(Rect dst) render) {
+    if (rotation == 0.0) {
+      render(rect);
+      return;
+    }
+
+    canvas.save();
+    canvas.translate(rect.left + origin.dx, rect.top + origin.dy);
+    canvas.rotate(rotation);
+
+    render(Rect.fromLTRB(-origin.dx, -origin.dy, rect.width - origin.dx, rect.height - origin.dy));
+
+    canvas.translate(-rect.left - origin.dx, -rect.top - origin.dy);
+    canvas.restore();
+  }
+
+  void renderBox(Canvas canvas, Matrix4 matrix, Offset origin, Size size, void Function(Rect dst) render) {
+    final sx = matrix.scaleX2D;
+    final sy = matrix.scaleY2D;
+
+    size = Size(size.width * sx, size.height * sy);
+    final dstOrigin = Offset(origin.dx * size.width, origin.dy * size.height);
+    final dst = (matrix.position2D - dstOrigin) & size;
+
+    renderRotated(canvas, dst, dstOrigin, matrix.angle2D, render);
+  }
+}
+
 class CanvasBuilder extends StatelessWidget {
   final RenderComponent component;
 
@@ -57,7 +86,7 @@ class BBoxRenderComponent extends SceneComponent with RenderComponent {
     _boxParent = component;
 
     if (component is RenderComponent) {
-      size = component.size;
+      size = (component as RenderComponent).size;
     }
 
     printDebug('BBox ATTACHED to $component');
@@ -101,19 +130,19 @@ class BBoxRenderComponent extends SceneComponent with RenderComponent {
   }
 
   void _renderBBox(Canvas canvas, String name, Matrix4 matrix, [Offset origin = Offset.zero, Size? size]) {
-    renderRaw(
+    size ??= this.size;
+
+    canvas.renderBox(
       canvas,
       matrix,
       origin,
-      size ?? this.size,
+      size,
       (rect) {
         canvas.drawCircle(
-            Offset(
-              rect.left + origin.dx * matrix.scaleX2D,
-              rect.top + origin.dy * matrix.scaleY2D,
-            ),
-            4.0,
-            Paint()..color = color);
+          rect.topLeft + Offset(rect.width * origin.dx, rect.height * origin.dy),
+          4.0,
+          Paint()..color = color,
+        );
 
         canvas.drawRect(
           rect,

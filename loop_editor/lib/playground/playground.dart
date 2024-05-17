@@ -21,21 +21,19 @@ extension _PlaygroundComponent on CoreContext {
         loop.add(Sprite(asset: Asset.get('placeholder'))
           ..zIndex = -1
           ..size = const Size(64.0, 64.0)
+          ..transform.origin = Offset.zero
           ..translate(const Offset(240.0, 240.0))
           ..updateDeltaLoopBehavior(LoopBehavior.loop));
 
         loop.add(Sprite(asset: Asset.get('placeholder'))
           ..size = const Size(32.0, 32.0)
-          ..transform.origin = const Offset(16.0, 16.0)
           ..translate(const Offset(240.0, 240.0), begin: const Offset(240.0, 120.0))
           ..rotate(360.0)
           ..scale(const Scale.of(3.0))
           ..attach(Sprite(asset: Asset.get('placeholder'))
             ..size = const Size(24.0, 24.0)
-            ..transform.origin = const Offset(12.0, 12.0)
             ..transform.position = const Offset(28.0, 0.0)
             ..attach(Sprite(asset: Asset.get('placeholder'))
-              ..transform.origin = const Offset(8.0, 8.0)
               ..size = const Size(16.0, 16.0)
               ..transform.position = const Offset(20.0, 0.0)
               ..translate(const Offset(64.0, 0.0)).setLoopBehavior(LoopBehavior.reverseLoop)

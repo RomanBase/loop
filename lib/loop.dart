@@ -10,6 +10,8 @@ import 'package:flutter/scheduler.dart';
 
 part 'src/core/asset_factory.dart';
 
+part 'src/core/component_lookup.dart';
+
 part 'src/core/control_loop.dart';
 
 part 'src/core/loop_scene.dart';

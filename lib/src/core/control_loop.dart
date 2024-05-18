@@ -89,6 +89,7 @@ class ControlLoop with ObservableLoop {
 
 /// Base tick component.
 mixin LoopComponent {
+  String tag = '';
   bool active = true;
 
   void tick(double dt);
@@ -144,6 +145,9 @@ mixin ObservableLoop implements ObservableValue<double>, ObservableNotifier, Dis
 /// 'Component' Loop dispatcher.
 mixin ObservableLoopComponent implements LoopComponent, ObservableChannel, Disposable {
   final _observable = ControlObservable.empty();
+
+  @override
+  late String tag = '$runtimeType';
 
   @override
   bool active = true;

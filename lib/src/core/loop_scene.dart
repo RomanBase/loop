@@ -72,6 +72,12 @@ class LoopScene extends LoopActor with ObservableLoop, RenderComponent, RenderQu
     super.pushRenderComponent(component);
   }
 
+  T? findComponentByTag<T extends LoopComponent>(String tag) => ComponentLookup.findComponentByTag<T>(items, tag);
+
+  T? findComponent<T extends LoopComponent>({bool Function(T object)? where}) => ComponentLookup.findComponent<T>(items, where);
+
+  Iterable<T> findComponents<T extends LoopComponent>({bool Function(T object)? where}) => ComponentLookup.findComponents<T>(items, where);
+
   @override
   bool onPointerDown(PointerEvent event) => PointerListener._proceed(items, event, (component) => component.onPointerDown(event));
 

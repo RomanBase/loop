@@ -86,16 +86,16 @@ class SceneComponent with ObservableLoopComponent {
     }
   }
 
-  void attach(LoopComponent component, {dynamic socket}) {
-    components[socket ?? component.hashCode] = component;
+  void attach(LoopComponent component, {dynamic slot}) {
+    components[slot ?? component.hashCode] = component;
 
     if (component is SceneComponent) {
       component.onAttach(this);
     }
   }
 
-  void detach(LoopComponent component, {dynamic socket}) {
-    components.remove(socket ?? component.hashCode);
+  void detach(LoopComponent component, {dynamic slot}) {
+    components.remove(slot ?? component.hashCode);
 
     if (component is SceneComponent) {
       component.onDetach();
@@ -104,7 +104,17 @@ class SceneComponent with ObservableLoopComponent {
 
   void removeFromParent() => parent?.detach(this);
 
-  T? getComponent<T>() => components.containsKey(T) ? components[T] as T : null;
+  T? getComponent<T>([dynamic slot]) {
+    final key = slot ?? T;
+
+    return components.containsKey(key) ? components[key] as T : null;
+  }
+
+  T? findComponentByTag<T extends LoopComponent>(String tag, {bool root = true}) => ComponentLookup.findComponentByTag<T>(root ? getLoop()!.items : components.values, tag);
+
+  T? findComponent<T extends LoopComponent>({bool root = true, bool Function(T object)? where}) => ComponentLookup.findComponent<T>(root ? getLoop()!.items : components.values, where);
+
+  Iterable<T> findComponents<T extends LoopComponent>({bool root = true, bool Function(T object)? where}) => ComponentLookup.findComponents<T>(root ? getLoop()!.items : components.values, where);
 
   @override
   void dispose() {

@@ -20,20 +20,28 @@ class SceneComponent with ObservableLoopComponent {
 
   bool notifyOnTick = true;
 
-  Matrix4 _screenSpace() {
-    if (parent == null) {
-      return getLoop()?.viewport.multiply(transform.matrix) ?? transform.matrix;
+  void onInit() {}
+
+  LoopScene? _initLoop(LoopScene? scene) {
+    assert(_loop == null, 'Can\'t attach to multiple loops');
+
+    if (scene == null) {
+      return null;
     }
 
-    return parent!.screenMatrix.multiplied2DTransform(transform.matrix);
+    _loop = scene;
+    onInit();
+    _instantiate();
+
+    return _loop;
   }
 
-  Matrix4 _worldSpace() {
-    if (parent == null) {
-      return transform.matrix;
-    }
-
-    return parent!.screenMatrix.multiplied2DTransform(transform.matrix);
+  void _instantiate() {
+    components.forEach((key, value) {
+      if (value is SceneComponent) {
+        value.getLoop();
+      }
+    });
   }
 
   LoopScene? getLoop() {
@@ -41,19 +49,19 @@ class SceneComponent with ObservableLoopComponent {
       return _loop;
     }
 
-    if (parent is LoopScene) {
-      return _loop = parent as LoopScene;
-    }
-
-    return _loop = parent?.getLoop();
+    return _initLoop(parent?.getLoop());
   }
 
   void onAttach(LoopComponent component) {
-    if (component is SceneComponent) {
-      assert(parent == null, 'Can\'t attach to multiple transform objects');
+    assert(parent == null, 'Can\'t attach to multiple transform objects');
 
+    if (component is LoopScene) {
+      _initLoop(component);
+      return;
+    }
+
+    if (component is SceneComponent) {
       parent = component;
-      _loop ??= getLoop();
     }
   }
 
@@ -62,7 +70,29 @@ class SceneComponent with ObservableLoopComponent {
     parent = null;
   }
 
-  void onTick(double dt) {}
+  void removeFromParent() {
+    if (parent == null) {
+      _loop?.detach(this);
+    } else {
+      parent?.detach(this);
+    }
+  }
+
+  void attach(LoopComponent component, {dynamic slot}) {
+    components[slot ?? component.hashCode] = component;
+
+    if (component is SceneComponent) {
+      component.onAttach(this);
+    }
+  }
+
+  void detach(LoopComponent component, {dynamic slot}) {
+    components.remove(slot ?? component.hashCode);
+
+    if (component is SceneComponent) {
+      component.onDetach();
+    }
+  }
 
   @override
   void tick(double dt) {
@@ -86,23 +116,23 @@ class SceneComponent with ObservableLoopComponent {
     }
   }
 
-  void attach(LoopComponent component, {dynamic slot}) {
-    components[slot ?? component.hashCode] = component;
+  void onTick(double dt) {}
 
-    if (component is SceneComponent) {
-      component.onAttach(this);
+  Matrix4 _screenSpace() {
+    if (parent == null) {
+      return getLoop()?.viewport.multiply(transform.matrix) ?? transform.matrix;
     }
+
+    return parent!.screenMatrix.multiplied2DTransform(transform.matrix);
   }
 
-  void detach(LoopComponent component, {dynamic slot}) {
-    components.remove(slot ?? component.hashCode);
-
-    if (component is SceneComponent) {
-      component.onDetach();
+  Matrix4 _worldSpace() {
+    if (parent == null) {
+      return transform.matrix;
     }
-  }
 
-  void removeFromParent() => parent?.detach(this);
+    return parent!.screenMatrix.multiplied2DTransform(transform.matrix);
+  }
 
   T? getComponent<T>([dynamic slot]) {
     final key = slot ?? T;
@@ -119,7 +149,7 @@ class SceneComponent with ObservableLoopComponent {
   @override
   void dispose() {
     if (_loop != null) {
-      _loop?.remove(this);
+      _loop?.detach(this);
     }
 
     super.dispose();

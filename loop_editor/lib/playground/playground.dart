@@ -19,22 +19,25 @@ extension _PlaygroundComponent on CoreContext {
         final loop = LoopScene();
         loop.timeDilation = 0.25;
 
-        loop.add(Sprite(asset: Asset.get('placeholder'))
+        loop.attach(Sprite(asset: Asset.get('placeholder'))
           ..zIndex = -1
           ..size = const Size(64.0, 64.0)
           ..transform.origin = Offset.zero
           ..translate(const Offset(240.0, 240.0))
           ..updateDeltaLoopBehavior(LoopBehavior.loop));
 
-        loop.add(Sprite(asset: Asset.get('placeholder'))
+        loop.attach(Sprite(asset: Asset.get('placeholder'))
+          ..tag = 'group_0'
           ..size = const Size(32.0, 32.0)
           ..translate(const Offset(240.0, 240.0), begin: const Offset(240.0, 120.0))
           ..rotate(360.0)
           ..scale(const Scale.of(3.0))
           ..attach(Sprite(asset: Asset.get('placeholder'))
+            ..tag = 'group_1'
             ..size = const Size(24.0, 24.0)
             ..transform.position = const Offset(28.0, 0.0)
             ..attach(Sprite(asset: Asset.get('placeholder'))
+              ..tag = 'group_2'
               ..size = const Size(16.0, 16.0)
               ..transform.position = const Offset(20.0, 0.0)
               ..translate(const Offset(64.0, 0.0)).setLoopBehavior(LoopBehavior.reverseLoop)
@@ -42,7 +45,7 @@ extension _PlaygroundComponent on CoreContext {
               ..rotate(360).setLoopBehavior(LoopBehavior.reverseLoop)))
           ..updateDeltaLoopBehavior(LoopBehavior.reverseLoop));
 
-        loop.add(Sprite(
+        loop.attach(Sprite(
           asset: Asset.get('mc'),
           actions: {
             'fire': const SpriteAction(
@@ -53,11 +56,12 @@ extension _PlaygroundComponent on CoreContext {
             ),
           },
         )
+          ..tag = 'fire'
           ..transform.position = const Offset(320.0, 320.0)
           ..translate(const Offset(320.0, 280.0)).setLoopBehavior(LoopBehavior.loop)
           ..scale(const Scale.of(2.0)).setLoopBehavior(LoopBehavior.loop));
 
-        loop.add(Mouse());
+        loop.attach(Mouse());
 
         return loop;
       })!;
@@ -134,9 +138,9 @@ class Playground extends ControlWidget {
           final bbox = context.use<BBoxRenderComponent>(value: () => BBoxRenderComponent()..zIndex = 100)!;
 
           if (context.scene.items.contains(bbox)) {
-            context.scene.remove(bbox);
+            context.scene.detach(bbox);
           } else {
-            context.scene.add(bbox);
+            context.scene.attach(bbox);
           }
         },
         child: const Icon(Icons.border_all_rounded),

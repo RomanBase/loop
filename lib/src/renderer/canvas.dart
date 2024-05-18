@@ -83,6 +83,8 @@ class BBoxRenderComponent extends SceneComponent with RenderComponent {
 
   @override
   void onAttach(LoopComponent component) {
+    super.onAttach(component);
+
     _boxParent = component;
 
     if (component is RenderComponent) {
@@ -93,12 +95,19 @@ class BBoxRenderComponent extends SceneComponent with RenderComponent {
   }
 
   @override
+  void onDetach() {
+    super.onDetach();
+
+    printDebug('BBox DETACHED');
+  }
+
+  @override
   void render(Canvas canvas, Rect rect) {
     if (_boxParent is LoopScene) {
       _renderBBox(canvas, '$_boxParent', Matrix4.identity());
 
       for (final element in (_boxParent as LoopScene).items) {
-        if(element is SceneComponent) {
+        if (element is SceneComponent) {
           _renderComponent(element, canvas, rect);
         }
       }

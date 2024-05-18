@@ -112,7 +112,7 @@ class SceneComponentState extends State<SceneComponentWidget> {
     super.initState();
 
     if (!component.isMounted) {
-      Scene.of(context).loop.add(component);
+      Scene.of(context).loop.attach(component);
     }
 
     component.subscribe(() => setState(() {}));

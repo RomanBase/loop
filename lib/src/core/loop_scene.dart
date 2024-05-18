@@ -1,18 +1,19 @@
 part of '../../loop.dart';
 
-class LoopScene extends LoopActor with ObservableLoop, RenderComponent, RenderQueue, LoopLeaf implements PointerListener {
+class LoopScene extends LoopActor with ObservableLoop, RenderComponent, RenderQueue, LoopLeaf, PointerDispatcher {
   final viewport = SceneViewport();
   final items = <LoopComponent>[];
 
-  /// We don't care about rotation during visibility test, so [_safePadding] extends viewport bounds.
-  Rect _safeZone = Rect.zero;
+  //TODO: custom struct
+  /// We don't care about rotation during visibility test, so [framePadding] extends viewport bounds.
+  final frame = ActionControl.broadcast<Rect>(Rect.zero);
 
-  double get _safePadding => 32.0;
+  double get framePadding => 32.0;
 
   @override
   set size(Size value) {
     super.size = value;
-    _safeZone = Rect.fromLTRB(-_safePadding, -_safePadding, size.width + _safePadding, size.height + _safePadding);
+    frame.value = Rect.fromLTRB(-framePadding, -framePadding, size.width + framePadding, size.height + framePadding);
   }
 
   void attach(SceneComponent component) {
@@ -67,7 +68,7 @@ class LoopScene extends LoopActor with ObservableLoop, RenderComponent, RenderQu
 
   @override
   void pushRenderComponent(RenderComponent component) {
-    if (!component.isVisible(_safeZone)) {
+    if (!component.isVisible(frame.value)) {
       return;
     }
 
@@ -79,21 +80,6 @@ class LoopScene extends LoopActor with ObservableLoop, RenderComponent, RenderQu
   T? findComponent<T extends LoopComponent>({bool Function(T object)? where}) => ComponentLookup.findComponent<T>(items, where);
 
   Iterable<T> findComponents<T extends LoopComponent>({bool Function(T object)? where}) => ComponentLookup.findComponents<T>(items, where);
-
-  @override
-  bool onPointerDown(PointerEvent event) => PointerListener._proceed(items, event, (component) => component.onPointerDown(event));
-
-  @override
-  bool onPointerHover(PointerEvent event) => PointerListener._proceed(items, event, (component) => component.onPointerHover(event));
-
-  @override
-  bool onPointerUp(PointerEvent event) => PointerListener._proceed(items, event, (component) => component.onPointerUp(event));
-
-  @override
-  bool onPointerMove(PointerEvent event) => PointerListener._proceed(items, event, (component) => component.onPointerMove(event));
-
-  @override
-  bool onPointerCancel(PointerEvent event) => PointerListener._proceed(items, event, (component) => component.onPointerCancel(event));
 
   @override
   void dispose() {

@@ -4,6 +4,8 @@ import 'package:loop/loop.dart';
 class Mouse extends SceneComponent with RenderComponent, PointerComponent {
   Mouse() {
     zIndex = 999;
+    pointer.primary = true;
+
     size = const Size.square(16.0);
   }
 

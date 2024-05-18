@@ -148,8 +148,10 @@ class SceneComponent with ObservableLoopComponent {
 
   @override
   void dispose() {
-    if (_loop != null) {
+    if (parent == null) {
       _loop?.detach(this);
+    } else {
+      parent?.detach(this);
     }
 
     super.dispose();

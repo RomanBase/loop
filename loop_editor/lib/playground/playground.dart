@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter_control/control.dart';
 import 'package:loop/loop.dart';
+import 'package:loop_editor/playground/drag_sprite.dart';
 import 'package:loop_editor/playground/mouse.dart';
 import 'package:loop_editor/playground/viewport_view.dart';
 import 'package:loop_editor/resources/theme.dart';
@@ -61,7 +62,7 @@ extension _PlaygroundComponent on CoreContext {
           ..translate(const Offset(320.0, 280.0)).setLoopBehavior(LoopBehavior.loop)
           ..scale(const Scale.of(2.0)).setLoopBehavior(LoopBehavior.loop));
 
-        loop.attach(Mouse());
+        loop.attach(DragSprite());
 
         return loop;
       })!;
@@ -136,6 +137,13 @@ class Playground extends ControlWidget {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           final bbox = context.use<BBoxRenderComponent>(value: () => BBoxRenderComponent()..zIndex = 100)!;
+          final mouse = context.scene.findComponent<Mouse>();
+
+          if (mouse == null) {
+            context.scene.attach(Mouse());
+          } else {
+            mouse.removeFromParent();
+          }
 
           if (context.scene.items.contains(bbox)) {
             context.scene.detach(bbox);

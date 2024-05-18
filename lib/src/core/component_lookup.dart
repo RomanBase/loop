@@ -6,15 +6,25 @@ class ComponentLookup {
   static T? findComponentByTag<T extends LoopComponent>(Iterable<LoopComponent> items, String tag) => findComponent(items, (item) => item.tag == tag);
 
   static T? findComponent<T extends LoopComponent>(Iterable<LoopComponent> items, [bool Function(T object)? test]) {
+    final children = <SceneComponent>[];
+
     for (var element in items) {
       if (element is T) {
-        if (test?.call(element) ?? true) {
+        if (test == null || test.call(element)) {
           return element;
         }
       }
 
       if (element is SceneComponent) {
-        return findComponent<T>(element.components.values, test);
+        children.add(element);
+      }
+    }
+
+    for (final element in children) {
+      final child = findComponent<T>(element.components.values, test);
+
+      if (child != null) {
+        return child;
       }
     }
 
@@ -26,7 +36,7 @@ class ComponentLookup {
 
     for (var element in items) {
       if (element is T) {
-        if (test?.call(element) ?? true) {
+        if (test == null || test.call(element)) {
           output.add(element);
         }
       }
@@ -42,7 +52,7 @@ class ComponentLookup {
   static void proceedComponents<T extends LoopComponent>(Iterable<LoopComponent> items, void Function(T component) action, [bool Function(T object)? test]) {
     for (var element in items) {
       if (element is T) {
-        if (test?.call(element) ?? true) {
+        if (test == null || test.call(element)) {
           action.call(element);
         }
       }

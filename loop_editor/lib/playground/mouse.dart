@@ -33,36 +33,36 @@ class Mouse extends SceneComponent with RenderComponent, PointerComponent {
   }
 
   @override
-  bool onPointerDown(PointerEvent event) {
+  bool onPointerDown(Pointer event) {
     pointer.isDown = true;
     pointer.down?.call(event);
     return false;
   }
 
   @override
-  bool onPointerMove(PointerEvent event) {
-    transform.position = event.localPosition + getLoop()!.viewport.position;
+  bool onPointerMove(Pointer event) {
+    transform.position = event.position;
     pointer.move?.call(event);
     return false;
   }
 
   @override
-  bool onPointerUp(PointerEvent event) {
+  bool onPointerUp(Pointer event) {
     pointer.isDown = false;
     pointer.up?.call(event);
     return false;
   }
 
   @override
-  bool onPointerCancel(PointerEvent event) {
+  bool onPointerCancel(Pointer event) {
     pointer.isDown = false;
     pointer.cancel?.call(event);
     return false;
   }
 
   @override
-  bool onPointerHover(PointerEvent event) {
-    transform.position = event.localPosition + getLoop()!.viewport.position;
+  bool onPointerHover(Pointer event) {
+    transform.position = event.position;
     pointer.hover?.call(event);
     return false;
   }

@@ -103,14 +103,14 @@ class TransformMatrix {
 
 /// Just fake inversion Matrix that mimics orthographic projection when multiplied with model matrix.
 /// Viewport size is 'ignored' because we are using mobile space (dp) resolution and we don't deal with frustrum in pure 2d scene. With proper scaling we can fake world size.
-class SceneViewport {
+class ViewportMatrix {
   final _transform = TransformMatrix();
 
   Matrix4 get matrix => _transform.matrix;
 
-  Offset get position => -_transform.position;
+  Offset get position => -_transform.position * reverseScale;
 
-  set position(Offset value) => _transform.position = -value;
+  set position(Offset value) => _transform.position = -value * scale;
 
   double get rotation => -_transform.rotation;
 
@@ -120,5 +120,29 @@ class SceneViewport {
 
   set scale(double value) => _transform.scale = Scale.of(value);
 
+  double get reverseScale => 1.0 / scale;
+
   Matrix4 multiply(Matrix4 local) => matrix.multiplied2DTransform(local);
+
+  void use(Matrix4 matrix) => matrix.copyInto(_transform._matrix);
+
+  Size updateViewport(Size frame, {double? requiredWidth, double? requiredHeight, double? ratio}) {
+    if (ratio != null) {
+      final frameRatio = frame.aspectRatio;
+      scale = frameRatio / ratio;
+      return frame * scale;
+    }
+
+    if (requiredWidth != null) {
+      scale = frame.width / requiredWidth;
+      return frame * reverseScale;
+    }
+
+    if (requiredHeight != null) {
+      scale = frame.height / requiredHeight;
+      return frame * scale;
+    }
+
+    return frame;
+  }
 }

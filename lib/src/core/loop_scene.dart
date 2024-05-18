@@ -1,7 +1,7 @@
 part of '../../loop.dart';
 
 class LoopScene extends LoopActor with ObservableLoop, RenderComponent, RenderQueue, LoopLeaf, PointerDispatcher {
-  final viewport = SceneViewport();
+  final viewport = ViewportMatrix();
   final items = <LoopComponent>[];
 
   //TODO: custom struct
@@ -10,11 +10,18 @@ class LoopScene extends LoopActor with ObservableLoop, RenderComponent, RenderQu
 
   double get framePadding => 32.0;
 
-  @override
-  set size(Size value) {
-    super.size = value;
-    frame.value = Rect.fromLTRB(-framePadding, -framePadding, size.width + framePadding, size.height + framePadding);
+  void updateViewportSize(Size canvasSize, {double? requiredWidth, double? requiredHeight, double? ratio}) {
+    if (frame.internalData == canvasSize) {
+      return;
+    }
+
+    frame.internalData = canvasSize;
+    size = viewport.updateViewport(canvasSize, requiredWidth: requiredWidth, requiredHeight: requiredHeight, ratio: ratio);
+    frame.value = Rect.fromLTRB(-framePadding, -framePadding, (size.width * viewport.scale) + framePadding, (size.height * viewport.scale) + framePadding);
   }
+
+  @override
+  Pointer transformPointer(PointerEvent event) => Pointer(event, (event.localPosition * viewport.reverseScale) + viewport.position);
 
   void attach(SceneComponent component) {
     assert(!component.isMounted, 'Can\'t use one Component in multiple Scenes');
@@ -93,5 +100,10 @@ class LoopScene extends LoopActor with ObservableLoop, RenderComponent, RenderQu
     }
 
     items.clear();
+  }
+
+  @override
+  String toString() {
+    return 'Scene [${size.width.toInt()}, ${size.height.toInt()}] (${_renderQueue.length})';
   }
 }

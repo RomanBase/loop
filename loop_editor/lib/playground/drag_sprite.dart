@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:loop/loop.dart';
 
 class DragSprite extends Sprite with PointerComponent {
@@ -7,10 +9,11 @@ class DragSprite extends Sprite with PointerComponent {
   void onInit() {
     super.onInit();
 
-    pointer.move = (event) => transform.position = event.localPosition;
+    pointer.move = (event) => transform.position = event.position;
 
     getLoop()!.frame.subscribe((value) {
-      transform.position = value.center;
+      transform.position = getLoop()!.size.center(Offset.zero);
+      size = Size(getLoop()!.size.width, 50.0);
     }, current: false).once();
   }
 }

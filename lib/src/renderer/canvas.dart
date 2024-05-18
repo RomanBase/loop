@@ -29,6 +29,56 @@ extension CanvasRender on Canvas {
   }
 }
 
+class ViewportBuilder extends StatelessWidget {
+  final LoopScene scene;
+  final double? width;
+  final double? height;
+  final double? ratio;
+
+  const ViewportBuilder({
+    super.key,
+    required this.scene,
+    this.width,
+    this.height,
+    this.ratio,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constrains) => CustomPaint(
+        painter: ViewportPainter(
+          widget: this,
+        ),
+        size: (constrains.hasBoundedWidth && constrains.hasBoundedHeight) ? Size(constrains.maxWidth, constrains.maxHeight) : Size.zero,
+      ),
+    );
+  }
+}
+
+class ViewportPainter extends CustomPainter {
+  final ViewportBuilder widget;
+
+  const ViewportPainter({
+    required this.widget,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    widget.scene.updateViewportSize(
+      size,
+      requiredWidth: widget.width,
+      requiredHeight: widget.height,
+
+    );
+
+    widget.scene.render(canvas, Offset.zero & size);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+}
+
 class CanvasBuilder extends StatelessWidget {
   final RenderComponent component;
 
@@ -40,21 +90,23 @@ class CanvasBuilder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
-      builder: (context, constrains) => CustomPaint(
-        painter: RenderPainter(
-          component: component,
-        ),
-        size: (constrains.hasBoundedWidth && constrains.hasBoundedHeight) ? Size(constrains.maxWidth, constrains.maxHeight) : Size.zero,
-      ),
+      builder: (context, constrains) {
+        return CustomPaint(
+          painter: ComponentPainter(
+            component: component,
+          ),
+          size: (constrains.hasBoundedWidth && constrains.hasBoundedHeight) ? Size(constrains.maxWidth, constrains.maxHeight) : Size.zero,
+        );
+      },
     );
   }
 }
 
-class RenderPainter extends CustomPainter {
+class ComponentPainter extends CustomPainter {
   final RenderComponent component;
   final Offset offset;
 
-  RenderPainter({
+  const ComponentPainter({
     required this.component,
     this.offset = Offset.zero,
   });
@@ -104,7 +156,7 @@ class BBoxRenderComponent extends SceneComponent with RenderComponent {
   @override
   void render(Canvas canvas, Rect rect) {
     if (_boxParent is LoopScene) {
-      _renderBBox(canvas, '$_boxParent', Matrix4.identity());
+      _renderBBox(canvas, '$_boxParent', Matrix4.identity()..scale((_boxParent as LoopScene).viewport.scale));
 
       for (final element in (_boxParent as LoopScene).items) {
         if (element is SceneComponent) {

@@ -7,43 +7,54 @@ class SceneActor extends SceneComponent with RenderComponent {
   }
 }
 
-abstract class PointerListener {
-  bool onPointerDown(PointerEvent event);
+class Pointer {
+  final PointerEvent event;
 
-  bool onPointerMove(PointerEvent event);
+  final Offset position;
 
-  bool onPointerUp(PointerEvent event);
+  Offset get localPosition => event.localPosition;
 
-  bool onPointerCancel(PointerEvent event);
+  Offset get screenPosition => event.position;
 
-  bool onPointerHover(PointerEvent event);
+  const Pointer(this.event, this.position);
 }
 
-mixin PointerDispatcher on LoopComponent implements PointerListener {
+abstract class PointerListener {
+  bool onPointerDown(Pointer event);
+
+  bool onPointerMove(Pointer event);
+
+  bool onPointerUp(Pointer event);
+
+  bool onPointerCancel(Pointer event);
+
+  bool onPointerHover(Pointer event);
+}
+
+mixin PointerDispatcher on LoopComponent {
   final _pointers = <PointerListener>[];
 
   void registerPointer(PointerListener listener, {bool primary = false}) => primary ? _pointers.insert(0, listener) : _pointers.add(listener);
 
   void removePointer(PointerListener listener) => _pointers.remove(listener);
 
-  @override
-  bool onPointerDown(PointerEvent event) => _proceed(_pointers, event, (component) => component.onPointerDown(event));
+  bool onPointerDown(PointerEvent event) => _proceed(_pointers, event, (component, event) => component.onPointerDown(event));
 
-  @override
-  bool onPointerHover(PointerEvent event) => _proceed(_pointers, event, (component) => component.onPointerHover(event));
+  bool onPointerMove(PointerEvent event) => _proceed(_pointers, event, (component, event) => component.onPointerMove(event));
 
-  @override
-  bool onPointerUp(PointerEvent event) => _proceed(_pointers, event, (component) => component.onPointerUp(event));
+  bool onPointerUp(PointerEvent event) => _proceed(_pointers, event, (component, event) => component.onPointerUp(event));
 
-  @override
-  bool onPointerMove(PointerEvent event) => _proceed(_pointers, event, (component) => component.onPointerMove(event));
+  bool onPointerCancel(PointerEvent event) => _proceed(_pointers, event, (component, event) => component.onPointerCancel(event));
 
-  @override
-  bool onPointerCancel(PointerEvent event) => _proceed(_pointers, event, (component) => component.onPointerCancel(event));
+  bool onPointerHover(PointerEvent event) => _proceed(_pointers, event, (component, event) => component.onPointerHover(event));
 
-  static bool _proceed(Iterable<PointerListener> items, PointerEvent event, bool Function(PointerListener component) action) {
+  Pointer transformPointer(PointerEvent event) => Pointer(event, event.localPosition);
+
+  bool _proceed(Iterable<PointerListener> items, PointerEvent event, bool Function(PointerListener component, Pointer event) action) {
+    final pointer = transformPointer(event);
+
     for (final element in items) {
-      if (action.call(element)) {
+      if (action.call(element, pointer)) {
         return true;
       }
     }
@@ -53,11 +64,11 @@ mixin PointerDispatcher on LoopComponent implements PointerListener {
 }
 
 class PointerEventHandler {
-  void Function(PointerEvent event)? down;
-  void Function(PointerEvent event)? move;
-  void Function(PointerEvent event)? up;
-  void Function(PointerEvent event)? cancel;
-  void Function(PointerEvent event)? hover;
+  void Function(Pointer event)? down;
+  void Function(Pointer event)? move;
+  void Function(Pointer event)? up;
+  void Function(Pointer event)? cancel;
+  void Function(Pointer event)? hover;
 
   bool handleMoveOutside = true;
   bool isDown = false;
@@ -83,7 +94,7 @@ mixin PointerComponent on SceneComponent, RenderComponent implements PointerList
   }
 
   @override
-  bool onPointerDown(PointerEvent event) {
+  bool onPointerDown(Pointer event) {
     if (!pointer.active || !active) {
       return false;
     }
@@ -98,7 +109,7 @@ mixin PointerComponent on SceneComponent, RenderComponent implements PointerList
   }
 
   @override
-  bool onPointerMove(PointerEvent event) {
+  bool onPointerMove(Pointer event) {
     if (!pointer.active || !active) {
       return false;
     }
@@ -118,7 +129,7 @@ mixin PointerComponent on SceneComponent, RenderComponent implements PointerList
   }
 
   @override
-  bool onPointerUp(PointerEvent event) {
+  bool onPointerUp(Pointer event) {
     if (!pointer.active || !active) {
       return false;
     }
@@ -137,7 +148,7 @@ mixin PointerComponent on SceneComponent, RenderComponent implements PointerList
   }
 
   @override
-  bool onPointerCancel(PointerEvent event) {
+  bool onPointerCancel(Pointer event) {
     if (!pointer.active || !active) {
       return false;
     }
@@ -152,7 +163,7 @@ mixin PointerComponent on SceneComponent, RenderComponent implements PointerList
   }
 
   @override
-  bool onPointerHover(PointerEvent event) {
+  bool onPointerHover(Pointer event) {
     if (!pointer.active || !active) {
       return false;
     }

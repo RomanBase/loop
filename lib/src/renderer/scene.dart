@@ -1,5 +1,30 @@
 part of '../../loop.dart';
 
+class SceneViewport extends StatefulWidget {
+  final double? width;
+  final double? height;
+  final double? ratio;
+  final Widget child;
+
+  const SceneViewport({
+    super.key,
+    this.width,
+    this.height,
+    this.ratio,
+    required this.child,
+  });
+
+  static SceneViewportState? of(BuildContext context) => context.findRootAncestorStateOfType<SceneViewportState>();
+
+  @override
+  State<StatefulWidget> createState() => SceneViewportState();
+}
+
+class SceneViewportState extends State<SceneViewport> {
+  @override
+  Widget build(BuildContext context) => widget.child;
+}
+
 class Scene extends SceneWidget {
   final List<Widget> children;
   final List<SceneItemBuilder> builders;
@@ -8,6 +33,9 @@ class Scene extends SceneWidget {
     super.key,
     super.control,
     super.loop,
+    super.width,
+    super.height,
+    super.ratio,
     this.children = const [],
   })  : builders = const [],
         super(tick: false);
@@ -16,11 +44,14 @@ class Scene extends SceneWidget {
     super.key,
     super.control,
     super.loop,
+    super.width,
+    super.height,
+    super.ratio,
     this.children = const [],
     this.builders = const [],
   }) : super(tick: true);
 
-  static SceneState of(BuildContext context) => context.findRootAncestorStateOfType<SceneState>()!;
+  static SceneState? of(BuildContext context) => context.findRootAncestorStateOfType<SceneState>();
 
   @override
   Widget build(BuildContext context, Widget render, double dt) {
@@ -45,12 +76,18 @@ abstract class SceneWidget extends StatefulWidget {
   final ControlLoop? control;
   final LoopScene? loop;
   final bool tick;
+  final double? width;
+  final double? height;
+  final double? ratio;
 
   const SceneWidget({
     super.key,
     this.control,
     this.loop,
     this.tick = true,
+    this.width,
+    this.height,
+    this.ratio,
   });
 
   @override
@@ -61,6 +98,7 @@ abstract class SceneWidget extends StatefulWidget {
 
 class SceneState extends State<SceneWidget> {
   late LoopScene loop;
+  SceneViewport? viewport;
 
   Disposable? _sub;
   double dt = 0.0;
@@ -74,6 +112,7 @@ class SceneState extends State<SceneWidget> {
 
   void _initScene() {
     loop = widget.loop ?? LoopScene();
+    viewport = SceneViewport.of(context)?.widget;
 
     if (!loop.isMounted) {
       loop.mount(widget.control);
@@ -112,7 +151,12 @@ class SceneState extends State<SceneWidget> {
   Widget build(BuildContext context) {
     return widget.build(
       context,
-      CanvasBuilder(component: loop),
+      ViewportBuilder(
+        scene: loop,
+        width: widget.width ?? viewport?.width,
+        height: widget.height ?? viewport?.height,
+        ratio: widget.ratio ?? viewport?.ratio,
+      ),
       dt,
     );
   }

@@ -2,6 +2,7 @@ library loop;
 
 import 'dart:ui' as ui;
 import 'dart:math' as math;
+import 'package:flutter/animation.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:vector_math/vector_math_64.dart' hide Colors;
 import 'package:control_core/core.dart';

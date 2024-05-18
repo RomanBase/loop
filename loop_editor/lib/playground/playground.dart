@@ -133,51 +133,54 @@ class Playground extends ControlWidget {
 
   @override
   Widget build(CoreElement context) {
-    return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          final bbox = context.use<BBoxRenderComponent>(value: () => BBoxRenderComponent()..zIndex = 100)!;
-          final mouse = context.scene.findComponent<Mouse>();
+    return SceneViewport(
+      width: 400.0,
+      child: Scaffold(
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            final bbox = context.use<BBoxRenderComponent>(value: () => BBoxRenderComponent()..zIndex = 100)!;
+            final mouse = context.scene.findComponent<Mouse>();
 
-          if (mouse == null) {
-            context.scene.attach(Mouse());
-          } else {
-            mouse.removeFromParent();
-          }
+            if (mouse == null) {
+              context.scene.attach(Mouse());
+            } else {
+              mouse.removeFromParent();
+            }
 
-          if (context.scene.items.contains(bbox)) {
-            context.scene.detach(bbox);
-          } else {
-            context.scene.attach(bbox);
-          }
-        },
-        child: const Icon(Icons.border_all_rounded),
-      ),
-      body: Stack(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(64.0),
-            child: Scene(
-              loop: context.scene,
-              children: [
-                SceneComponentBuilder(
-                  component: context.c2,
-                  builder: (_, dt) => Container(
-                    width: 48.0,
-                    height: 48.0,
-                    color: context.c2.deltaColor,
+            if (context.scene.items.contains(bbox)) {
+              context.scene.detach(bbox);
+            } else {
+              context.scene.attach(bbox);
+            }
+          },
+          child: const Icon(Icons.border_all_rounded),
+        ),
+        body: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(64.0),
+              child: Scene(
+                loop: context.scene,
+                children: [
+                  SceneComponentBuilder(
+                    component: context.c2,
+                    builder: (_, dt) => Container(
+                      width: 48.0,
+                      height: 48.0,
+                      color: context.c2.deltaColor,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          const FpsView(
-            alignment: Alignment.bottomLeft,
-          ),
-          ViewportView(
-            control: context.scene,
-          ),
-        ],
+            const FpsView(
+              alignment: Alignment.bottomLeft,
+            ),
+            ViewportView(
+              control: context.scene,
+            ),
+          ],
+        ),
       ),
     );
   }

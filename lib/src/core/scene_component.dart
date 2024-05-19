@@ -140,11 +140,11 @@ class SceneComponent with ObservableLoopComponent {
     return components.containsKey(key) ? components[key] as T : null;
   }
 
-  T? findComponentByTag<T extends LoopComponent>(String tag, {bool root = true}) => ComponentLookup.findComponentByTag<T>(root ? getLoop()!.items : components.values, tag);
+  T? findComponentByTag<T extends LoopComponent>(String tag, {bool root = false}) => ComponentLookup.findComponentByTag<T>(root ? getLoop()!.items : components.values, tag);
 
-  T? findComponent<T extends LoopComponent>({bool root = true, bool Function(T object)? where}) => ComponentLookup.findComponent<T>(root ? getLoop()!.items : components.values, where);
+  T? findComponent<T extends LoopComponent>({bool root = false, bool Function(T object)? where}) => ComponentLookup.findComponent<T>(root ? getLoop()!.items : components.values, where);
 
-  Iterable<T> findComponents<T extends LoopComponent>({bool root = true, bool Function(T object)? where}) => ComponentLookup.findComponents<T>(root ? getLoop()!.items : components.values, where);
+  Iterable<T> findComponents<T extends LoopComponent>({bool root = false, bool Function(T object)? where}) => ComponentLookup.findComponents<T>(root ? getLoop()!.items : components.values, where);
 
   @override
   void dispose() {

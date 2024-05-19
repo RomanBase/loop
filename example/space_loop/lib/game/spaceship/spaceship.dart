@@ -200,12 +200,12 @@ class SpaceshipComponent extends SceneComponent {
   void changeComponent(SpaceshipAssetModel pref, int index) {
     final component = getComponent<SceneComponent>(pref.key)!;
 
-    final activityCheck = component.findComponents<DeltaTransform>(root: false);
+    final activityCheck = component.findComponents<DeltaTransform>();
     if (activityCheck.any((element) => element.active)) {
       return;
     }
 
-    final sprites = component is Sprite ? [component] : component.findComponents<Sprite>(root: false);
+    final sprites = component is Sprite ? [component] : component.findComponents<Sprite>();
 
     for (final element in sprites) {
       final originScale = element.transform.scale;

@@ -6,12 +6,15 @@
       <excludeFolder url="file://$MODULE_DIR$/.dart_tool" />
       <excludeFolder url="file://$MODULE_DIR$/build" />
       <excludeFolder url="file://$MODULE_DIR$/.pub" />
-      <excludeFolder url="file://$MODULE_DIR$/ci/build" />
-      <excludeFolder url="file://$MODULE_DIR$/ci/.pub" />
-      <excludeFolder url="file://$MODULE_DIR$/ci/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/example/space_loop/ci/build" />
+      <excludeFolder url="file://$MODULE_DIR$/example/space_loop/ci/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/example/space_loop/ci/.dart_tool" />
       <excludeFolder url="file://$MODULE_DIR$/loop_editor/.pub" />
       <excludeFolder url="file://$MODULE_DIR$/loop_editor/.dart_tool" />
       <excludeFolder url="file://$MODULE_DIR$/loop_editor/build" />
+      <excludeFolder url="file://$MODULE_DIR$/example/space_loop/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/example/space_loop/build" />
+      <excludeFolder url="file://$MODULE_DIR$/example/space_loop/.dart_tool" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Dart SDK" level="project" />

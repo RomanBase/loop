@@ -1,0 +1,54 @@
+name: space_loop
+description: "A new Flutter project."
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.3.3 <4.0.0'
+
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  loop:
+    path: ../../
+
+  flutter_control:
+    git:
+      url: https://github.com/RomanBase/flutter_control
+
+  localino: 1.2.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^3.0.0
+
+# The following section is specific to Flutter packages.
+flutter:
+
+  # The following line ensures that the Material Icons font is
+  # included with your application, so that you can use the icons in
+  # the material Icons class.
+  uses-material-design: true
+
+  assets:
+    - assets/
+    - assets/bodies1/
+    - assets/bodies2/
+    - assets/bodies3/
+    - assets/bullets/
+    - assets/cabins/
+    - assets/engines/
+    - assets/flames/
+    - assets/guns1/
+    - assets/guns2/
+    - assets/mines/
+    - assets/missile_flames/
+    - assets/missiles/
+    - assets/wings1/
+    - assets/wings2/
+
+

@@ -44,6 +44,7 @@ abstract class DeltaTransform<T, U> extends TransformComponent<T> with LoopCompo
   DeltaTransform<T, U>? _parent;
 
   Function(T value)? onValue;
+  Function()? onFinished;
 
   bool get atEdge => componentValue == begin || componentValue == end;
 
@@ -79,6 +80,7 @@ abstract class DeltaTransform<T, U> extends TransformComponent<T> with LoopCompo
           reset();
           break;
         default:
+          onFinished?.call();
           break;
       }
     }

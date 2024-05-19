@@ -89,11 +89,11 @@ class TransformMatrix {
     final s = math.sin(rotation);
     final c = math.cos(rotation);
 
-    _matrix[0] = c * scale.width;
-    _matrix[1] = s * scale.width;
+    _matrix[0] = c * scale.width.abs();
+    _matrix[4] = s * scale.width.abs();
 
-    _matrix[4] = -s * scale.height;
-    _matrix[5] = c * scale.height;
+    _matrix[1] = -s * scale.height.abs();
+    _matrix[5] = c * scale.height.abs();
 
     return _matrix;
   }

@@ -44,7 +44,7 @@ class SpriteAction {
 }
 
 class Sprite extends SceneComponent with RenderComponent {
-  final ui.Image asset;
+  late ui.Image asset;
   final Map<String, SpriteAction> actions;
 
   DeltaSequence get sequence => getComponent<DeltaSequence>()!;
@@ -52,6 +52,8 @@ class Sprite extends SceneComponent with RenderComponent {
   int get frame => getComponent<DeltaSequence>()?.value ?? 0;
 
   double get blend => getComponent<DeltaSequence>()?.blend ?? 0.0;
+
+  double alpha = 1.0;
 
   SpriteAction? action;
 
@@ -63,6 +65,10 @@ class Sprite extends SceneComponent with RenderComponent {
     if (actions.isNotEmpty) {
       activate(initialAction ?? actions.keys.first);
     }
+  }
+
+  void setDefaultSize() {
+    size = Size(asset.width.toDouble(), asset.height.toDouble());
   }
 
   void activate(String actionName) {
@@ -91,7 +97,7 @@ class Sprite extends SceneComponent with RenderComponent {
           asset,
           asset.tile(frame + 1, action),
           dst,
-          Paint()..color = Color.fromRGBO(255, 255, 255, blend),
+          Paint()..color = Color.fromRGBO(255, 255, 255, blend * alpha),
         );
       }
 
@@ -99,7 +105,7 @@ class Sprite extends SceneComponent with RenderComponent {
         asset,
         asset.tile(frame, action),
         dst,
-        Paint(),
+        Paint()..color = Color.fromRGBO(255, 255, 255, alpha),
       );
     });
   }

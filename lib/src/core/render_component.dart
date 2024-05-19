@@ -18,8 +18,8 @@ mixin RenderComponent on LoopComponent {
     if (this is SceneComponent) {
       final component = this as SceneComponent;
       final matrix = component.screenMatrix;
-      final sx = matrix.scaleX2D;
-      final sy = matrix.scaleY2D;
+      final sx = matrix.scaleX2D.abs();
+      final sy = matrix.scaleY2D.abs();
 
       final size = Size(this.size.width * sx, this.size.height * sy);
       final dstOrigin = Offset(component.transform.origin.dx * size.width, component.transform.origin.dy * size.height);
@@ -41,10 +41,10 @@ mixin RenderComponent on LoopComponent {
 
   void renderComponent(Canvas canvas, SceneComponent component, void Function(Rect dst) render) {
     canvas.renderRotated(
-      canvas,
       screenBounds,
       Offset(screenBounds.width * component.transform.origin.dx, screenBounds.height * component.transform.origin.dy),
       component.screenMatrix.angle2D,
+      component.transform.scale,
       render,
     );
   }

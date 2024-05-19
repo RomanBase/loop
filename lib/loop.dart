@@ -2,7 +2,6 @@ library loop;
 
 import 'dart:ui' as ui;
 import 'dart:math' as math;
-import 'package:flutter/animation.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:vector_math/vector_math_64.dart' hide Colors;
 import 'package:control_core/core.dart';
@@ -41,7 +40,6 @@ part 'src/renderer/sprite.dart';
 
 part 'src/ui/fps_view.dart';
 
-
 ///
 /// TODO: Probably switch everything to Vector2
 ///
@@ -62,6 +60,8 @@ extension SizeExt on Size {
   bool get isZero => width == 0.0 && height == 0.0;
 
   bool get isOne => width == 1.0 && height == 1.0;
+
+  bool get isNegative => width < 0.0 || height < 0.0;
 }
 
 class Scale extends Size {

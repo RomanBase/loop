@@ -52,12 +52,13 @@ class AssetFactory implements Disposable {
 
   void clear() => _factory.clear();
 
+  void printFactoryContent() => _factory.printDebugStore(initializers: false);
+
   @override
   void dispose() {
     _factory.dispose();
   }
 }
-
 
 class AssetLoader {
   const AssetLoader._();

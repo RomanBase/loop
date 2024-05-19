@@ -67,7 +67,8 @@ class SpaceshipComponent extends SceneComponent {
     super.onInit();
 
     getLoop()!.frame.subscribe((value) {
-      transform.position = getLoop()!.size.center(Offset.zero);
+      transform.position = getLoop()!.size.center(const Offset(0.0, 300.0));
+      _activateSideJiggle();
     }, current: false).once();
 
     config.clean();
@@ -90,6 +91,13 @@ class SpaceshipComponent extends SceneComponent {
     flame.scale(Scale(0.75 + 0.25 * random.nextDouble(), 0.75 + 0.5 * random.nextDouble()), duration: Duration(milliseconds: 400 + random.nextInt(300)), reset: true)
       ..curve = Curves.bounceInOut
       ..onFinished = () => _activateFlame(index);
+  }
+
+  void _activateSideJiggle() {
+    final random = Random();
+    translate(getLoop()!.size.center(Offset.zero) + Offset(64.0 * (random.nextDouble() - 0.5) * 2.0, 32.0 * (random.nextDouble() - 0.5) * 2.0))
+      ..curve = Curves.easeInOut
+      ..onFinished = () => _activateSideJiggle();
   }
 
   void build() {

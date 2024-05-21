@@ -93,12 +93,17 @@ mixin LoopComponent {
   bool active = true;
 
   void tick(double dt);
+
+  void destroy();
 }
 
 /// Concrete implementation of LoopComponent
 class LoopActor with LoopComponent {
   @override
   void tick(double dt) {}
+
+  @override
+  void destroy() {}
 }
 
 /// 'Main' Loop dispatcher.
@@ -167,6 +172,11 @@ mixin ObservableLoopComponent implements LoopComponent, ObservableChannel, Dispo
     if (_observable.subCount > 0) {
       _observable.notify();
     }
+  }
+
+  @override
+  void destroy() {
+    dispose();
   }
 
   @override

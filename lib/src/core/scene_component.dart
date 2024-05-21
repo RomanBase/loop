@@ -1,7 +1,7 @@
 part of '../../loop.dart';
 
 class SceneComponent with ObservableLoopComponent {
-  final components = <dynamic, LoopComponent>{};
+  final components = HashMap<dynamic, LoopComponent>();
 
   final transform = TransformMatrix();
 
@@ -145,6 +145,14 @@ class SceneComponent with ObservableLoopComponent {
   T? findComponent<T extends LoopComponent>({bool root = false, bool Function(T object)? where}) => ComponentLookup.findComponent<T>(root ? getLoop()!.items : components.values, where);
 
   Iterable<T> findComponents<T extends LoopComponent>({bool root = false, bool Function(T object)? where}) => ComponentLookup.findComponents<T>(root ? getLoop()!.items : components.values, where);
+
+  @override
+  void destroy() {
+    super.destroy();
+
+    components.forEach((key, value) => value.destroy());
+    dispose();
+  }
 
   @override
   void dispose() {

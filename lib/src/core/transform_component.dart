@@ -205,6 +205,9 @@ abstract class DeltaTransform<T, U> extends TransformComponent<T> with LoopCompo
 
     return transform;
   }
+
+  @override
+  void destroy() {}
 }
 
 abstract class DeltaDuration<T> extends DeltaTransform<T, Duration> {

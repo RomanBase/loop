@@ -22,6 +22,8 @@ class SpaceShipEditor extends ControlWidget {
 
   @override
   Widget build(CoreElement context) {
+    final spaceship = context.spaceship;
+
     return Scaffold(
       body: Scene(
         loop: context.loop,
@@ -33,25 +35,25 @@ class SpaceShipEditor extends ControlWidget {
               padding: const EdgeInsets.all(64.0),
               child: Wrap(
                 children: [
-                  _randomizeComponent(context.spaceship, context.spaceship.config.body),
-                  _randomizeComponent(context.spaceship, context.spaceship.config.bodySide),
-                  _randomizeComponent(context.spaceship, context.spaceship.config.bodyAlt),
-                  _randomizeComponent(context.spaceship, context.spaceship.config.cabin),
-                  _randomizeComponent(context.spaceship, context.spaceship.config.cabinAlt),
-                  _randomizeComponent(context.spaceship, context.spaceship.config.engine),
-                  _randomizeComponent(context.spaceship, context.spaceship.config.wing),
-                  _randomizeComponent(context.spaceship, context.spaceship.config.wingAlt),
+                  _randomizeComponent(spaceship, spaceship.config.body),
+                  _randomizeComponent(spaceship, spaceship.config.bodySide),
+                  _randomizeComponent(spaceship, spaceship.config.bodyAlt),
+                  _randomizeComponent(spaceship, spaceship.config.cabin),
+                  _randomizeComponent(spaceship, spaceship.config.cabinAlt),
+                  _randomizeComponent(spaceship, spaceship.config.engine),
+                  _randomizeComponent(spaceship, spaceship.config.wing),
+                  _randomizeComponent(spaceship, spaceship.config.wingAlt),
                   IconButton(
                     onPressed: () => [
-                      context.spaceship.config.body,
-                      context.spaceship.config.bodySide,
-                      context.spaceship.config.bodyAlt,
-                      context.spaceship.config.cabin,
-                      context.spaceship.config.cabinAlt,
-                      context.spaceship.config.engine,
-                      context.spaceship.config.wing,
-                      context.spaceship.config.wingAlt,
-                    ].forEach((e) => context.spaceship.changeComponent(e, _random.nextInt(e.count))),
+                      spaceship.config.body,
+                      spaceship.config.bodySide,
+                      spaceship.config.bodyAlt,
+                      spaceship.config.cabin,
+                      spaceship.config.cabinAlt,
+                      spaceship.config.engine,
+                      spaceship.config.wing,
+                      spaceship.config.wingAlt,
+                    ].forEach((e) => spaceship.changeComponent(e, _random.nextInt(e.count))),
                     icon: Text('all'),
                   )
                 ],

@@ -2,6 +2,7 @@ part of '../../loop.dart';
 
 mixin LoopCollision on SceneComponent {
   final Set<LoopCollision> overlapComponents = <LoopCollision>{};
+  final _collisionChild = <LoopCollision>{};
   LoopComponent? _collisionParent;
 
   int collisionMask = 0x0001;
@@ -22,7 +23,20 @@ mixin LoopCollision on SceneComponent {
   }
 
   bool overlaps(LoopCollision other) {
-    return bounds.overlaps(other.bounds);
+    if (bounds.overlaps(other.bounds)) {
+      return _collisionChild.isEmpty || _collisionChild.any((element) => element.overlaps(other));
+    }
+
+    return false;
+  }
+
+  @override
+  void attach(LoopComponent component, {slot}) {
+    if (component is LoopCollision) {
+      _collisionChild.add(component);
+    }
+
+    super.attach(component, slot: slot);
   }
 
   @override
@@ -42,9 +56,7 @@ mixin LoopCollision on SceneComponent {
 
     if (_collisionParent is LoopCollisionSubsystem) {
       (_collisionParent as LoopCollisionSubsystem).removeCollisionComponent(this);
-    } else if (_collisionParent is LoopCollision) {
-
-    }
+    } else if (_collisionParent is LoopCollision) {}
 
     _collisionParent = null;
   }

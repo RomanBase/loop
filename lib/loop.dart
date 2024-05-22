@@ -11,6 +11,9 @@ import 'package:control_core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
+part 'src/collision/collision_component.dart';
+part 'src/collision/collision_subsystem.dart';
+
 part 'src/core/asset_factory.dart';
 
 part 'src/core/component_lookup.dart';

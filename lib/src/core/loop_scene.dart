@@ -26,14 +26,14 @@ class LoopScene extends LoopActor with ObservableLoop, RenderComponent, RenderQu
   void attach(SceneComponent component) {
     assert(!component.isMounted, 'Can\'t use one Component in multiple Scenes');
 
-    items.add(component);
+    add(component);
     component.onAttach(this);
 
     notify();
   }
 
   void detach(SceneComponent component) {
-    if (component.isMounted && items.remove(component)) {
+    if (component.isMounted && remove(component)) {
       component.onDetach();
 
       notify();
@@ -62,7 +62,11 @@ class LoopScene extends LoopActor with ObservableLoop, RenderComponent, RenderQu
         }
       }
     }
+
+    onTick(dt);
   }
+
+  void onTick(double dt) {}
 
   @override
   void render(Canvas canvas, Rect rect) {

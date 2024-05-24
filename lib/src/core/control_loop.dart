@@ -191,6 +191,7 @@ mixin ObservableLoopComponent implements LoopComponent, ObservableChannel, Dispo
 
   @override
   void dispose() {
+    active = false;
     _observable.dispose();
   }
 }

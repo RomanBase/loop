@@ -1,8 +1,8 @@
 import 'package:flutter_control/control.dart';
 import 'package:loop/loop.dart';
-import 'package:space_loop/game/init/init_control.dart';
-import 'package:space_loop/game/init/init_page.dart';
 import 'package:space_loop/game/spaceship/spaceship_editor.dart';
+import 'package:space_loop/init/init_control.dart';
+import 'package:space_loop/init/init_page.dart';
 
 void main() {
   runApp(const MyApp());

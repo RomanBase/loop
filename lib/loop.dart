@@ -3,6 +3,7 @@ library loop;
 import 'dart:collection';
 import 'dart:ui' as ui;
 import 'dart:math' as math;
+import 'package:flutter/animation.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart' show rootBundle;
@@ -13,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
 part 'src/collision/collision_component.dart';
+
 part 'src/collision/collision_subsystem.dart';
 
 part 'src/core/asset_factory.dart';
@@ -20,6 +22,8 @@ part 'src/core/asset_factory.dart';
 part 'src/core/component_lookup.dart';
 
 part 'src/core/control_loop.dart';
+
+part 'src/core/emit_component.dart';
 
 part 'src/core/loop_scene.dart';
 

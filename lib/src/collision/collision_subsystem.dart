@@ -16,14 +16,14 @@ mixin LoopCollisionSubsystem on ObservableLoop {
     for (int i = 0; i < _collisionItems.length - 1; i++) {
       final item = _collisionItems[i];
 
-      if (!item.active || item.static) {
+      if (!item.canCollide || item.static) {
         continue;
       }
 
       for (int j = i + 1; j < _collisionItems.length; j++) {
         final other = _collisionItems[j];
 
-        if (!other.active) {
+        if (!other.canCollide) {
           continue;
         }
 
@@ -47,6 +47,24 @@ mixin LoopCollisionSubsystem on ObservableLoop {
           }
         }
       }
+    }
+  }
+
+  List<LoopCollisionComponent> getCollisionTree() {
+    final items = <LoopCollisionComponent>[];
+
+    for (final element in _collisionItems) {
+      _fillCollisionTree(element, items);
+    }
+
+    return items;
+  }
+
+  void _fillCollisionTree(LoopCollisionComponent component, List<LoopCollisionComponent> out) {
+    out.add(component);
+
+    for (final element in component._collisionChild) {
+      _fillCollisionTree(element, out);
     }
   }
 }

@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter_control/control.dart';
 import 'package:loop/loop.dart';
+import 'package:space_loop/game/weapon/gun.dart';
 import 'package:space_loop/model/pref_model.dart';
 import 'dart:math' as math;
 
@@ -63,11 +64,14 @@ class SpaceshipComponent extends SceneComponent with LoopCollisionComponent {
   final config = SpaceshipConfig();
 
   @override
+  Size? get collisionSize => const Size(240.0, 260.0);
+
+  @override
   void onInit() {
     super.onInit();
 
     getLoop()!.frame.subscribe((value) {
-      transform.position = getLoop()!.size.center(const Offset(0.0, 300.0));
+      transform.position = getLoop()!.size.bottomCenter(const Offset(0.0, 300));
       _activateSideJiggle();
     }, current: false).once();
 
@@ -79,28 +83,9 @@ class SpaceshipComponent extends SceneComponent with LoopCollisionComponent {
     _activateFlame(3);
   }
 
-  void _activateFlame(int index) {
-    final flame = getComponent<Sprite>('${config.flame.key}$index');
-
-    if (flame == null) {
-      return;
-    }
-
-    final random = Random();
-    flame.rotate((random.nextDouble() - 0.5) * 6.0, duration: const Duration(milliseconds: 400), reset: true);
-    flame.scale(Scale(0.75 + 0.25 * random.nextDouble(), 0.75 + 0.5 * random.nextDouble()), duration: Duration(milliseconds: 400 + random.nextInt(300)), reset: true)
-      ..curve = Curves.bounceInOut
-      ..onFinished = () => _activateFlame(index);
-  }
-
-  void _activateSideJiggle() {
-    final random = Random();
-    translate(getLoop()!.size.center(Offset.zero) + Offset(64.0 * (random.nextDouble() - 0.5) * 2.0, 32.0 * (random.nextDouble() - 0.5) * 2.0))
-      ..curve = Curves.easeInOut
-      ..onFinished = () => _activateSideJiggle();
-  }
-
   void build() {
+    attach(Gun()..transform.position = const Offset(0.0, -65.0));
+
     attach(
       Sprite(asset: Asset.get(config.flame.value))
         ..transform.origin = const Offset(0.5, 0.0)
@@ -200,9 +185,31 @@ class SpaceshipComponent extends SceneComponent with LoopCollisionComponent {
     attach(
       Sprite(asset: Asset.get(config.cabin.value))
         ..transform.position = const Offset(0.0, -65.0)
-        ..setDefaultSize(),
+        ..setDefaultSize()
+        ..attach(LoopColliderComponent()),
       slot: config.cabin.key,
     );
+  }
+
+  void _activateFlame(int index) {
+    final flame = getComponent<Sprite>('${config.flame.key}$index');
+
+    if (flame == null) {
+      return;
+    }
+
+    final random = Random();
+    flame.rotate((random.nextDouble() - 0.5) * 6.0, duration: const Duration(milliseconds: 400), reset: true);
+    flame.scale(Scale(0.75 + 0.25 * random.nextDouble(), 0.75 + 0.5 * random.nextDouble()), duration: Duration(milliseconds: 400 + random.nextInt(300)), reset: true)
+      ..curve = Curves.bounceInOut
+      ..onFinished = () => _activateFlame(index);
+  }
+
+  void _activateSideJiggle() {
+    final random = Random();
+    translate(getLoop()!.size.bottomCenter(const Offset(0.0, -200)) + Offset(64.0 * (random.nextDouble() - 0.5) * 2.0, 32.0 * (random.nextDouble() - 0.5) * 2.0))
+      ..curve = Curves.easeInOut
+      ..onFinished = () => _activateSideJiggle();
   }
 
   void changeComponent(SpaceshipAssetModel pref, int index) {

@@ -207,7 +207,14 @@ abstract class DeltaTransform<T, U> extends TransformComponent<T> with LoopCompo
   }
 
   @override
-  void destroy() {}
+  void destroy() {
+    _run = false;
+    onValue = null;
+    onFinished = null;
+
+    _parent?.destroy();
+    _parent = null;
+  }
 }
 
 abstract class DeltaDuration<T> extends DeltaTransform<T, Duration> {
@@ -400,4 +407,13 @@ class DeltaSequence extends DeltaDuration<int> {
     blend = curve.transform(value - index);
     return index;
   }
+}
+
+class DeltaLifetime extends DeltaDuration<double> {
+  DeltaLifetime({
+    super.duration,
+  }) : super(begin: 0.0, end: 1.0);
+
+  @override
+  double lerp(double a, double b, double t) => t;
 }

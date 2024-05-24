@@ -96,8 +96,12 @@ class SceneComponent with ObservableLoopComponent {
     }
   }
 
+  void preTick(double dt) {}
+
   @override
   void tick(double dt) {
+    preTick(dt);
+
     _worldMatrix = null;
     _screenMatrix = null;
 
@@ -133,7 +137,7 @@ class SceneComponent with ObservableLoopComponent {
       return transform.matrix;
     }
 
-    return parent!.screenMatrix.multiplied2DTransform(transform.matrix);
+    return parent!.worldMatrix.multiplied2DTransform(transform.matrix);
   }
 
   Rect getBounds(Size size) {
@@ -162,20 +166,13 @@ class SceneComponent with ObservableLoopComponent {
 
   @override
   void destroy() {
-    super.destroy();
-
     components.forEach((key, value) => value.destroy());
-    dispose();
+    super.destroy();
   }
 
   @override
   void dispose() {
-    if (parent == null) {
-      _loop?.detach(this);
-    } else {
-      parent?.detach(this);
-    }
-
+    removeFromParent();
     super.dispose();
   }
 }

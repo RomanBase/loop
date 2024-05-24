@@ -144,6 +144,8 @@ class BBoxRenderComponent<T extends SceneComponent> extends SceneComponent with 
 
   Size Function(T component) componentSize = (component) => (component is RenderComponent) ? (component as RenderComponent).size : Size.zero;
 
+  Iterable<T> Function()? componentList;
+
   @override
   void onAttach(LoopComponent component) {
     super.onAttach(component);
@@ -164,6 +166,24 @@ class BBoxRenderComponent<T extends SceneComponent> extends SceneComponent with 
 
   @override
   void render(Canvas canvas, Rect rect) {
+    if (componentList != null) {
+      final items = componentList!();
+
+      for (T component in items) {
+        if (shouldRender(component)) {
+          _renderBBox(
+            canvas,
+            '$component',
+            component.screenMatrix,
+            component.transform.origin,
+            componentSize(component),
+          );
+        }
+      }
+
+      return;
+    }
+
     if (_boxParent is LoopScene) {
       // render also scene bounds while rendering generic bounds
       if (shouldRender(SceneActor())) {

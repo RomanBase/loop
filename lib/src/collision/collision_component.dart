@@ -9,7 +9,11 @@ mixin LoopCollisionComponent on SceneComponent {
 
   Rect? _bounds;
 
-  Rect get bounds => _bounds ??= _bBox();
+  Rect get collisionBounds => _bounds ??= _bBox();
+
+  Size? get collisionSize => this is RenderComponent ? (this as RenderComponent).size : null;
+
+  bool get canCollide => active && collisionMask > 0;
 
   Function(LoopCollisionComponent other)? onCollision;
   Function(LoopCollisionComponent other)? onCollisionEnded;
@@ -19,8 +23,8 @@ mixin LoopCollisionComponent on SceneComponent {
     final position = matrix.position2D;
     late Rect rect;
 
-    if (this is RenderComponent) {
-      rect = getBounds((this as RenderComponent).size);
+    if (collisionSize != null) {
+      rect = getBounds(collisionSize!);
     } else {
       rect = Rect.fromLTWH(position.dx, position.dy, 0.0, 0.0);
       final components = findComponents(where: (item) => item is SceneComponent && item is RenderComponent);
@@ -41,7 +45,7 @@ mixin LoopCollisionComponent on SceneComponent {
 
     if (_collisionChild.isNotEmpty) {
       for (final element in _collisionChild) {
-        final other = element.bounds;
+        final other = element.collisionBounds;
         rect = Rect.fromLTRB(
           math.min(rect.left, other.left),
           math.min(rect.top, other.top),
@@ -65,7 +69,7 @@ mixin LoopCollisionComponent on SceneComponent {
   }
 
   bool overlaps(LoopCollisionComponent other) {
-    if (bounds.overlaps(other.bounds)) {
+    if (collisionBounds.overlaps(other.collisionBounds)) {
       return _collisionChild.isEmpty || _collisionChild.any((element) => element.overlaps(other));
     }
 
@@ -79,6 +83,13 @@ mixin LoopCollisionComponent on SceneComponent {
     if (component is LoopCollisionComponent) {
       _collisionChild.add(component);
     }
+  }
+
+  @override
+  void preTick(double dt) {
+    super.preTick(dt);
+
+    _bounds = null;
   }
 
   @override
@@ -100,15 +111,26 @@ mixin LoopCollisionComponent on SceneComponent {
   }
 
   @override
-  void onDetach() {
-    super.onDetach();
-
+  void removeFromParent() {
     if (_collisionParent is LoopCollisionSubsystem) {
       (_collisionParent as LoopCollisionSubsystem).removeCollisionComponent(this);
     }
 
     _collisionParent = null;
+
+    super.removeFromParent();
   }
 }
 
 class LoopCollisionActor extends SceneComponent with LoopCollisionComponent {}
+
+class LoopColliderComponent extends LoopCollisionActor {
+  Size? size;
+
+  LoopColliderComponent({
+    this.size,
+  });
+
+  @override
+  Size? get collisionSize => size ?? (parent is RenderComponent ? (parent as RenderComponent).size : null);
+}

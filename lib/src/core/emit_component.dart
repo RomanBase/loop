@@ -1,5 +1,4 @@
 import 'dart:collection';
-import 'dart:ui';
 
 import 'package:loop/loop.dart';
 
@@ -7,7 +6,9 @@ abstract class ComponentEmitter<T extends LoopComponent> extends SceneComponent 
   final emittedObjects = HashMap<dynamic, T>();
   final _toEmit = HashMap<dynamic, T>();
 
-  void emit(T component, {dynamic slot}) => _toEmit[slot ?? component.hashCode] = component;
+  void emit(T component, {dynamic slot, bool attach = false}) {
+    _toEmit[slot ?? component.hashCode] = component;
+  }
 
   @override
   void onTick(double dt) {

@@ -21,6 +21,7 @@ class MyApp extends StatelessWidget {
         RoutingModule([]),
       ],
       entries: {
+        ControlLoop: MainLoop(),
         AssetFactory: AssetFactory(),
       },
       factories: {
@@ -44,4 +45,8 @@ class MyApp extends StatelessWidget {
       ),
     );
   }
+}
+
+class MainLoop extends ControlLoop with LoopCollisionSubsystem {
+  static MainLoop main() => ControlLoop.main<MainLoop>();
 }

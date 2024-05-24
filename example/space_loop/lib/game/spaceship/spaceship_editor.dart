@@ -7,18 +7,16 @@ import 'package:space_loop/game/spaceship/spaceship.dart';
 final _random = Random();
 
 extension _Hook on CoreElement {
-  LoopScene get loop => use<LoopScene>(value: () => LoopScene()..attach(SpaceshipComponent()))!;
+  LoopScene get loop => use<LoopScene>(
+      value: () => LoopScene()
+        ..mount(ControlLoop.main())
+        ..attach(SpaceshipComponent()))!;
 
   SpaceshipComponent get spaceship => loop.findComponent<SpaceshipComponent>()!;
 }
 
 class SpaceShipEditor extends ControlWidget {
   const SpaceShipEditor({super.key});
-
-  @override
-  void onInit(Map args, CoreContext context) {
-    super.onInit(args, context);
-  }
 
   @override
   Widget build(CoreElement context) {
@@ -54,7 +52,7 @@ class SpaceShipEditor extends ControlWidget {
                       spaceship.config.wing,
                       spaceship.config.wingAlt,
                     ].forEach((e) => spaceship.changeComponent(e, _random.nextInt(e.count))),
-                    icon: Text('all'),
+                    icon: const Text('all'),
                   )
                 ],
               ),

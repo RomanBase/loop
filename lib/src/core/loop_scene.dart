@@ -66,6 +66,7 @@ class LoopScene extends LoopActor with ObservableLoop, RenderComponent, RenderQu
     onTick(dt);
   }
 
+  @override
   void onTick(double dt) {}
 
   @override
@@ -91,6 +92,20 @@ class LoopScene extends LoopActor with ObservableLoop, RenderComponent, RenderQu
   T? findComponent<T extends LoopComponent>({bool Function(T object)? where}) => ComponentLookup.findComponent<T>(items, where);
 
   Iterable<T> findComponents<T extends LoopComponent>({bool Function(T object)? where}) => ComponentLookup.findComponents<T>(items, where);
+
+  T? getSubsystem<T>({bool main = true}) {
+    if (main && _control is T) {
+      return _control as T;
+    }
+
+    if (this is T) {
+      return this as T;
+    }
+
+    printDebug('Subsystem not found: $T');
+
+    return null;
+  }
 
   @override
   void dispose() {

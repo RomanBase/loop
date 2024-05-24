@@ -28,8 +28,6 @@ class InitControl extends InitLoaderControl {
       },
     );
 
-    Asset.instance.printFactoryContent();
-
     return AppState.main;
   }
 

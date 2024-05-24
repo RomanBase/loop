@@ -132,13 +132,17 @@ class ComponentPainter extends CustomPainter {
 }
 
 /// Just for debug
-class BBoxRenderComponent extends SceneComponent with RenderComponent {
+class BBoxRenderComponent<T extends SceneComponent> extends SceneComponent with RenderComponent {
   late LoopComponent _boxParent;
 
   @override
   bool get visibleClip => false;
 
   Color color = Colors.red;
+
+  bool Function(SceneComponent component) shouldRender = (component) => component is T;
+
+  Size Function(T component) componentSize = (component) => (component is RenderComponent) ? (component as RenderComponent).size : Size.zero;
 
   @override
   void onAttach(LoopComponent component) {
@@ -149,8 +153,6 @@ class BBoxRenderComponent extends SceneComponent with RenderComponent {
     if (component is RenderComponent) {
       size = component.size;
     }
-
-    printDebug('BBox ATTACHED to $component');
   }
 
   @override
@@ -163,7 +165,10 @@ class BBoxRenderComponent extends SceneComponent with RenderComponent {
   @override
   void render(Canvas canvas, Rect rect) {
     if (_boxParent is LoopScene) {
-      _renderBBox(canvas, '$_boxParent', Matrix4.identity()..scale((_boxParent as LoopScene).viewport.scale));
+      // render also scene bounds while rendering generic bounds
+      if (shouldRender(SceneActor())) {
+        _renderBBox(canvas, '$_boxParent', Matrix4.identity()..scale((_boxParent as LoopScene).viewport.scale));
+      }
 
       for (final element in (_boxParent as LoopScene).items) {
         if (element is SceneComponent) {
@@ -182,13 +187,13 @@ class BBoxRenderComponent extends SceneComponent with RenderComponent {
       return;
     }
 
-    if (component is RenderComponent) {
+    if (shouldRender(component)) {
       _renderBBox(
         canvas,
         '$component',
         component.screenMatrix,
         component.transform.origin,
-        (component as RenderComponent).size,
+        componentSize(component as T),
       );
     }
 
@@ -216,7 +221,7 @@ class BBoxRenderComponent extends SceneComponent with RenderComponent {
         canvas.drawRect(
           rect,
           Paint()
-            ..color = Colors.red
+            ..color = color
             ..style = PaintingStyle.stroke
             ..strokeWidth = 3.0,
         );

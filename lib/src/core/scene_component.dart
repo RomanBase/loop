@@ -20,6 +20,8 @@ class SceneComponent with ObservableLoopComponent {
 
   bool notifyOnTick = true;
 
+  bool static = false;
+
   void onInit() {}
 
   LoopScene? _initLoop(LoopScene? scene) {
@@ -134,6 +136,16 @@ class SceneComponent with ObservableLoopComponent {
     return parent!.screenMatrix.multiplied2DTransform(transform.matrix);
   }
 
+  Rect getBounds(Size size) {
+    final sx = worldMatrix.scaleX2D;
+    final sy = worldMatrix.scaleY2D;
+
+    final sSize = Size(size.width * sx, size.height * sy);
+    final dstOrigin = Offset(transform.origin.dx * sSize.width, transform.origin.dy * sSize.height);
+
+    return (worldMatrix.position2D - dstOrigin) & sSize;
+  }
+
   T? getComponent<T>([dynamic slot]) {
     final key = slot ?? T;
 
@@ -145,6 +157,8 @@ class SceneComponent with ObservableLoopComponent {
   T? findComponent<T extends LoopComponent>({bool root = false, bool Function(T object)? where}) => ComponentLookup.findComponent<T>(root ? getLoop()!.items : components.values, where);
 
   Iterable<T> findComponents<T extends LoopComponent>({bool root = false, bool Function(T object)? where}) => ComponentLookup.findComponents<T>(root ? getLoop()!.items : components.values, where);
+
+  T? getSubsystem<T>({bool main = true}) => getLoop()?.getSubsystem<T>(main: main);
 
   @override
   void destroy() {

@@ -6,6 +6,8 @@ class ControlLoop with ObservableLoop {
   late final Ticker _ticker;
   final bool lazyRun;
 
+  final children = <LoopComponent>{};
+
   double deltaTime = _targetFrameDelta;
 
   Duration _lastTick = Duration.zero;
@@ -18,14 +20,16 @@ class ControlLoop with ObservableLoop {
     _ticker = Ticker(_tick);
   }
 
-  factory ControlLoop.main() {
+  static T main<T extends ControlLoop>() {
     final instance = Control.get<ControlLoop>();
 
     if (instance != null) {
-      return instance;
+      return instance as T;
     }
 
-    return ControlLoop().._register();
+    final control = ControlLoop().._register();
+
+    return control as T;
   }
 
   void _register() {
@@ -37,7 +41,11 @@ class ControlLoop with ObservableLoop {
     _lastTick = elapsed;
 
     setValue(deltaTime);
+    onTick(value);
   }
+
+  @override
+  void onTick(double dt) {}
 
   void start() {
     if (running) {
@@ -119,6 +127,8 @@ mixin ObservableLoop implements ObservableValue<double>, ObservableNotifier, Dis
   @override
   double get value => _observable.value;
 
+  void onTick(double dt);
+
   void setValue(double value, {bool notify = true}) => _observable.setValue(
         value * timeDilation,
         notify: notify,
@@ -198,10 +208,12 @@ mixin LoopLeaf on LoopComponent implements Disposable {
     assert(!isMounted, 'Can\'t use one Scene for multiple Loops');
 
     _control = loop ?? ControlLoop.main();
-    _sub = _control!.subscribe(tick);
+    _sub = _control?.subscribe(tick);
+    _control?.children.add(this);
   }
 
   void unmount() {
+    _control?.children.remove(this);
     _sub?.dispose();
     _sub = null;
     _control = null;

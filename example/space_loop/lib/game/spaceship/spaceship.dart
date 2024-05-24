@@ -59,7 +59,7 @@ class SpaceshipConfig extends BaseModel with PrefsProvider {
   }
 }
 
-class SpaceshipComponent extends SceneComponent {
+class SpaceshipComponent extends SceneComponent with LoopCollisionComponent {
   final config = SpaceshipConfig();
 
   @override
@@ -87,7 +87,7 @@ class SpaceshipComponent extends SceneComponent {
     }
 
     final random = Random();
-    flame.rotate((random.nextDouble() - 0.5) * math.pi, duration: const Duration(milliseconds: 400), reset: true);
+    flame.rotate((random.nextDouble() - 0.5) * 6.0, duration: const Duration(milliseconds: 400), reset: true);
     flame.scale(Scale(0.75 + 0.25 * random.nextDouble(), 0.75 + 0.5 * random.nextDouble()), duration: Duration(milliseconds: 400 + random.nextInt(300)), reset: true)
       ..curve = Curves.bounceInOut
       ..onFinished = () => _activateFlame(index);
@@ -140,7 +140,7 @@ class SpaceshipComponent extends SceneComponent {
     );
 
     attach(
-      SceneComponent()
+      LoopCollisionActor()
         ..transform.position = const Offset(0.0, -35.0)
         ..attach(Sprite(asset: Asset.get(config.bodyAlt.value))
           ..transform.position = const Offset(-40.0, 0.0)
@@ -153,7 +153,7 @@ class SpaceshipComponent extends SceneComponent {
     );
 
     attach(
-      SceneComponent()
+      LoopCollisionActor()
         ..transform.position = const Offset(0.0, 16.0)
         ..attach(Sprite(asset: Asset.get(config.wing.value))
           ..transform.position = const Offset(-70.0, 0.0)

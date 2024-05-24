@@ -52,7 +52,7 @@ part 'src/renderer/sprite.dart';
 part 'src/ui/fps_view.dart';
 
 ///
-/// TODO: Probably switch everything to Vector2
+/// TODO: Probably switch everything to Vector2 or create custom struct..
 ///
 
 extension Vector2Ext on Vector2 {
@@ -73,6 +73,10 @@ extension SizeExt on Size {
   bool get isOne => width == 1.0 && height == 1.0;
 
   bool get isNegative => width < 0.0 || height < 0.0;
+
+  Size reverse(double rx, [double? ry]) => Size(width * (1.0 / rx), height * (1.0 / (ry ?? rx)));
+
+  Size scale(double rx, [double? ry]) => Size(width * rx, height * (ry ?? rx));
 }
 
 class Scale extends Size {

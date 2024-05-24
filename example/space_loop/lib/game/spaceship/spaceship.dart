@@ -84,6 +84,8 @@ class SpaceshipComponent extends SceneComponent with LoopCollisionComponent {
   }
 
   void build() {
+    transform.scale = const Scale.of(0.5);
+
     attach(Gun()..transform.position = const Offset(0.0, -65.0));
 
     attach(

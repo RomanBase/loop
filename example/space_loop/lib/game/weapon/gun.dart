@@ -2,7 +2,7 @@ import 'package:flutter_control/control.dart';
 import 'package:loop/loop.dart';
 import 'package:space_loop/game/weapon/bullet.dart';
 
-class Gun extends ComponentEmitter<Bullet> with RenderComponent {
+class Gun extends RenderComponentEmitter<Bullet> {
   void fire() => emit(Bullet()..transform.position = worldMatrix.position2D);
 
   @override
@@ -17,15 +17,8 @@ class Gun extends ComponentEmitter<Bullet> with RenderComponent {
     fire();
 
     applyTransform(
-      DeltaLifetime(duration: const Duration(milliseconds: 1200))..onFinished = () => _fire(),
+      DeltaLifetime(duration: const Duration(milliseconds: 100))..onFinished = () => _fire(),
       reset: true,
     );
-  }
-
-  @override
-  void render(Canvas canvas, Rect rect) {
-    emittedObjects.forEach((key, value) {
-      value.render(canvas, rect);
-    });
   }
 }

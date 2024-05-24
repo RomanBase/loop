@@ -19,13 +19,12 @@ mixin LoopCollisionComponent on SceneComponent {
   Function(LoopCollisionComponent other)? onCollisionEnded;
 
   Rect _bBox() {
-    final matrix = worldMatrix;
-    final position = matrix.position2D;
     late Rect rect;
 
     if (collisionSize != null) {
       rect = getBounds(collisionSize!);
     } else {
+      final position = worldMatrix.position2D;
       rect = Rect.fromLTWH(position.dx, position.dy, 0.0, 0.0);
       final components = findComponents(where: (item) => item is SceneComponent && item is RenderComponent);
 

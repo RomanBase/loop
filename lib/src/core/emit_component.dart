@@ -70,3 +70,16 @@ class ComponentEmitter<T extends LoopComponent> extends SceneComponent {
     super.destroy();
   }
 }
+
+class RenderComponentEmitter<T extends RenderComponent> extends ComponentEmitter<T> with RenderComponent, RenderQueue {
+  @override
+  void render(Canvas canvas, Rect rect) {
+    final frame = getLoop()!.frame.value;
+
+    emittedObjects.forEach((key, value) {
+      if (value.isVisible(frame)) {
+        value.render(canvas, rect);
+      }
+    });
+  }
+}

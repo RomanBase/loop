@@ -23,47 +23,44 @@ class SpaceShipEditor extends ControlWidget {
     final spaceship = context.spaceship;
 
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(32.0),
-        child: SceneViewport(
-          width: 400.0,
-          child: Scene(
-            loop: context.loop,
-            children: [
-              const FpsView(),
-              Align(
-                alignment: Alignment.bottomLeft,
-                child: Padding(
-                  padding: const EdgeInsets.all(64.0),
-                  child: Wrap(
-                    children: [
-                      _randomizeComponent(spaceship, spaceship.config.body),
-                      _randomizeComponent(spaceship, spaceship.config.bodySide),
-                      _randomizeComponent(spaceship, spaceship.config.bodyAlt),
-                      _randomizeComponent(spaceship, spaceship.config.cabin),
-                      _randomizeComponent(spaceship, spaceship.config.cabinAlt),
-                      _randomizeComponent(spaceship, spaceship.config.engine),
-                      _randomizeComponent(spaceship, spaceship.config.wing),
-                      _randomizeComponent(spaceship, spaceship.config.wingAlt),
-                      IconButton(
-                        onPressed: () => [
-                          spaceship.config.body,
-                          spaceship.config.bodySide,
-                          spaceship.config.bodyAlt,
-                          spaceship.config.cabin,
-                          spaceship.config.cabinAlt,
-                          spaceship.config.engine,
-                          spaceship.config.wing,
-                          spaceship.config.wingAlt,
-                        ].forEach((e) => spaceship.changeComponent(e, _random.nextInt(e.count))),
-                        icon: const Text('all'),
-                      )
-                    ],
-                  ),
+      body: SceneViewport(
+        width: 400.0,
+        child: Scene(
+          loop: context.loop,
+          children: [
+            const FpsView(),
+            Align(
+              alignment: Alignment.bottomLeft,
+              child: Padding(
+                padding: const EdgeInsets.all(64.0),
+                child: Wrap(
+                  children: [
+                    _randomizeComponent(spaceship, spaceship.config.body),
+                    _randomizeComponent(spaceship, spaceship.config.bodySide),
+                    _randomizeComponent(spaceship, spaceship.config.bodyAlt),
+                    _randomizeComponent(spaceship, spaceship.config.cabin),
+                    _randomizeComponent(spaceship, spaceship.config.cabinAlt),
+                    _randomizeComponent(spaceship, spaceship.config.engine),
+                    _randomizeComponent(spaceship, spaceship.config.wing),
+                    _randomizeComponent(spaceship, spaceship.config.wingAlt),
+                    IconButton(
+                      onPressed: () => [
+                        spaceship.config.body,
+                        spaceship.config.bodySide,
+                        spaceship.config.bodyAlt,
+                        spaceship.config.cabin,
+                        spaceship.config.cabinAlt,
+                        spaceship.config.engine,
+                        spaceship.config.wing,
+                        spaceship.config.wingAlt,
+                      ].forEach((e) => spaceship.changeComponent(e, _random.nextInt(e.count))),
+                      icon: const Text('all'),
+                    )
+                  ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

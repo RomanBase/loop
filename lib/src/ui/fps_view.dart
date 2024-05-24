@@ -27,16 +27,18 @@ class FpsView extends StatelessWidget {
               final box = element.findComponents<BBoxRenderComponent>();
               if (box.isEmpty) {
                 element.attach(BBoxRenderComponent()..color = Colors.red.withOpacity(0.35));
-                if (ticker is LoopCollisionSubsystem || loop is LoopCollisionSubsystem) {
-                  element.attach(BBoxRenderComponent<LoopCollisionComponent>()
-                    ..color = Colors.green
-                    ..componentList = () {
-                      return [
-                        ...(ticker is LoopCollisionSubsystem) ? (ticker as LoopCollisionSubsystem).getCollisionTree() : [],
-                        ...(loop is LoopCollisionSubsystem) ? (loop as LoopCollisionSubsystem).getCollisionTree() : [],
-                      ];
-                    }
-                    ..componentSize = (component) => component.collisionBounds.size);
+                if (element.findComponent<LoopCollisionComponent>() != null) {
+                  element.attach(
+                    BBoxRenderComponent<LoopCollisionComponent>()
+                      ..color = Colors.green
+                      ..componentList = () {
+                        return [
+                          ...(ticker is LoopCollisionSubsystem) ? (ticker as LoopCollisionSubsystem).getCollisionTree() : [],
+                          ...(loop is LoopCollisionSubsystem) ? (loop as LoopCollisionSubsystem).getCollisionTree() : [],
+                        ];
+                      }
+                      ..componentSize = (component) => component.collisionBounds.size.reverse(component.worldMatrix.scaleX2D, component.worldMatrix.scaleY2D),
+                  );
                 }
               } else {
                 for (final element in box) {

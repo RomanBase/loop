@@ -102,7 +102,9 @@ mixin LoopComponent {
 
   void tick(double dt);
 
-  void destroy();
+  void destroy(){
+    active = false;
+  }
 }
 
 /// Concrete implementation of LoopComponent

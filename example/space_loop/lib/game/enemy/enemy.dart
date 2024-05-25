@@ -54,7 +54,7 @@ class Enemy extends Sprite with LoopCollisionComponent {
 }
 
 class EnemyEmitter extends ComponentEmitter<Enemy> {
-  void fire() => emit(Enemy(), attach: true);
+  void fire() => emit(Enemy(), global: true);
 
   @override
   void onInit() {

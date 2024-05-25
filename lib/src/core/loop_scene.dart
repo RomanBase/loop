@@ -1,13 +1,21 @@
 part of '../../loop.dart';
 
+enum ComponentAction {
+  none,
+  create,
+  attach,
+  detach,
+  destroy,
+}
+
 class _ComponentAction {
-  final bool attach;
   final dynamic key;
+  final ComponentAction action;
   final LoopComponent component;
 
   const _ComponentAction({
-    required this.attach,
-    required this.key,
+    this.key,
+    this.action = ComponentAction.none,
     required this.component,
   });
 }
@@ -15,6 +23,8 @@ class _ComponentAction {
 class LoopScene extends LoopActor with ObservableLoop, RenderComponent, RenderQueue, LoopLeaf, PointerDispatcher {
   final viewport = ViewportMatrix();
   final items = <LoopComponent>[];
+  final _actions = <_ComponentAction>[];
+  bool _tickActive = false;
 
   //TODO: custom struct
   /// We don't care about rotation during visibility test, so [framePadding] extends viewport bounds.
@@ -45,16 +55,55 @@ class LoopScene extends LoopActor with ObservableLoop, RenderComponent, RenderQu
   }
 
   void detach(SceneComponent component) {
-    if (component.isMounted && remove(component)) {
+    if (remove(component)) {
       component.onDetach();
 
       notify();
     }
   }
 
-  void add(LoopComponent component) => items.add(component);
+  void add(LoopComponent component) {
+    if (_tickActive) {
+      _actions.add(_ComponentAction(
+        action: ComponentAction.attach,
+        component: component,
+      ));
+      return;
+    }
 
-  bool remove(LoopComponent component) => items.remove(component);
+    items.add(component);
+  }
+
+  bool remove(LoopComponent component) {
+    if (_tickActive) {
+      _actions.add(_ComponentAction(
+        action: ComponentAction.detach,
+        component: component,
+      ));
+
+      return true;
+    }
+
+    return items.remove(component);
+  }
+
+  void preTick(double dt) {
+    if (_actions.isNotEmpty) {
+      for (final element in _actions) {
+        switch (element.action) {
+          case ComponentAction.attach:
+            items.add(element.component);
+            break;
+          case ComponentAction.detach:
+            items.remove(element.component);
+            break;
+          default:
+        }
+      }
+
+      _actions.clear();
+    }
+  }
 
   @override
   void tick(double dt) {
@@ -64,7 +113,9 @@ class LoopScene extends LoopActor with ObservableLoop, RenderComponent, RenderQu
 
     setValue(dt);
     dt = value;
+    preTick(dt);
 
+    _tickActive = true;
     for (final element in items) {
       if (element.active) {
         element.tick(dt);
@@ -74,6 +125,7 @@ class LoopScene extends LoopActor with ObservableLoop, RenderComponent, RenderQu
         }
       }
     }
+    _tickActive = false;
 
     onTick(dt);
   }

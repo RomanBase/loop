@@ -2,17 +2,20 @@ part of '../../loop.dart';
 
 class _ToAttach<T> {
   final T component;
+  final bool local;
   final bool global;
 
   const _ToAttach({
     required this.component,
+    required this.local,
     required this.global,
   });
 
-  void weakInit(ComponentEmitter emitter) {
+  void weakInit(SceneComponent ref) {
     if (component is SceneComponent) {
       (component as SceneComponent)
-        .._loop = emitter.getLoop()
+        ..parent = ref
+        .._loop = ref.getLoop()
         ..onInit();
     }
   }
@@ -22,8 +25,14 @@ class ComponentEmitter<T extends LoopComponent> extends SceneComponent {
   final emittedObjects = HashMap<dynamic, T>();
   final _toEmit = HashMap<dynamic, _ToAttach>();
 
-  void emit(T component, {dynamic slot, bool attach = false}) {
-    _toEmit[slot ?? component.hashCode] = _ToAttach(component: component, global: attach);
+  late final _weakRef = WeakSceneComponent(ref: this);
+
+  void emit(T component, {dynamic slot, bool local = false, bool global = false}) {
+    _toEmit[slot ?? component.hashCode] = _ToAttach(
+      component: component,
+      local: local,
+      global: global,
+    );
   }
 
   @override
@@ -34,9 +43,11 @@ class ComponentEmitter<T extends LoopComponent> extends SceneComponent {
       _toEmit.forEach((key, value) {
         if (value.global) {
           getLoop()?.attach(value.component);
+        } else if (value.local) {
+          attach(value.component, slot: key);
         } else {
           emittedObjects[key] = value.component;
-          value.weakInit(this);
+          value.weakInit(_weakRef);
         }
       });
       _toEmit.clear();

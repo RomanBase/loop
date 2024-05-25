@@ -56,7 +56,7 @@ class Bullet extends Sprite with LoopCollisionComponent {
   }
 
   @override
-  String toString() => '$index';
+  String toString() => 'B$index';
 
   int index = _counter++;
 }

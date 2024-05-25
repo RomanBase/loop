@@ -82,6 +82,9 @@ class SceneComponent with ObservableLoopComponent {
     } else {
       parent?.detach(this);
     }
+
+    _loop = null;
+    parent = null;
   }
 
   void attach(LoopComponent component, {dynamic slot}) {
@@ -179,4 +182,13 @@ class SceneComponent with ObservableLoopComponent {
     removeFromParent();
     super.dispose();
   }
+}
+
+class WeakSceneComponent<T extends SceneComponent> extends SceneComponent {
+  final T ref;
+
+  WeakSceneComponent({required this.ref});
+
+  @override
+  LoopScene? getLoop() => ref.getLoop();
 }

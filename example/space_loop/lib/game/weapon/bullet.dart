@@ -18,7 +18,7 @@ class Bullet extends Sprite with LoopCollisionComponent {
   void onInit() {
     super.onInit();
 
-    lifetime(const Duration(seconds: 3));
+    applyLifetime(const Duration(seconds: 3));
   }
 
   @override

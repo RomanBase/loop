@@ -201,15 +201,15 @@ class SpaceshipComponent extends SceneComponent with LoopCollisionComponent {
     }
 
     final random = Random();
-    flame.rotate((random.nextDouble() - 0.5) * 6.0, duration: const Duration(milliseconds: 400), reset: true);
-    flame.scale(Scale(0.75 + 0.25 * random.nextDouble(), 0.75 + 0.5 * random.nextDouble()), duration: Duration(milliseconds: 400 + random.nextInt(300)), reset: true)
+    flame.applyRotate((random.nextDouble() - 0.5) * 6.0, duration: const Duration(milliseconds: 400), reset: true);
+    flame.applyScale(Scale(0.75 + 0.25 * random.nextDouble(), 0.75 + 0.5 * random.nextDouble()), duration: Duration(milliseconds: 400 + random.nextInt(300)), reset: true)
       ..curve = Curves.bounceInOut
       ..onFinished = () => _activateFlame(index);
   }
 
   void _activateSideJiggle() {
     final random = Random();
-    translate(getLoop()!.size.bottomCenter(const Offset(0.0, -200)) + Offset(64.0 * (random.nextDouble() - 0.5) * 2.0, 32.0 * (random.nextDouble() - 0.5) * 2.0))
+    applyTranslate(getLoop()!.size.bottomCenter(const Offset(0.0, -200)) + Offset(64.0 * (random.nextDouble() - 0.5) * 2.0, 32.0 * (random.nextDouble() - 0.5) * 2.0))
       ..curve = Curves.easeInOut
       ..onFinished = () => _activateSideJiggle();
   }
@@ -228,30 +228,30 @@ class SpaceshipComponent extends SceneComponent with LoopCollisionComponent {
       final originScale = element.transform.scale;
       final originPosition = element.transform.position;
 
-      element.scale(const Scale.of(3.0) & originScale, duration: const Duration(milliseconds: 300), reset: true)
+      element.applyScale(const Scale.of(3.0) & originScale, duration: const Duration(milliseconds: 300), reset: true)
         ..curve = Curves.ease
         ..onFinished = () {
           element.asset = Asset.get(pref.value);
           element.setDefaultSize();
-          element.scale(originScale, duration: const Duration(milliseconds: 500)).curve = Curves.easeInQuad;
+          element.applyScale(originScale, duration: const Duration(milliseconds: 500)).curve = Curves.easeInQuad;
         };
 
-      element.opacity(0.0, duration: const Duration(milliseconds: 300), reset: true)
+      element.applyOpacity(0.0, duration: const Duration(milliseconds: 300), reset: true)
         ..until(hold: WaitCondition(duration: const Duration(milliseconds: 100)))
         ..curve = Curves.ease;
-      element.opacity(1.0, duration: const Duration(milliseconds: 400))
+      element.applyOpacity(1.0, duration: const Duration(milliseconds: 400))
         ..until(hold: WaitCondition(duration: const Duration(milliseconds: 100)))
         ..curve = Curves.easeInQuad
         ..onValue = (value) => element.alpha = value;
 
-      element.translate(Offset(originPosition.dx * 5.0, originPosition.dy * 3.0), duration: const Duration(milliseconds: 200)).curve = Curves.ease;
-      element.translate(originPosition, duration: const Duration(milliseconds: 600)).curve = Curves.easeInQuad;
+      element.applyTranslate(Offset(originPosition.dx * 5.0, originPosition.dy * 3.0), duration: const Duration(milliseconds: 200)).curve = Curves.ease;
+      element.applyTranslate(originPosition, duration: const Duration(milliseconds: 600)).curve = Curves.easeInQuad;
     }
 
     if (component is! Sprite) {
       final originPosition = component.transform.position;
-      component.translate(Offset(originPosition.dx, originPosition.dy * 3.0), duration: const Duration(milliseconds: 200)).curve = Curves.ease;
-      component.translate(originPosition, duration: const Duration(milliseconds: 600)).curve = Curves.easeInQuad;
+      component.applyTranslate(Offset(originPosition.dx, originPosition.dy * 3.0), duration: const Duration(milliseconds: 200)).curve = Curves.ease;
+      component.applyTranslate(originPosition, duration: const Duration(milliseconds: 600)).curve = Curves.easeInQuad;
     }
 
     pref.value = pref.getAsset(index);

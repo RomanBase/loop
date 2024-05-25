@@ -125,7 +125,7 @@ class SceneComponentState extends State<SceneComponentWidget> {
       origin: component.transform.origin,
       filterQuality: widget.filterQuality,
       child: Opacity(
-        opacity: component.deltaOpacity ?? 1.0,
+        opacity: component.getComponent<DeltaOpacity>()?.value ?? 1.0,
         child: widget.build(context, component._loop!.value),
       ),
     );

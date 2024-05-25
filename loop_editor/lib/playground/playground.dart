@@ -24,15 +24,15 @@ extension _PlaygroundComponent on CoreContext {
           ..zIndex = -1
           ..size = const Size(64.0, 64.0)
           ..transform.origin = Offset.zero
-          ..translate(const Offset(240.0, 240.0))
-          ..updateDeltaLoopBehavior(LoopBehavior.loop));
+          ..applyTranslate(const Offset(240.0, 240.0))
+          ..applyDeltaLoopBehavior(LoopBehavior.loop));
 
         loop.attach(Sprite(asset: Asset.get('placeholder'))
           ..tag = 'group_0'
           ..size = const Size(32.0, 32.0)
-          ..translate(const Offset(240.0, 240.0), begin: const Offset(240.0, 120.0))
-          ..rotate(360.0)
-          ..scale(const Scale.of(3.0))
+          ..applyTranslate(const Offset(240.0, 240.0), begin: const Offset(240.0, 120.0))
+          ..applyRotate(360.0)
+          ..applyScale(const Scale.of(3.0))
           ..attach(Sprite(asset: Asset.get('placeholder'))
             ..tag = 'group_1'
             ..size = const Size(24.0, 24.0)
@@ -41,10 +41,10 @@ extension _PlaygroundComponent on CoreContext {
               ..tag = 'group_2'
               ..size = const Size(16.0, 16.0)
               ..transform.position = const Offset(20.0, 0.0)
-              ..translate(const Offset(64.0, 0.0)).setLoopBehavior(LoopBehavior.reverseLoop)
-              ..scale(const Scale.of(2.0)).setLoopBehavior(LoopBehavior.reverseLoop)
-              ..rotate(360).setLoopBehavior(LoopBehavior.reverseLoop)))
-          ..updateDeltaLoopBehavior(LoopBehavior.reverseLoop));
+              ..applyTranslate(const Offset(64.0, 0.0)).setLoopBehavior(LoopBehavior.reverseLoop)
+              ..applyScale(const Scale.of(2.0)).setLoopBehavior(LoopBehavior.reverseLoop)
+              ..applyRotate(360).setLoopBehavior(LoopBehavior.reverseLoop)))
+          ..applyDeltaLoopBehavior(LoopBehavior.reverseLoop));
 
         loop.attach(Sprite(
           asset: Asset.get('mc'),
@@ -59,8 +59,8 @@ extension _PlaygroundComponent on CoreContext {
         )
           ..tag = 'fire'
           ..transform.position = const Offset(320.0, 320.0)
-          ..translate(const Offset(320.0, 280.0)).setLoopBehavior(LoopBehavior.loop)
-          ..scale(const Scale.of(2.0)).setLoopBehavior(LoopBehavior.loop));
+          ..applyTranslate(const Offset(320.0, 280.0)).setLoopBehavior(LoopBehavior.loop)
+          ..applyScale(const Scale.of(2.0)).setLoopBehavior(LoopBehavior.loop));
 
         loop.attach(DragSprite());
 
@@ -77,12 +77,12 @@ extension _PlaygroundComponent on CoreContext {
         final s = 1.0 + r.nextInt(2);
 
         c.transform.origin = const Offset(32.0, 32.0);
-        c.translate(Offset(x, 0.0), begin: Offset(x, UITheme.device.height), duration: d);
-        c.rotate(r.nextDouble() * 720.0, duration: d);
-        c.scale(Scale.of(s), duration: d);
-        c.color(Color(r.nextInt(4294967295)), begin: Color(r.nextInt(4294967295)), duration: d);
+        c.applyTranslate(Offset(x, 0.0), begin: Offset(x, UITheme.device.height), duration: d);
+        c.applyRotate(r.nextDouble() * 720.0, duration: d);
+        c.applyScale(Scale.of(s), duration: d);
+        c.applyColor(Color(r.nextInt(4294967295)), begin: Color(r.nextInt(4294967295)), duration: d);
 
-        c.updateDeltaLoopBehavior(LoopBehavior.loop);
+        c.applyDeltaLoopBehavior(LoopBehavior.loop);
 
         return c;
       })!;
@@ -96,12 +96,12 @@ class Playground extends ControlWidget {
     super.onInit(args, context);
 
     context.c1
-      ..translate(Offset(320.0, UITheme.device.height * 0.5), duration: const Duration(seconds: 2)).curve = Curves.easeOutQuad
-      ..translate(Offset(120.0, UITheme.device.height * 0.5)).curve = Curves.easeInCubic
-      ..translate(Offset(120.0, UITheme.device.height * 0.65))
-      ..scale(const Scale(4.0, 2.0))
-      ..scale(const Scale(3.0, 3.0))
-      ..scale(const Scale(1.0, 1.0));
+      ..applyTranslate(Offset(320.0, UITheme.device.height * 0.5), duration: const Duration(seconds: 2)).curve = Curves.easeOutQuad
+      ..applyTranslate(Offset(120.0, UITheme.device.height * 0.5)).curve = Curves.easeInCubic
+      ..applyTranslate(Offset(120.0, UITheme.device.height * 0.65))
+      ..applyScale(const Scale(4.0, 2.0))
+      ..applyScale(const Scale(3.0, 3.0))
+      ..applyScale(const Scale(1.0, 1.0));
 
     context.c1.getComponent<DeltaPosition>()?.setReverse(true);
     context.c1.getComponent<DeltaPosition>()?.setLoopBehavior(LoopBehavior.reverseLoop);
@@ -109,25 +109,25 @@ class Playground extends ControlWidget {
 
     context.c2
       ..transform.origin = const Offset(24.0, 24.0)
-      ..translate(Offset(UITheme.device.width * 0.5, UITheme.device.height * 0.25))
-      ..translate(Offset(UITheme.device.width * 0.75, UITheme.device.height * 0.25)).until(
+      ..applyTranslate(Offset(UITheme.device.width * 0.5, UITheme.device.height * 0.25))
+      ..applyTranslate(Offset(UITheme.device.width * 0.75, UITheme.device.height * 0.25)).until(
         postpone: WaitCondition(duration: const Duration(milliseconds: 1000)),
         hold: CycleCondition(cycles: 2),
         loopHold: LoopBehavior.reverseLoop,
       )
-      ..translate(Offset(UITheme.device.width * 0.85, UITheme.device.height * 0.65))
-      ..scale(const Scale(3.0, 2.0))
-      ..scale(const Scale(1.5, 1.5))
-      ..scale(const Scale(0.5, 1.0))
-      ..opacity(0.25)
-      ..opacity(0.25)
-      ..opacity(1.0)
-      ..color(Colors.lightBlueAccent, begin: Colors.black)
-      ..color(Colors.greenAccent)
-      ..color(Colors.orangeAccent)
-      ..rotate(360.0);
+      ..applyTranslate(Offset(UITheme.device.width * 0.85, UITheme.device.height * 0.65))
+      ..applyScale(const Scale(3.0, 2.0))
+      ..applyScale(const Scale(1.5, 1.5))
+      ..applyScale(const Scale(0.5, 1.0))
+      ..applyOpacity(0.25)
+      ..applyOpacity(0.25)
+      ..applyOpacity(1.0)
+      ..applyColor(Colors.lightBlueAccent, begin: Colors.black)
+      ..applyColor(Colors.greenAccent)
+      ..applyColor(Colors.orangeAccent)
+      ..applyRotate(360.0);
 
-    context.c2.updateDeltaLoopBehavior(LoopBehavior.reverseLoop);
+    context.c2.applyDeltaLoopBehavior(LoopBehavior.reverseLoop);
     context.c2.getComponent<DeltaRotation>()?.setLoopBehavior(LoopBehavior.loop);
   }
 
@@ -167,7 +167,7 @@ class Playground extends ControlWidget {
                     builder: (_, dt) => Container(
                       width: 48.0,
                       height: 48.0,
-                      color: context.c2.deltaColor,
+                      color: context.c2.getComponent<DeltaColor>()?.value,
                     ),
                   ),
                 ],
@@ -211,7 +211,7 @@ class PerformanceTest extends ControlWidget {
                     child: Container(
                       width: 64.0,
                       height: 64.0,
-                      color: context[index].deltaColor,
+                      color: context[index].getComponent<DeltaColor>()?.value,
                       child: Center(
                         child: Image.asset(
                           'assets/placeholder.png',
@@ -233,7 +233,7 @@ class PerformanceTest extends ControlWidget {
           builder: (_, dt) => Container(
             width: 24.0,
             height: 24.0,
-            color: context[index].deltaColor,
+            color: context[index].getComponent<DeltaColor>()?.value,
             child: Center(
               child: Text('$index'),
             ),

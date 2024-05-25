@@ -1,18 +1,6 @@
 part of '../../loop.dart';
 
-extension SceneComponentDelta on SceneComponent {
-  Offset? get deltaOffset => getComponent<DeltaPosition>()?.value;
-
-  Scale? get deltaScale => getComponent<DeltaScale>()?.value;
-
-  double? get deltaRotation => getComponent<DeltaRotation>()?.value;
-
-  Color? get deltaColor => getComponent<DeltaColor>()?.value;
-
-  double? get deltaOpacity => getComponent<DeltaOpacity>()?.value;
-
-  Offset? get deltaCurve => getComponent<DeltaCurve>()?.value;
-
+extension SceneComponentDeltaTransform on SceneComponent {
   T applyTransform<T extends DeltaTransform>(T transform, {bool reset = false}) {
     final key = T == dynamic ? transform.runtimeType : T;
 
@@ -26,7 +14,7 @@ extension SceneComponentDelta on SceneComponent {
     return components[key] as T;
   }
 
-  DeltaPosition translate(Offset location, {Offset? begin, Duration duration = const Duration(seconds: 1), bool reset = false}) {
+  DeltaPosition applyTranslate(Offset location, {Offset? begin, Duration duration = const Duration(seconds: 1), bool reset = false}) {
     return applyTransform(
       DeltaPosition(
         duration: duration,
@@ -37,7 +25,7 @@ extension SceneComponentDelta on SceneComponent {
     );
   }
 
-  DeltaScale scale(Scale scale, {Scale? begin, Duration duration = const Duration(seconds: 1), bool reset = false}) {
+  DeltaScale applyScale(Scale scale, {Scale? begin, Duration duration = const Duration(seconds: 1), bool reset = false}) {
     return applyTransform(
       DeltaScale(
         duration: duration,
@@ -48,7 +36,7 @@ extension SceneComponentDelta on SceneComponent {
     );
   }
 
-  DeltaRotation rotate(double degree, {double? begin, Duration duration = const Duration(seconds: 1), bool reset = false}) {
+  DeltaRotation applyRotate(double degree, {double? begin, Duration duration = const Duration(seconds: 1), bool reset = false}) {
     return applyTransform(
       DeltaRotation(
         duration: duration,
@@ -59,7 +47,7 @@ extension SceneComponentDelta on SceneComponent {
     );
   }
 
-  DeltaOpacity opacity(double opacity, {double begin = 1.0, Duration duration = const Duration(seconds: 1), bool reset = false}) {
+  DeltaOpacity applyOpacity(double opacity, {double begin = 1.0, Duration duration = const Duration(seconds: 1), bool reset = false}) {
     return applyTransform(
       DeltaOpacity(
         duration: duration,
@@ -70,7 +58,7 @@ extension SceneComponentDelta on SceneComponent {
     );
   }
 
-  DeltaColor color(Color color, {Color begin = Colors.white, Duration duration = const Duration(seconds: 1), bool reset = false}) {
+  DeltaColor applyColor(Color color, {Color begin = Colors.white, Duration duration = const Duration(seconds: 1), bool reset = false}) {
     return applyTransform(
       DeltaColor(
         duration: duration,
@@ -81,7 +69,7 @@ extension SceneComponentDelta on SceneComponent {
     );
   }
 
-  DeltaCurve curve(Offset location, Offset controlPoint, {Offset begin = Offset.zero, Duration duration = const Duration(seconds: 1), bool reset = false}) {
+  DeltaCurve applyCurve(Offset location, Offset controlPoint, {Offset begin = Offset.zero, Duration duration = const Duration(seconds: 1), bool reset = false}) {
     return applyTransform(
       DeltaCurve(
         duration: duration,
@@ -93,7 +81,7 @@ extension SceneComponentDelta on SceneComponent {
     );
   }
 
-  DeltaLifetime lifetime(Duration duration, {bool reset = false}) {
+  DeltaLifetime applyLifetime(Duration duration, {bool reset = false}) {
     return applyTransform(
       DeltaLifetime(
         duration: duration,
@@ -102,7 +90,7 @@ extension SceneComponentDelta on SceneComponent {
     );
   }
 
-  void updateDeltaLoopBehavior(LoopBehavior loop) {
+  void applyDeltaLoopBehavior(LoopBehavior loop) {
     components.forEach((key, value) {
       if (value is DeltaTransform) {
         value.setLoopBehavior(loop);
@@ -110,7 +98,7 @@ extension SceneComponentDelta on SceneComponent {
     });
   }
 
-  void updateDeltaLoopReversion(bool reverse) {
+  void applyDeltaLoopReversion(bool reverse) {
     components.forEach((key, value) {
       if (value is DeltaTransform) {
         value.setReverse(reverse);

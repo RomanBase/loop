@@ -17,7 +17,7 @@ class Gun extends RenderComponentEmitter<Bullet> {
     fire();
 
     applyTransform(
-      DeltaLifetime(duration: const Duration(milliseconds: 100))..onFinished = () => _fire(),
+      DeltaLifetime(duration: const Duration(milliseconds: 500))..onFinished = () => _fire(),
       reset: true,
     );
   }

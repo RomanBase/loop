@@ -38,16 +38,6 @@ mixin RenderComponent on LoopComponent {
   }
 
   void render(Canvas canvas, Rect rect);
-
-  void renderComponent(Canvas canvas, SceneComponent component, void Function(Rect dst) render) {
-    canvas.renderRotated(
-      screenBounds,
-      Offset(screenBounds.width * component.transform.origin.dx, screenBounds.height * component.transform.origin.dy),
-      component.screenMatrix.angle2D,
-      component.transform.scale,
-      render,
-    );
-  }
 }
 
 mixin RenderQueue {
@@ -67,3 +57,5 @@ mixin RenderQueue {
     _renderQueue.clear();
   }
 }
+
+abstract class RenderActor extends LoopActor with RenderComponent {}

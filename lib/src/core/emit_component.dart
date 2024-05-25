@@ -2,11 +2,11 @@ part of '../../loop.dart';
 
 class _ToAttach<T> {
   final T component;
-  final bool attach;
+  final bool global;
 
   const _ToAttach({
     required this.component,
-    required this.attach,
+    required this.global,
   });
 
   void weakInit(ComponentEmitter emitter) {
@@ -23,7 +23,7 @@ class ComponentEmitter<T extends LoopComponent> extends SceneComponent {
   final _toEmit = HashMap<dynamic, _ToAttach>();
 
   void emit(T component, {dynamic slot, bool attach = false}) {
-    _toEmit[slot ?? component.hashCode] = _ToAttach(component: component, attach: attach);
+    _toEmit[slot ?? component.hashCode] = _ToAttach(component: component, global: attach);
   }
 
   @override
@@ -32,8 +32,8 @@ class ComponentEmitter<T extends LoopComponent> extends SceneComponent {
 
     if (_toEmit.isNotEmpty) {
       _toEmit.forEach((key, value) {
-        if (value.attach) {
-          attach(value.component, slot: key);
+        if (value.global) {
+          getLoop()?.attach(value.component);
         } else {
           emittedObjects[key] = value.component;
           value.weakInit(this);

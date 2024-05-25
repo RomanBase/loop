@@ -1,7 +1,7 @@
 import 'package:flutter_control/control.dart';
 import 'package:loop/loop.dart';
 
-class Mouse extends SceneComponent with RenderComponent, PointerComponent {
+class Mouse extends SceneActor with PointerComponent {
   Mouse() {
     zIndex = 999;
     pointer.primary = true;
@@ -11,7 +11,7 @@ class Mouse extends SceneComponent with RenderComponent, PointerComponent {
 
   @override
   void render(Canvas canvas, Rect rect) {
-    renderComponent(canvas, this, (dst) {
+    canvas.renderComponent(canvas, this, (dst) {
       canvas.drawCircle(dst.center, dst.width * 0.5, Paint()..color = pointer.isDown ? Colors.blue : Colors.black);
 
       final text = TextPainter(

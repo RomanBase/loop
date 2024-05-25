@@ -1,6 +1,16 @@
 part of '../../loop.dart';
 
 extension CanvasRender on Canvas {
+  void renderComponent(Canvas canvas, SceneActor component, void Function(Rect dst) render) {
+    canvas.renderRotated(
+      component.screenBounds,
+      Offset(component.screenBounds.width * component.transform.origin.dx, component.screenBounds.height * component.transform.origin.dy),
+      component.screenMatrix.angle2D,
+      component.transform.scale,
+      render,
+    );
+  }
+
   void renderRotated(Rect rect, Offset origin, double rotation, Scale scale, void Function(Rect dst) render) {
     if (rotation == 0.0 && !scale.isNegative) {
       render(rect);
@@ -186,7 +196,7 @@ class BBoxRenderComponent<T extends SceneComponent> extends SceneComponent with 
 
     if (_boxParent is LoopScene) {
       // render also scene bounds while rendering generic bounds
-      if (shouldRender(SceneActor())) {
+      if (shouldRender(EmptySceneActor())) {
         _renderBBox(canvas, '$_boxParent', Matrix4.identity()..scale((_boxParent as LoopScene).viewport.scale));
       }
 

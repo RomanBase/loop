@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter_control/control.dart';
 import 'package:loop/loop.dart';
+import 'package:space_loop/game/enemy/enemy.dart';
 import 'package:space_loop/game/spaceship/spaceship.dart';
 
 final _random = Random();
@@ -10,9 +11,10 @@ extension _Hook on CoreElement {
   LoopScene get loop => use<LoopScene>(
       value: () => LoopScene()
         ..mount(ControlLoop.main())
-        ..attach(SpaceshipComponent()))!;
+        ..attach(Spaceship())
+        ..attach(EnemyEmitter()))!;
 
-  SpaceshipComponent get spaceship => loop.findComponent<SpaceshipComponent>()!;
+  Spaceship get spaceship => loop.findComponent<Spaceship>()!;
 }
 
 class SpaceShipEditor extends ControlWidget {
@@ -66,7 +68,7 @@ class SpaceShipEditor extends ControlWidget {
     );
   }
 
-  Widget _randomizeComponent(SpaceshipComponent spaceship, SpaceshipAssetModel model) => IconButton(
+  Widget _randomizeComponent(Spaceship spaceship, SpaceshipAssetModel model) => IconButton(
         onPressed: () => spaceship.changeComponent(model, _random.nextInt(model.count)),
         icon: Text(model.key),
       );

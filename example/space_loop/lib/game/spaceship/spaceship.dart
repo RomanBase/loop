@@ -60,7 +60,7 @@ class SpaceshipConfig extends BaseModel with PrefsProvider {
   }
 }
 
-class SpaceshipComponent extends SceneComponent with LoopCollisionComponent {
+class Spaceship extends SceneComponent with LoopCollisionComponent {
   final config = SpaceshipConfig();
 
   @override

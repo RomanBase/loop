@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter_control/control.dart';
 import 'package:loop/loop.dart';
+import 'package:space_loop/game/enemy/enemy.dart';
 
 class Bullet extends Sprite with LoopCollisionComponent {
   double speed = -500.0;
@@ -18,7 +19,12 @@ class Bullet extends Sprite with LoopCollisionComponent {
   void onInit() {
     super.onInit();
 
-    applyLifetime(const Duration(seconds: 3));
+    applyLifetime(const Duration(seconds: 2));
+    applyScale(
+      const Scale.of(1.0),
+      begin: const Scale.of(0.25),
+      duration: const Duration(milliseconds: 300),
+    );
   }
 
   @override
@@ -32,7 +38,21 @@ class Bullet extends Sprite with LoopCollisionComponent {
   void onBeginOverlap(LoopCollisionComponent other) {
     super.onBeginOverlap(other);
 
-    //printDebug('$this overlap $other');
+    if (other is Enemy) {
+      collisionMask = 0;
+
+      applyScale(
+        const Scale.of(2.0),
+        begin: transform.scale,
+        reset: true,
+        duration: const Duration(milliseconds: 100),
+      ).onFinished = () => destroy();
+
+      applyOpacity(
+        0.0,
+        duration: const Duration(milliseconds: 100),
+      ).onValue = (value) => alpha = value;
+    }
   }
 
   @override

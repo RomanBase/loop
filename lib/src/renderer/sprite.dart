@@ -43,7 +43,7 @@ class SpriteAction {
   Rect sheet(int index) => Rect.zero;
 }
 
-class Sprite extends SceneComponent with RenderComponent {
+class Sprite extends SceneActor {
   late ui.Image asset;
   final Map<String, SpriteAction> actions;
 
@@ -91,7 +91,7 @@ class Sprite extends SceneComponent with RenderComponent {
 
   @override
   void render(Canvas canvas, Rect rect) {
-    renderComponent(canvas, this, (dst) {
+    canvas.renderComponent(canvas, this, (dst) {
       if (action != null && action!.blend != null && !sequence.atEdge) {
         canvas.drawImageRect(
           asset,

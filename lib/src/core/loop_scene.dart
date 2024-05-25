@@ -1,5 +1,17 @@
 part of '../../loop.dart';
 
+class _ComponentAction {
+  final bool attach;
+  final dynamic key;
+  final LoopComponent component;
+
+  const _ComponentAction({
+    required this.attach,
+    required this.key,
+    required this.component,
+  });
+}
+
 class LoopScene extends LoopActor with ObservableLoop, RenderComponent, RenderQueue, LoopLeaf, PointerDispatcher {
   final viewport = ViewportMatrix();
   final items = <LoopComponent>[];

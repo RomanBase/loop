@@ -43,7 +43,7 @@ class MyApp extends StatelessWidget {
       ),
       states: [
         AppState.init.build((context) => InitLoader.of(builder: (_) => Container())),
-        AppState.main.build((context) => const Playground()),
+        AppState.main.build((context) => const Editor()),
       ],
       builder: (context, home) => MaterialApp(
         title: 'Flutter Demo',

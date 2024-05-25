@@ -64,6 +64,10 @@ class SceneComponent with ObservableLoopComponent {
 
     if (component is SceneComponent) {
       parent = component;
+
+      if (parent!.isMounted) {
+        _initLoop(parent!._loop);
+      }
     }
   }
 

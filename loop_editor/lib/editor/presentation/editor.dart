@@ -1,6 +1,14 @@
 import 'package:flutter_control/control.dart';
+import 'package:loop/loop.dart';
+import 'package:loop_editor/editor/control/editor_loop.dart';
 import 'package:loop_editor/editor/presentation/editor_tree.dart';
 import 'package:loop_editor/resources/theme.dart';
+
+extension _EditorHook on CoreContext {
+  EditorLoop get control => use(value: () => EditorLoop())!;
+
+  EditorScene get loop => use(value: () => EditorScene()..mount(control))!;
+}
 
 class Editor extends ControlWidget {
   const Editor({super.key});
@@ -26,8 +34,12 @@ class Editor extends ControlWidget {
                   color: theme.scheme.primaryContainer,
                   child: const EditorTree(),
                 ),
-                const Expanded(
-                  child: EditorFrame(),
+                Expanded(
+                  child: EditorFrame(
+                    loop: context.loop,
+                    width: 400.0,
+                    height: 800.0,
+                  ),
                 ),
                 Container(
                   width: 240.0,
@@ -44,59 +56,43 @@ class Editor extends ControlWidget {
 }
 
 class EditorFrame extends ControlWidget {
-  final Size bounds;
-  final Size size;
+  final double? width;
+  final double? height;
+  final EditorScene loop;
 
   const EditorFrame({
     super.key,
-    this.size = const Size(360.0, 820.0),
-    this.bounds = const Size(2048.0, 2048.0),
+    required this.loop,
+    this.width,
+    this.height,
   });
 
   @override
   Widget build(CoreElement context) {
     final theme = context.theme;
-    final matrix = context.value<Matrix4>(value: Matrix4.identity(), stateNotifier: true);
 
-    return Stack(
-      children: [
-        GestureDetector(
-          onHorizontalDragUpdate: (event) {
-            matrix.value!.translate(event.delta.dx, event.delta.dy);
-            context.notifyState();
-          },
-          onVerticalDragUpdate: (event) {
-            matrix.value!.translate(event.delta.dx, event.delta.dy);
-            context.notifyState();
-          },
-          child: Container(
-            clipBehavior: Clip.hardEdge,
-            decoration: BoxDecoration(
-              color: theme.scheme.tertiaryContainer,
-            ),
-            child: Center(
-              child: Transform(
-                transform: matrix.value!,
-                child: Container(
-                  width: size.width,
-                  height: size.height,
-                  color: theme.scheme.surfaceVariant,
-                ),
+    return Container(
+      color: theme.scheme.tertiaryContainer,
+      child: Stack(
+        children: [
+          Center(
+            child: Container(
+              width: width,
+              height: height,
+              color: Colors.white,
+              child: Scene(
+                loop: loop,
+                width: width,
+                height: height,
               ),
             ),
           ),
-        ),
-        Align(
-          alignment: Alignment.topRight,
-          child: Padding(
-            padding: const EdgeInsets.all(UISize.half),
-            child: Text(
-              '${size.width} x ${size.height}',
-              style: theme.font.bodySmall,
-            ),
+          FpsView(
+            alignment: Alignment.topRight,
+            control: loop.control,
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

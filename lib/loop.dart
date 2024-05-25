@@ -41,6 +41,8 @@ part 'src/core/transform_component.dart';
 
 part 'src/core/transform_matrix.dart';
 
+part 'src/io/pointer.dart';
+
 part 'src/renderer/builder.dart';
 
 part 'src/renderer/canvas.dart';

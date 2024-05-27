@@ -10,7 +10,10 @@ class Enemy extends Sprite with LoopCollisionComponent {
   @override
   int get collisionMask => 0x0011;
 
-  Enemy() : super(asset: Asset.get('mine_0${1 + Random().nextInt(5)}'));
+  Enemy() : super(asset: Asset.get('mine_0${1 + Random().nextInt(5)}')) {
+    //spawn offscreen
+    transform.position = const Offset(0.0, -1000.0);
+  }
 
   @override
   void onInit() {

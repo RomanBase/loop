@@ -97,7 +97,7 @@ class ControlLoop with ObservableLoop {
 
 /// Base tick component.
 mixin LoopComponent {
-  String tag = '';
+  late String tag = '$runtimeType';
   bool active = true;
 
   void tick(double dt);

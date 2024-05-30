@@ -185,11 +185,12 @@ abstract class DeltaTransform<T, U> extends TransformComponent<T> with LoopCompo
     state.reset();
     _overflowDelta = 0.0;
     componentValue = reverse ? end : begin;
-    _run = true;
 
     if (!local) {
       _parent?.reset();
     }
+
+    _run = true;
   }
 
   void until({StateCondition<DeltaTransform<T, U>>? postpone, StateCondition<DeltaTransform<T, U>>? hold, LoopBehavior loopHold = LoopBehavior.none}) {
@@ -355,8 +356,8 @@ class DeltaCurve extends DeltaDuration<Offset> {
     final rr = r * r;
 
     return Offset(
-      rr * a.dx + rt2 * b.dx + tt * cp.dx,
-      rr * a.dy + rt2 * b.dy + tt * cp.dy,
+      rr * a.dx + rt2 * cp.dx + tt * b.dx,
+      rr * a.dy + rt2 * cp.dy + tt * b.dy,
     );
   }
 }

@@ -24,8 +24,8 @@ extension _PlaygroundComponent on CoreContext {
           ..zIndex = -1
           ..size = const Size(64.0, 64.0)
           ..transform.origin = Offset.zero
-          ..applyTranslate(const Offset(240.0, 240.0))
-          ..applyDeltaLoopBehavior(LoopBehavior.loop));
+          ..applyTranslateCurve(const Offset(240.0, 240.0), const Offset(240.0, 0.0))
+          ..applyDeltaLoopBehavior(LoopBehavior.reverseLoop));
 
         loop.attach(Sprite(asset: Asset.get('placeholder'))
           ..tag = 'group_0'

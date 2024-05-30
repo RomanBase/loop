@@ -69,11 +69,11 @@ extension SceneComponentDeltaTransform on SceneComponent {
     );
   }
 
-  DeltaCurve applyTranslateCurve(Offset location, Offset controlPoint, {Offset begin = Offset.zero, Duration duration = const Duration(seconds: 1), bool reset = false}) {
+  DeltaCurve applyTranslateCurve(Offset location, Offset controlPoint, {Offset? begin, Duration duration = const Duration(seconds: 1), bool reset = false}) {
     return applyTransform(
       DeltaCurve(
         duration: duration,
-        begin: begin,
+        begin: begin ?? transform.position,
         end: location,
         cp: controlPoint,
       )..onValue = (value) => transform.position = value,

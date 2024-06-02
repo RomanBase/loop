@@ -8,8 +8,8 @@ import 'package:space_loop/game/spaceship/spaceship.dart';
 final _random = Random();
 
 extension _Hook on CoreElement {
-  LoopScene get loop => use<LoopScene>(
-      value: () => LoopScene()
+  Loop get loop => use<Loop>(
+      value: () => Loop()
         ..mount(ControlLoop.main())
         ..attach(Spaceship())
         ..attach(EnemyEmitter()))!;

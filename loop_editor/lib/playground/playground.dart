@@ -14,10 +14,10 @@ extension _PlaygroundComponent on CoreContext {
 
   SceneComponent get c2 => use(key: 'c2', value: () => SceneComponent())!;
 
-  LoopScene get scene => use(
+  Loop get scene => use(
       key: 'scene',
       value: () {
-        final loop = LoopScene();
+        final loop = Loop();
         loop.timeDilation = 0.25;
 
         loop.attach(Sprite(asset: Asset.get('placeholder'))

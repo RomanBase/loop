@@ -8,34 +8,9 @@ mixin RenderComponent on LoopComponent {
 
   int zIndex = 0;
 
-  Rect? _screenBounds;
-
-  Rect get screenBounds => _screenBounds ??= _renderBounds();
+  Rect get screenBounds => Rect.largest;
 
   bool isVisible(Rect rect) => visible && (!visibleClip || screenBounds.overlaps(rect));
-
-  Rect _renderBounds() {
-    if (this is SceneComponent) {
-      final component = this as SceneComponent;
-      final matrix = component.screenMatrix;
-      final sx = matrix.scaleX2D.abs();
-      final sy = matrix.scaleY2D.abs();
-
-      final size = Size(this.size.width * sx, this.size.height * sy);
-      final dstOrigin = Offset(component.transform.origin.dx * size.width, component.transform.origin.dy * size.height);
-      final dst = (matrix.position2D - dstOrigin) & size;
-
-      return dst;
-    }
-
-    return Rect.fromLTWH(0.0, 0.0, size.width, size.height);
-  }
-
-  @override
-  void tick(double dt) {
-    _screenBounds = null;
-    super.tick(dt);
-  }
 
   void render(Canvas canvas, Rect rect);
 }
@@ -57,5 +32,3 @@ mixin RenderQueue {
     _renderQueue.clear();
   }
 }
-
-abstract class RenderActor extends LoopActor with RenderComponent {}

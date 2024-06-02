@@ -13,7 +13,7 @@ class EditorControl extends BaseControl with LazyControl, ReferenceCounter {
     components[0]?.add(EditorComponentModel()..name = 'component');
   }
 
-  void add(String name, [Type type = LoopScene]) {
+  void add(String name, [Type type = Loop]) {
     final component = EditorComponentModel()
       ..name = name
       ..type = type;

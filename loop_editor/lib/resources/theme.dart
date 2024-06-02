@@ -162,7 +162,6 @@ extension UITheme on ThemeData {
         android: () => const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
         ios: () => const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
         other: () => const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-        defaultValue: () => const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
       )!;
 
   ImageFilter get blurFilter => ImageFilter.blur(sigmaX: UISize.blurSigma, sigmaY: UISize.blurSigma);

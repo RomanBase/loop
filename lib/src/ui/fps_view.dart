@@ -2,7 +2,7 @@ part of '../../loop.dart';
 
 class FpsView extends StatelessWidget {
   final ControlLoop? control;
-  final LoopScene? loop;
+  final Loop? loop;
   final Alignment alignment;
   final TextStyle? style;
 
@@ -23,7 +23,7 @@ class FpsView extends StatelessWidget {
       child: GestureDetector(
         onTap: () {
           for (final element in ticker.children) {
-            if (element is LoopScene) {
+            if (element is Loop) {
               final box = element.findComponents<BBoxRenderComponent>();
               if (box.isEmpty) {
                 element.attach(BBoxRenderComponent()..color = Colors.red.withOpacity(0.35));

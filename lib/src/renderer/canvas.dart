@@ -48,7 +48,7 @@ extension CanvasRender on Canvas {
 }
 
 class ViewportBuilder extends StatelessWidget {
-  final LoopScene scene;
+  final Loop scene;
   final double? width;
   final double? height;
   final double? ratio;
@@ -168,13 +168,6 @@ class BBoxRenderComponent<T extends SceneComponent> extends SceneComponent with 
   }
 
   @override
-  void onDetach() {
-    super.onDetach();
-
-    printDebug('BBox DETACHED');
-  }
-
-  @override
   void render(Canvas canvas, Rect rect) {
     if (componentList != null) {
       final items = componentList!();
@@ -194,13 +187,13 @@ class BBoxRenderComponent<T extends SceneComponent> extends SceneComponent with 
       return;
     }
 
-    if (_boxParent is LoopScene) {
+    if (_boxParent is Loop) {
       // render also scene bounds while rendering generic bounds
       if (shouldRender(EmptySceneActor())) {
-        _renderBBox(canvas, '$_boxParent', Matrix4.identity()..scale((_boxParent as LoopScene).viewport.scale));
+        _renderBBox(canvas, '$_boxParent', Matrix4.identity()..scale((_boxParent as Loop).viewport.scale));
       }
 
-      for (final element in (_boxParent as LoopScene).items) {
+      for (final element in (_boxParent as Loop).items) {
         if (element is SceneComponent) {
           _renderComponent(element, canvas, rect);
         }

@@ -95,27 +95,6 @@ class ControlLoop with ObservableLoop {
   }
 }
 
-/// Base tick component.
-mixin LoopComponent {
-  late String tag = '$runtimeType';
-  bool active = true;
-
-  void tick(double dt);
-
-  void destroy(){
-    active = false;
-  }
-}
-
-/// Concrete implementation of LoopComponent
-class LoopActor with LoopComponent {
-  @override
-  void tick(double dt) {}
-
-  @override
-  void destroy() {}
-}
-
 /// 'Main' Loop dispatcher.
 /// Any Object can subscribe to be notified about deltaTime.
 mixin ObservableLoop implements ObservableValue<double>, ObservableNotifier, Disposable {

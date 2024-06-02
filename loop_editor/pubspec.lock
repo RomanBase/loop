@@ -53,10 +53,10 @@ packages:
     dependency: transitive
     description:
       name: control_core
-      sha256: "67a1c96f7c8648168c5f47c14c9139cb4e1fd1d615a693f9431c8afe57c91b96"
+      sha256: "0e3ffac7a2d1c452dec46fd14f04665ccb9c19502669dab90816b68307da0187"
       url: "https://pub.dev"
     source: hosted
-    version: "1.2.0"
+    version: "1.2.1"
   fake_async:
     dependency: transitive
     description:
@@ -91,10 +91,10 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "63bbdee58a1c85fe1190443a3413107d631daf8d"
+      resolved-ref: b07681b9c6c5c8c65e65962dce563c70899d88d9
       url: "https://github.com/RomanBase/flutter_control"
     source: git
-    version: "4.0.0-beta.5"
+    version: "4.0.0-beta.7a"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -236,10 +236,10 @@ packages:
     dependency: transitive
     description:
       name: shared_preferences_android
-      sha256: "1ee8bf911094a1b592de7ab29add6f826a7331fb854273d55918693d5364a1f2"
+      sha256: "93d0ec9dd902d85f326068e6a899487d1f65ffcd5798721a95330b26c8131577"
       url: "https://pub.dev"
     source: hosted
-    version: "2.2.2"
+    version: "2.2.3"
   shared_preferences_foundation:
     dependency: transitive
     description:
@@ -361,10 +361,10 @@ packages:
     dependency: transitive
     description:
       name: win32
-      sha256: "0eaf06e3446824099858367950a813472af675116bf63f008a4c2a75ae13e9cb"
+      sha256: a79dbe579cb51ecd6d30b17e0cae4e0ea15e2c0e66f69ad4198f22a6789e94f4
       url: "https://pub.dev"
     source: hosted
-    version: "5.5.0"
+    version: "5.5.1"
   xdg_directories:
     dependency: transitive
     description:
@@ -374,5 +374,5 @@ packages:
     source: hosted
     version: "1.0.4"
 sdks:
-  dart: ">=3.3.3 <4.0.0"
-  flutter: ">=3.19.0"
+  dart: ">=3.4.0 <4.0.0"
+  flutter: ">=3.22.0"

@@ -14,7 +14,7 @@ class SceneComponent with ObservableLoopComponent {
 
   SceneComponent? parent;
 
-  LoopScene? _loop;
+  Loop? _loop;
 
   bool get isMounted => _loop != null;
 
@@ -24,7 +24,7 @@ class SceneComponent with ObservableLoopComponent {
 
   void onInit() {}
 
-  LoopScene? _initLoop(LoopScene? scene) {
+  Loop? _initLoop(Loop? scene) {
     assert(_loop == null, 'Can\'t attach to multiple loops');
 
     if (scene == null) {
@@ -46,7 +46,7 @@ class SceneComponent with ObservableLoopComponent {
     });
   }
 
-  LoopScene? getLoop() {
+  Loop? getLoop() {
     if (_loop != null) {
       return _loop;
     }
@@ -57,7 +57,7 @@ class SceneComponent with ObservableLoopComponent {
   void onAttach(LoopComponent component) {
     assert(parent == null, 'Can\'t attach to multiple transform objects');
 
-    if (component is LoopScene) {
+    if (component is Loop) {
       _initLoop(component);
       return;
     }
@@ -190,5 +190,5 @@ class WeakSceneComponent<T extends SceneComponent> extends SceneComponent {
   WeakSceneComponent({required this.ref});
 
   @override
-  LoopScene? getLoop() => ref.getLoop();
+  Loop? getLoop() => ref.getLoop();
 }

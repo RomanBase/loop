@@ -74,7 +74,7 @@ class Scene extends SceneWidget {
 
 abstract class SceneWidget extends StatefulWidget {
   final ControlLoop? control;
-  final LoopScene? loop;
+  final Loop? loop;
   final bool tick;
   final double? width;
   final double? height;
@@ -97,7 +97,7 @@ abstract class SceneWidget extends StatefulWidget {
 }
 
 class SceneState extends State<SceneWidget> {
-  late LoopScene loop;
+  late Loop loop;
   SceneViewport? viewport;
 
   Disposable? _sub;
@@ -111,7 +111,7 @@ class SceneState extends State<SceneWidget> {
   }
 
   void _initScene() {
-    loop = widget.loop ?? LoopScene();
+    loop = widget.loop ?? Loop();
     viewport = SceneViewport.of(context)?.widget;
 
     if (!loop.isMounted) {

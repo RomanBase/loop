@@ -2,7 +2,7 @@ import 'package:flutter_control/control.dart';
 import 'package:loop/loop.dart';
 import 'dart:math' as math;
 
-class ViewportView extends ControllableWidget<LoopScene> {
+class ViewportView extends ControllableWidget<Loop> {
   const ViewportView({
     super.key,
     required super.control,

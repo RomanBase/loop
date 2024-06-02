@@ -20,7 +20,18 @@ class _ComponentAction {
   });
 }
 
-class LoopScene extends LoopActor with ObservableLoop, RenderComponent, RenderQueue, LoopLeaf, PointerDispatcher {
+mixin LoopComponent {
+  late String tag = '$runtimeType';
+  bool active = true;
+
+  void tick(double dt);
+
+  void destroy() {
+    active = false;
+  }
+}
+
+class Loop with LoopComponent, ObservableLoop, RenderComponent, RenderQueue, LoopLeaf, PointerDispatcher {
   final viewport = ViewportMatrix();
   final items = <LoopComponent>[];
   final _actions = <_ComponentAction>[];
@@ -45,24 +56,29 @@ class LoopScene extends LoopActor with ObservableLoop, RenderComponent, RenderQu
   @override
   Pointer transformPointer(PointerEvent event) => Pointer(event, (event.localPosition * viewport.reverseScale) + viewport.position);
 
-  void attach(SceneComponent component) {
-    assert(!component.isMounted, 'Can\'t use one Component in multiple Scenes');
+  void attach(LoopComponent component) {
+    assert(component is! SceneComponent || !component.isMounted, 'Can\'t use one Component in multiple Scenes');
 
-    add(component);
-    component.onAttach(this);
+    _add(component);
+
+    if (component is SceneComponent) {
+      component.onAttach(this);
+    }
 
     notify();
   }
 
-  void detach(SceneComponent component) {
-    if (remove(component)) {
-      component.onDetach();
+  void detach(LoopComponent component) {
+    if (_remove(component)) {
+      if (component is SceneComponent) {
+        component.onDetach();
+      }
 
       notify();
     }
   }
 
-  void add(LoopComponent component) {
+  void _add(LoopComponent component) {
     if (_tickActive) {
       _actions.add(_ComponentAction(
         action: ComponentAction.attach,
@@ -74,7 +90,7 @@ class LoopScene extends LoopActor with ObservableLoop, RenderComponent, RenderQu
     items.add(component);
   }
 
-  bool remove(LoopComponent component) {
+  bool _remove(LoopComponent component) {
     if (_tickActive) {
       _actions.add(_ComponentAction(
         action: ComponentAction.detach,

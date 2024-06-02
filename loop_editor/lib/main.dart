@@ -49,6 +49,7 @@ class MyApp extends StatelessWidget {
         title: 'Flutter Demo',
         theme: context<ThemeConfig>()?.value,
         home: home,
+        debugShowCheckedModeBanner: false,
       ),
       onSetupChanged: (context) {
         UITheme.invalidate(context);

@@ -1,4 +1,6 @@
 import 'dart:math';
+import 'dart:typed_data';
+import 'dart:ui';
 
 import 'package:flutter_control/control.dart';
 import 'package:loop/loop.dart';
@@ -65,26 +67,6 @@ extension _PlaygroundComponent on CoreContext {
         loop.attach(DragSprite());
 
         return loop;
-      })!;
-
-  SceneComponent operator [](dynamic key) => use(
-      key: key,
-      value: () {
-        final c = SceneComponent();
-
-        final d = Duration(milliseconds: 1000 + r.nextInt(9000));
-        final x = UITheme.device.width * r.nextDouble();
-        final s = 1.0 + r.nextInt(2);
-
-        c.transform.origin = const Offset(32.0, 32.0);
-        c.applyTranslate(Offset(x, 0.0), begin: Offset(x, UITheme.device.height), duration: d);
-        c.applyRotate(r.nextDouble() * 720.0, duration: d);
-        c.applyScale(Scale.of(s), duration: d);
-        c.applyColor(Color(r.nextInt(4294967295)), begin: Color(r.nextInt(4294967295)), duration: d);
-
-        c.applyDeltaLoopBehavior(LoopBehavior.loop);
-
-        return c;
       })!;
 }
 
@@ -173,11 +155,17 @@ class Playground extends ControlWidget {
                 ],
               ),
             ),
-            const FpsView(
-              alignment: Alignment.bottomLeft,
-            ),
             ViewportView(
               control: context.scene,
+            ),
+            Scene(
+              loop: context.testLoop,
+            ),
+            const PerformanceTest(
+              count: 1000,
+            ),
+            const FpsView(
+              alignment: Alignment.topRight,
             ),
           ],
         ),
@@ -186,60 +174,192 @@ class Playground extends ControlWidget {
   }
 }
 
+extension _PerformanceHooks on CoreElement {
+  Loop get testLoop => use(
+        key: 'test_loop',
+        value: () => Loop(),
+      )!;
+
+  SceneComponent operator [](dynamic key) => use(
+      key: key,
+      value: () {
+        final c = SceneComponent()..tag = 'test';
+
+        final d = Duration(milliseconds: 1000 + r.nextInt(9000));
+        final x = UITheme.device.width * r.nextDouble();
+        final s = 1.0 + r.nextInt(2);
+
+        c.applyTranslate(Offset(x, 0.0), begin: Offset(x, UITheme.device.height), duration: d);
+        c.applyRotate(r.nextDouble() * 720.0, duration: d);
+        c.applyScale(Scale.of(s), duration: d);
+        c.applyColor(Color(r.nextInt(4294967295)), begin: Color(r.nextInt(4294967295)), duration: d);
+
+        c.applyDeltaLoopBehavior(LoopBehavior.loop);
+
+        return c;
+      })!;
+}
+
 class PerformanceTest extends ControlWidget {
-  final bool builder;
   final int count;
 
   const PerformanceTest({
     super.key,
-    this.builder = false,
     this.count = 100,
   });
 
   @override
+  void onInit(Map args, CoreContext context) {
+    super.onInit(args, context);
+
+    List.generate(count, (index) {
+      context.testLoop.attach(context[index]);
+    });
+
+    context.testLoop.attach(_MeshRenderer());
+  }
+
+  @override
   Widget build(CoreElement context) {
-    if (builder) {
-      return Scene.builder(
+    final variant = context.value(value: 'canvas', stateNotifier: true);
+
+    return Stack(
+      children: [
+        if (variant.value == 'widget_builder') _sceneWidget(context),
+        if (variant.value == 'component_builder') _sceneComponent(context),
+        if (variant.value == 'canvas') Scene(loop: context.testLoop),
+        if (variant.value == 'mesh') Scene(loop: context.testLoop),
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: Row(
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () => variant.value = 'widget_builder',
+                  child: Text('widget'),
+                ),
+              ),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () => variant.value = 'component_builder',
+                  child: Text('child'),
+                ),
+              ),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () => variant.value = 'canvas',
+                  child: Text('canvas'),
+                ),
+              ),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () => variant.value = 'mesh',
+                  child: Text('mesh'),
+                ),
+              ),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () => variant.value = 'none',
+                  child: Text('none'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _sceneWidget(CoreElement context) => Scene.builder(
         builders: List.generate(
-            count,
-            (index) => (_, dt) {
-                  context[index].tick(dt);
+          count,
+          (index) => (_, dt) {
+            context['w_$index'].tick(dt);
 
-                  return Transform(
-                    transform: context[index].transform.matrix,
-                    origin: context[index].transform.origin,
-                    child: Container(
-                      width: 64.0,
-                      height: 64.0,
-                      color: context[index].getComponent<DeltaColor>()?.value,
-                      child: Center(
-                        child: Image.asset(
-                          'assets/placeholder.png',
-                          width: 32.0,
-                          height: 32.0,
-                        ),
-                      ),
-                    ),
-                  );
-                }),
+            return Transform(
+              transform: context['w_$index'].transform.matrix,
+              origin: const Offset(32.0, 32.0),
+              child: Container(
+                width: 64.0,
+                height: 64.0,
+                color: context['w_$index'].getComponent<DeltaColor>()?.value,
+                child: Center(
+                  child: Image.asset(
+                    'assets/placeholder.png',
+                    width: 32.0,
+                    height: 32.0,
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
       );
-    }
 
-    return Scene(
-      children: List.generate(
-        count,
-        (index) => SceneComponentBuilder(
-          component: context[index],
-          builder: (_, dt) => Container(
-            width: 24.0,
-            height: 24.0,
-            color: context[index].getComponent<DeltaColor>()?.value,
-            child: Center(
-              child: Text('$index'),
+  Widget _sceneComponent(CoreElement context) => Scene(
+        children: List.generate(
+          count,
+          (index) => SceneComponentBuilder(
+            component: context['c_$index'],
+            builder: (_, dt) => Container(
+              width: 24.0,
+              height: 24.0,
+              color: context['c_$index'].getComponent<DeltaColor>()?.value,
+              child: Center(
+                child: Text('$index'),
+              ),
             ),
           ),
         ),
-      ),
-    );
+      );
+}
+
+class _RectRenderer extends SceneComponent with RenderComponent {
+  @override
+  bool get visibleClip => false;
+
+  @override
+  void render(Canvas canvas, Rect rect) {
+    final components = findComponents<SceneComponent>(root: true, where: (component) => component.tag == 'test');
+
+    for (var element in components) {
+      canvas.renderBox(
+        element.screenMatrix,
+        element.transform.origin,
+        const Size(24, 24),
+        (dst) => canvas.drawRect(dst, Paint()..color = element.getComponent<DeltaColor>()!.value),
+      );
+    }
+  }
+}
+
+class _MeshRenderer extends SceneComponent with RenderComponent {
+  @override
+  bool get visibleClip => false;
+
+  final rectVertices = Float32List.fromList([0.0, 0.0, 24.0, 0.0, 24.0, 24.0, 0.0, 24.0]);
+
+  final rectFaces = Uint16List.fromList([0, 1, 2, 0, 2, 3]);
+
+  @override
+  void render(Canvas canvas, Rect rect) {
+    final components = findComponents<SceneComponent>(root: true, where: (component) => component.tag == 'test');
+
+    for (var element in components) {
+      canvas.save();
+      canvas.transform(element.screenMatrix.storage);
+
+      canvas.drawVertices(
+        Vertices.raw(
+          VertexMode.triangles,
+          rectVertices,
+          indices: rectFaces,
+        ),
+        BlendMode.src,
+        Paint()..color = element.getComponent<DeltaColor>()!.value,
+      );
+
+      canvas.restore();
+    }
   }
 }

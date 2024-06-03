@@ -33,4 +33,4 @@ flutter:
     - assets/
 
   shaders:
-    - shaders/texture.frag
+    - lib/shaders/texture.frag

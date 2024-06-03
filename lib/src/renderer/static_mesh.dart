@@ -17,10 +17,32 @@ class StaticMesh extends SceneActor {
     _paint = Paint()..shader = shader;
   }
 
+  void setDefaultSize() {
+    double minX = vertices[0], maxX = vertices[0];
+    double minY = vertices[1], maxY = vertices[1];
+
+    for (int i = 2; i < vertices.length; i += 2) {
+      if (vertices[i] < minX) {
+        minX = vertices[i];
+      } else if (vertices[i] > maxX) {
+        maxX = vertices[i];
+      }
+
+      if (vertices[i + 1] < minY) {
+        minY = vertices[i + 1];
+      } else if (vertices[i + 1] > maxY) {
+        maxY = vertices[i + 1];
+      }
+    }
+
+    size = Size((maxX - minX).abs(), (maxY - minY).abs());
+  }
+
   @override
   void render(Canvas canvas, Rect rect) {
     canvas.save();
     canvas.transform(screenMatrix.storage);
+    canvas.translate(-size.width * transform.origin.dx, -size.height * transform.origin.dy);
 
     canvas.drawVertices(
       ui.Vertices.raw(

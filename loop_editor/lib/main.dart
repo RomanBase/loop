@@ -29,20 +29,15 @@ class MyApp extends StatelessWidget {
       ],
       initAsync: () async {
 
-        await FragmentProgram.fromAsset('assets/texture.frag').then((value) {
-          printDebug(value.fragmentShader());
-        }).catchError((err) {
-          printDebug(err);
-        });
-
         await AssetLoader.load(
           Asset.instance,
           images: {
             'placeholder': 'assets/placeholder.png',
             'mc': 'assets/mc.png',
+            'img': 'assets/img.png',
           },
           shaders: {
-            'shader': 'assets/texture.frag',
+            'shader': 'lib/shaders/texture.frag',
           },
           progress: (value) => printDebug('asset loading: $value'),
         );

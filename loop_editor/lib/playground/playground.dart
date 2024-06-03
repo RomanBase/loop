@@ -67,11 +67,20 @@ extension _PlaygroundComponent on CoreContext {
 
         loop.attach(DragSprite());
 
+        const size = 320.0;
         loop.attach(StaticMesh(
-          Float32List.fromList([0.0, 0.0, 24.0, 0.0, 24.0, 24.0, 0.0, 24.0]),
+          Float32List.fromList([0.0, 0.0, size, 0.0, size, size, 0.0, size]),
           faces: Uint16List.fromList([0, 1, 2, 0, 2, 3]),
-          shader: Asset.get<ui.FragmentProgram>('shader').fragmentShader(),
-        )..transform.position = const Offset(250.0, 250.0));
+          uvs: Float32List.fromList([0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0]),
+          shader: Asset.get<ui.FragmentProgram>('shader').fragmentShader()
+            ..setImageSampler(0, Asset.get('img'))
+            ..setFloat(0, 1.0)
+            ..setFloat(1, 1.0)
+            ..setFloat(2, 1.0)
+            ..setFloat(3, 1.0),
+        )
+          ..transform.position = const Offset(200, 800)
+          ..setDefaultSize());
 
         return loop;
       })!;
@@ -164,12 +173,6 @@ class Playground extends ControlWidget {
             ),
             ViewportView(
               control: context.scene,
-            ),
-            Scene(
-              loop: context.testLoop,
-            ),
-            const PerformanceTest(
-              count: 1000,
             ),
             const FpsView(
               alignment: Alignment.topRight,

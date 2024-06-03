@@ -44,6 +44,14 @@ class AssetFactory implements Disposable {
         return frame.image;
       });
 
+  Future<void> loadFragmentShader(String path, {String? name}) async {
+    await ui.FragmentProgram.fromAsset(path).then((value) {
+      _factory.set(key: name ?? path, value: value);
+    }).catchError((err) {
+      printDebug(err);
+    });
+  }
+
   T? get<T>(String asset) => _factory.get<T>(key: asset);
 
   bool contains(String asset) => _factory.contains(asset);
@@ -67,9 +75,10 @@ class AssetLoader {
     AssetFactory factory, {
     Map<String, String> images = const {},
     Map<String, String> binary = const {},
+    Map<String, String> shaders = const {},
     void Function(double value)? progress,
   }) async {
-    final count = images.length + binary.length;
+    final count = images.length + binary.length + shaders.length;
     int i = 0;
 
     for (final item in images.entries) {
@@ -79,7 +88,13 @@ class AssetLoader {
     }
 
     for (final item in binary.entries) {
-      await factory.loadImage(item.value, name: item.key);
+      await factory.loadBinary(item.value, name: item.key);
+
+      progress?.call(++i / count);
+    }
+
+    for (final item in shaders.entries) {
+      await factory.loadFragmentShader(item.value, name: item.key);
 
       progress?.call(++i / count);
     }

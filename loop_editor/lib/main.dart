@@ -1,5 +1,7 @@
 library loop;
 
+import 'dart:ui';
+
 import 'package:flutter_control/control.dart';
 import 'package:loop/loop.dart';
 import 'package:loop_editor/editor/control/editor_control.dart';
@@ -26,11 +28,21 @@ class MyApp extends StatelessWidget {
         RoutingModule([]),
       ],
       initAsync: () async {
+
+        await FragmentProgram.fromAsset('assets/texture.frag').then((value) {
+          printDebug(value.fragmentShader());
+        }).catchError((err) {
+          printDebug(err);
+        });
+
         await AssetLoader.load(
           Asset.instance,
           images: {
             'placeholder': 'assets/placeholder.png',
             'mc': 'assets/mc.png',
+          },
+          shaders: {
+            'shader': 'assets/texture.frag',
           },
           progress: (value) => printDebug('asset loading: $value'),
         );

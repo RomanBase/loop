@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui';
+import 'dart:ui' as ui;
 
 import 'package:flutter_control/control.dart';
 import 'package:loop/loop.dart';
@@ -65,6 +66,12 @@ extension _PlaygroundComponent on CoreContext {
           ..applyScale(const Scale.of(2.0)).setLoopBehavior(LoopBehavior.loop));
 
         loop.attach(DragSprite());
+
+        loop.attach(StaticMesh(
+          Float32List.fromList([0.0, 0.0, 24.0, 0.0, 24.0, 24.0, 0.0, 24.0]),
+          faces: Uint16List.fromList([0, 1, 2, 0, 2, 3]),
+          shader: Asset.get<ui.FragmentProgram>('shader').fragmentShader(),
+        )..transform.position = const Offset(250.0, 250.0));
 
         return loop;
       })!;
@@ -360,6 +367,34 @@ class _MeshRenderer extends SceneComponent with RenderComponent {
       );
 
       canvas.restore();
+    }
+  }
+}
+
+class TextureShader {
+  late FragmentProgram program;
+  late FragmentShader shader;
+
+  Future<void> load(String asset) async {
+    program = await FragmentProgram.fromAsset(asset);
+    shader = program.fragmentShader();
+  }
+
+  void update({ui.Image? image, Color? color, Offset? uv}) {
+    if (image != null) {
+      shader.setImageSampler(0, image);
+    }
+
+    if (color != null) {
+      shader.setFloat(0, color.red / 255);
+      shader.setFloat(1, color.green / 255);
+      shader.setFloat(2, color.blue / 255);
+      shader.setFloat(3, color.alpha / 255);
+    }
+
+    if (uv != null) {
+      shader.setFloat(4, uv.dx);
+      shader.setFloat(5, uv.dy);
     }
   }
 }

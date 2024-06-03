@@ -13,11 +13,13 @@ class StaticMesh extends SceneActor {
     this.uvs,
     this.faces,
     this.shader,
+    Size? size,
   }) {
+    this.size = size ?? getVerticesBounds();
     _paint = Paint()..shader = shader;
   }
 
-  void setDefaultSize() {
+  Size getVerticesBounds() {
     double minX = vertices[0], maxX = vertices[0];
     double minY = vertices[1], maxY = vertices[1];
 
@@ -35,14 +37,13 @@ class StaticMesh extends SceneActor {
       }
     }
 
-    size = Size((maxX - minX).abs(), (maxY - minY).abs());
+    return Size((maxX - minX).abs(), (maxY - minY).abs());
   }
 
   @override
   void render(Canvas canvas, Rect rect) {
     canvas.save();
     canvas.transform(screenMatrix.storage);
-    canvas.translate(-size.width * transform.origin.dx, -size.height * transform.origin.dy);
 
     canvas.drawVertices(
       ui.Vertices.raw(

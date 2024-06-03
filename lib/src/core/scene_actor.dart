@@ -7,13 +7,12 @@ abstract class SceneActor extends SceneComponent with RenderComponent {
   Rect get screenBounds => _screenBounds ??= _renderBounds();
 
   Rect _renderBounds() {
-    final component = this as SceneComponent;
-    final matrix = component.screenMatrix;
+    final matrix = screenMatrix;
     final sx = matrix.scaleX2D.abs();
     final sy = matrix.scaleY2D.abs();
 
     final size = Size(this.size.width * sx, this.size.height * sy);
-    final dstOrigin = Offset(component.transform.origin.dx * size.width, component.transform.origin.dy * size.height);
+    final dstOrigin = Offset(transform.origin.dx * size.width, transform.origin.dy * size.height);
     final dst = (matrix.position2D - dstOrigin) & size;
 
     return dst;

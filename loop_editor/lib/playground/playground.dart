@@ -67,9 +67,9 @@ extension _PlaygroundComponent on CoreContext {
 
         loop.attach(DragSprite());
 
-        const size = 320.0;
+        const s = 160.0;
         loop.attach(StaticMesh(
-          Float32List.fromList([0.0, 0.0, size, 0.0, size, size, 0.0, size]),
+          Float32List.fromList([-s, -s, s, -s, s, s, -s, s]),
           faces: Uint16List.fromList([0, 1, 2, 0, 2, 3]),
           uvs: Float32List.fromList([0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0]),
           shader: Asset.get<ui.FragmentProgram>('shader').fragmentShader()
@@ -80,7 +80,7 @@ extension _PlaygroundComponent on CoreContext {
             ..setFloat(3, 1.0),
         )
           ..transform.position = const Offset(200, 800)
-          ..setDefaultSize());
+          ..applyScale(const Scale(1.25, 1.0)).setLoopBehavior(LoopBehavior.reverseLoop));
 
         return loop;
       })!;
@@ -370,34 +370,6 @@ class _MeshRenderer extends SceneComponent with RenderComponent {
       );
 
       canvas.restore();
-    }
-  }
-}
-
-class TextureShader {
-  late FragmentProgram program;
-  late FragmentShader shader;
-
-  Future<void> load(String asset) async {
-    program = await FragmentProgram.fromAsset(asset);
-    shader = program.fragmentShader();
-  }
-
-  void update({ui.Image? image, Color? color, Offset? uv}) {
-    if (image != null) {
-      shader.setImageSampler(0, image);
-    }
-
-    if (color != null) {
-      shader.setFloat(0, color.red / 255);
-      shader.setFloat(1, color.green / 255);
-      shader.setFloat(2, color.blue / 255);
-      shader.setFloat(3, color.alpha / 255);
-    }
-
-    if (uv != null) {
-      shader.setFloat(4, uv.dx);
-      shader.setFloat(5, uv.dy);
     }
   }
 }

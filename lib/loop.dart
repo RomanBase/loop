@@ -53,6 +53,8 @@ part 'src/renderer/canvas.dart';
 
 part 'src/renderer/scene.dart';
 
+part 'src/renderer/skeletal_mesh.dart';
+
 part 'src/renderer/sprite.dart';
 
 part 'src/renderer/static_mesh.dart';

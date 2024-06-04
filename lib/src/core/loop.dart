@@ -61,6 +61,8 @@ class Loop with LoopComponent, ObservableLoop, RenderComponent, RenderQueue, Loo
       (size.width * viewport.scale) + framePadding,
       (size.height * viewport.scale) + framePadding,
     );
+
+    viewport.originOffset = Offset(size.width * 0.5, size.height * 0.5);
   }
 
   @override

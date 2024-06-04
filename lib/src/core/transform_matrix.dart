@@ -108,6 +108,8 @@ class ViewportMatrix {
 
   Matrix4 get matrix => _transform.matrix;
 
+  Offset originOffset = Offset.zero;
+
   Offset get position => -_transform.position * reverseScale;
 
   set position(Offset value) => _transform.position = -value * scale;

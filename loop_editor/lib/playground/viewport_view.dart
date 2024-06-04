@@ -42,11 +42,11 @@ class ViewportView extends ControllableWidget<Loop> {
                 icon: const Icon(Icons.arrow_forward),
               ),
               IconButton(
-                onPressed: () => control.viewport.rotation += math.pi * 0.25,
+                onPressed: () => control.viewport.rotation += math.pi / 180 * 10,
                 icon: const Icon(Icons.rotate_90_degrees_ccw),
               ),
               IconButton(
-                onPressed: () => control.viewport.rotation += -math.pi * 0.25,
+                onPressed: () => control.viewport.rotation += -math.pi / 180 * 10,
                 icon: const Icon(Icons.rotate_90_degrees_cw),
               ),
             ],

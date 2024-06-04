@@ -49,12 +49,25 @@ class Loop with LoopComponent, ObservableLoop, RenderComponent, RenderQueue, Loo
     }
 
     frame.internalData = canvasSize;
-    size = viewport.updateViewport(canvasSize, requiredWidth: requiredWidth, requiredHeight: requiredHeight, ratio: ratio);
-    frame.value = Rect.fromLTRB(-framePadding, -framePadding, (size.width * viewport.scale) + framePadding, (size.height * viewport.scale) + framePadding);
+    size = viewport.updateViewport(
+      canvasSize,
+      requiredWidth: requiredWidth,
+      requiredHeight: requiredHeight,
+      ratio: ratio,
+    );
+    frame.value = Rect.fromLTRB(
+      -framePadding,
+      -framePadding,
+      (size.width * viewport.scale) + framePadding,
+      (size.height * viewport.scale) + framePadding,
+    );
   }
 
   @override
-  Pointer transformPointer(PointerEvent event) => Pointer(event, (event.localPosition * viewport.reverseScale) + viewport.position);
+  Pointer transformPointer(PointerEvent event) => Pointer(
+        event,
+        (event.localPosition * viewport.reverseScale) + viewport.position,
+      );
 
   void attach(LoopComponent component) {
     assert(component is! SceneComponent || !component.isMounted, 'Can\'t use one Component in multiple Scenes');

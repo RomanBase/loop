@@ -53,7 +53,6 @@ class Loop with LoopComponent, ObservableLoop, RenderComponent, RenderQueue, Loo
       canvasSize,
       requiredWidth: requiredWidth,
       requiredHeight: requiredHeight,
-      ratio: ratio,
     );
     frame.value = Rect.fromLTRB(
       -framePadding,
@@ -62,7 +61,7 @@ class Loop with LoopComponent, ObservableLoop, RenderComponent, RenderQueue, Loo
       (size.height * viewport.scale) + framePadding,
     );
 
-    viewport.originOffset = Offset(size.width * 0.5, size.height * 0.5);
+    viewport.originOffset = size.center(Offset.zero);
   }
 
   @override

@@ -12,7 +12,7 @@ class DragSprite extends Sprite with PointerComponent {
     pointer.move = (event) => transform.position = event.position;
 
     getLoop()!.frame.subscribe((value) {
-      transform.position = getLoop()!.size.center(Offset.zero);
+      //transform.position = getLoop()!.size.center(Offset.zero);
       size = Size(getLoop()!.size.width, 50.0);
     }, current: false).once();
   }

@@ -105,18 +105,19 @@ class TransformMatrix {
 /// Viewport size is 'ignored' because we are using mobile space (dp) resolution and we don't deal with frustrum in pure 2d scene. With proper scaling we can fake world size.
 class ViewportMatrix {
   final _transform = TransformMatrix();
+  final _view = TransformMatrix();
 
   Matrix4 get matrix => _transform.matrix;
 
   Offset originOffset = Offset.zero;
 
-  Offset get position => -_transform.position * reverseScale;
+  Offset get position => -_view.position + originOffset;
 
-  set position(Offset value) => _transform.position = -value * scale;
+  set position(Offset value) => _view.position = -value + originOffset;
 
-  double get rotation => -_transform.rotation;
+  double get rotation => -_view.rotation;
 
-  set rotation(double value) => _transform.rotation = -value;
+  set rotation(double value) => _view.rotation = -value;
 
   double get scale => _transform.scale.width;
 
@@ -124,27 +125,24 @@ class ViewportMatrix {
 
   double get reverseScale => 1.0 / scale;
 
-  Matrix4 multiply(Matrix4 local) => matrix.multiplied2DTransform(local);
+  Matrix4 multiply(Matrix4 local) {
+    var vp = matrix.multiplied2DTransform(_view.matrix);
+    //vp.translate(originOffset.dx, originOffset.dy);
+    vp = vp.multiplied2DTransform(local);
 
-  void use(Matrix4 matrix) => matrix.copyInto(_transform._matrix);
+    return vp;
+  }
 
-  Size updateViewport(Size frame, {double? requiredWidth, double? requiredHeight, double? ratio}) {
-    if (ratio != null) {
-      final frameRatio = frame.aspectRatio;
-      scale = frameRatio / ratio;
-      return frame * scale;
-    }
-
+  Size updateViewport(Size frame, {double? requiredWidth, double? requiredHeight}) {
     if (requiredWidth != null) {
       scale = frame.width / requiredWidth;
-      return frame * reverseScale;
-    }
-
-    if (requiredHeight != null) {
+    } else if (requiredHeight != null) {
       scale = frame.height / requiredHeight;
-      return frame * scale;
     }
 
-    return frame;
+    _view._rebuildMatrix = true;
+    _transform._rebuildMatrix = true;
+
+    return frame * reverseScale;
   }
 }

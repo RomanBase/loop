@@ -4,6 +4,7 @@ import 'dart:collection';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'dart:math' as math;
+import 'package:vector_math/vector_math.dart' as v_math;
 import 'package:flutter/animation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';

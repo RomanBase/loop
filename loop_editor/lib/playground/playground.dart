@@ -67,7 +67,7 @@ extension _PlaygroundComponent on CoreContext {
 
         loop.attach(DragSprite());
 
-        const s = 160.0;
+        const s = 20.0;
         loop.attach(StaticMesh(
           Float32List.fromList([-s, -s, s, -s, s, s, -s, s]),
           faces: Uint16List.fromList([0, 1, 2, 0, 2, 3]),
@@ -79,7 +79,7 @@ extension _PlaygroundComponent on CoreContext {
             ..setFloat(2, 1.0)
             ..setFloat(3, 1.0),
         )
-          ..transform.position = const Offset(200, 800)
+          ..transform.position = const Offset(0, 0)
           ..applyScale(const Scale(1.25, 1.0)).setLoopBehavior(LoopBehavior.reverseLoop));
 
         return loop;

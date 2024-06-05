@@ -11,7 +11,7 @@ class Mouse extends SceneActor with PointerComponent {
 
   @override
   void render(Canvas canvas, Rect rect) {
-    canvas.renderComponent(canvas, this, (dst) {
+    canvas.renderComponent(this, (dst) {
       canvas.drawCircle(dst.center, dst.width * 0.5, Paint()..color = pointer.isDown ? Colors.blue : Colors.black);
 
       final text = TextPainter(

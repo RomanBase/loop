@@ -91,7 +91,7 @@ class Sprite extends SceneActor {
 
   @override
   void render(Canvas canvas, Rect rect) {
-    canvas.renderComponent(canvas, this, (dst) {
+    canvas.renderComponent(this, (dst) {
       if (action != null && action!.blend != null && !sequence.atEdge) {
         canvas.drawImageRect(
           asset,

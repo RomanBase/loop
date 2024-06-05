@@ -1,8 +1,8 @@
 part of '../../loop.dart';
 
 extension CanvasRender on Canvas {
-  void renderComponent(Canvas canvas, SceneActor component, void Function(Rect dst) render) {
-    canvas.renderRotated(
+  void renderComponent(SceneActor component, void Function(Rect dst) render) {
+    _renderRotated(
       component.screenBounds,
       Offset(component.screenBounds.width * component.transform.origin.dx, component.screenBounds.height * component.transform.origin.dy),
       component.screenMatrix.angle2D,
@@ -11,7 +11,18 @@ extension CanvasRender on Canvas {
     );
   }
 
-  void renderRotated(Rect rect, Offset origin, double rotation, Scale scale, void Function(Rect dst) render) {
+  void renderBox(Matrix4 matrix, Offset origin, Size size, void Function(Rect dst) render) {
+    final sx = matrix.scaleX2D;
+    final sy = matrix.scaleY2D;
+
+    size = Size(size.width * sx, size.height * sy);
+    final dstOrigin = Offset(origin.dx * size.width, origin.dy * size.height);
+    final dst = (matrix.position2D - dstOrigin) & size;
+
+    _renderRotated(dst, dstOrigin, matrix.angle2D, Scale(sx, sy), render);
+  }
+
+  void _renderRotated(Rect rect, Offset origin, double rotation, Scale scale, void Function(Rect dst) render) {
     if (rotation == 0.0 && !scale.isNegative) {
       render(rect);
       return;
@@ -25,17 +36,6 @@ extension CanvasRender on Canvas {
     render(Rect.fromLTRB(-origin.dx, -origin.dy, rect.width - origin.dx, rect.height - origin.dy));
 
     restore();
-  }
-
-  void renderBox(Matrix4 matrix, Offset origin, Size size, void Function(Rect dst) render) {
-    final sx = matrix.scaleX2D;
-    final sy = matrix.scaleY2D;
-
-    size = Size(size.width * sx, size.height * sy);
-    final dstOrigin = Offset(origin.dx * size.width, origin.dy * size.height);
-    final dst = (matrix.position2D - dstOrigin) & size;
-
-    renderRotated(dst, dstOrigin, matrix.angle2D, Scale(sx, sy), render);
   }
 
   void renderRaw(Matrix4 matrix, void Function() render) {

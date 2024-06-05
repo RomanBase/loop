@@ -111,9 +111,9 @@ class ViewportMatrix {
 
   Offset originOffset = Offset.zero;
 
-  Offset get position => -_view.position + originOffset;
+  Offset get position => -_transform.position;
 
-  set position(Offset value) => _view.position = -value + originOffset;
+  set position(Offset value) => _transform.position = -value;
 
   double get rotation => -_view.rotation;
 
@@ -126,8 +126,8 @@ class ViewportMatrix {
   double get reverseScale => 1.0 / scale;
 
   Matrix4 multiply(Matrix4 local) {
-    var vp = matrix.multiplied2DTransform(_view.matrix);
-    //vp.translate(originOffset.dx, originOffset.dy);
+    var vp = _transform.matrix.multiplied2DTransform(_view.matrix);
+    vp.translate(originOffset.dx, originOffset.dy);
     vp = vp.multiplied2DTransform(local);
 
     return vp;

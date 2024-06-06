@@ -51,6 +51,17 @@ extension Matrix4Ext on Matrix4 {
   Matrix4 copy() => Matrix4.fromList(storage);
 }
 
+extension Vector2Ext on Vector2 {
+  bool get isZero => x == 0.0 && y == 0.0;
+
+  bool get isOne => x == 1.0 && y == 1.0;
+
+  void move(double step) {
+    storage[0] *= step;
+    storage[1] *= step;
+  }
+}
+
 /// Currently holds only local transforms
 class TransformMatrix {
   final _matrix = Matrix4.identity();
@@ -134,22 +145,22 @@ class Viewport2D {
 
   Vector2 get direction => _direction;
 
-  double get rotation => -math.atan2(_direction[1], _direction[0]);
+  double get rotation => math.atan2(_direction[1], _direction[0]);
 
   set rotation(double radians) {
     final s = math.sin(radians);
     final c = math.cos(radians);
 
     _direction[0] = c;
-    _direction[1] = -s;
+    _direction[1] = s;
     _rebuild = true;
   }
 
-  Vector2 get position => _position;
+  Vector2 get position => Vector2(-_position[0], -_position[1]);
 
   set position(Vector2 value) {
-    _position[0] = value[0];
-    _position[1] = value[1];
+    _position[0] = -value[0];
+    _position[1] = -value[1];
     _rebuild = true;
   }
 
@@ -170,8 +181,15 @@ class Viewport2D {
     _matrix[1] = -s * as;
     _matrix[5] = c * as;
 
-    _matrix[12] = _position[0] * scale + (screenSize.width * 0.5);
-    _matrix[13] = _position[1] * scale + (screenSize.height * 0.5);
+    final x = _position[0] * scale;
+    final y = _position[1] * scale;
+    final sx = screenSize.width * 0.5;
+    final sy = screenSize.height * 0.5;
+    final dx = x - sx;
+    final dy = y - sy;
+
+    _matrix[12] = dx * _direction.x - dy * _direction.y + sx;
+    _matrix[13] = dx * _direction.y + dy * _direction.x + sy;
 
     return _matrix;
   }

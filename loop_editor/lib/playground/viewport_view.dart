@@ -26,19 +26,19 @@ class ViewportView extends ControllableWidget<Loop> {
                 icon: const Icon(Icons.center_focus_strong),
               ),
               IconButton(
-                onPressed: () => control.viewport.position += Vector2(0.0, -step),
+                onPressed: () => control.viewport.position += Vector2(0.0, step),
                 icon: const Icon(Icons.arrow_upward),
               ),
               IconButton(
-                onPressed: () => control.viewport.position += Vector2(0.0, step),
+                onPressed: () => control.viewport.position += Vector2(0.0, -step),
                 icon: const Icon(Icons.arrow_downward),
               ),
               IconButton(
-                onPressed: () => control.viewport.position += Vector2(-step, 0.0),
+                onPressed: () => control.viewport.position += Vector2(step, 0.0),
                 icon: const Icon(Icons.arrow_back),
               ),
               IconButton(
-                onPressed: () => control.viewport.position += Vector2(step, 0.0),
+                onPressed: () => control.viewport.position += Vector2(-step, 0.0),
                 icon: const Icon(Icons.arrow_forward),
               ),
               IconButton(

@@ -68,12 +68,6 @@ part 'src/ui/fps_view.dart';
 /// TODO: Probably switch everything to Vector2 or create custom struct..
 ///
 
-extension Vector2Ext on Vector2 {
-  bool get isZero => x == 0.0 && y == 0.0;
-
-  bool get isOne => x == 1.0 && y == 1.0;
-}
-
 extension OffsetExt on Offset {
   bool get isZero => dx == 0.0 && dy == 0.0;
 

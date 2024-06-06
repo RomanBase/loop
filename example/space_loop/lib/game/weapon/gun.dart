@@ -3,7 +3,7 @@ import 'package:loop/loop.dart';
 import 'package:space_loop/game/weapon/bullet.dart';
 
 class Gun extends RenderComponentEmitter<Bullet> {
-  void fire() => emit(Bullet()..transform.position = worldMatrix.position2D);
+  void fire() => emit(Bullet()..transform.position = worldMatrix.position2D.vector);
 
   @override
   void onInit() {

@@ -112,7 +112,11 @@ class SceneState extends State<SceneWidget> {
 
   void _initScene() {
     loop = widget.loop ?? Loop();
-    viewport = SceneViewport.of(context)?.widget;
+    final viewportState = SceneViewport.of(context);
+
+    if (viewportState != null) {
+      viewport = viewportState.widget;
+    }
 
     if (!loop.isMounted) {
       loop.mount(widget.control);

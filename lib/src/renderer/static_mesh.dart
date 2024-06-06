@@ -45,6 +45,13 @@ class StaticMesh extends SceneActor {
     canvas.save();
     canvas.transform(screenMatrix.storage);
 
+    renderComponent(canvas, rect);
+
+    canvas.restore();
+  }
+
+  @override
+  void renderComponent(Canvas canvas, Rect rect) {
     canvas.drawVertices(
       ui.Vertices.raw(
         VertexMode.triangles,
@@ -55,7 +62,5 @@ class StaticMesh extends SceneActor {
       BlendMode.src,
       _paint,
     );
-
-    canvas.restore();
   }
 }

@@ -60,22 +60,25 @@ extension Vector2Ext on Vector2 {
     storage[0] *= step;
     storage[1] *= step;
   }
+
+  Offset get offset => Offset(storage[0], storage[1]);
 }
 
-/// Currently holds only local transforms
 class TransformMatrix {
   final _matrix = Matrix4.identity();
 
   Offset origin = const Offset(0.5, 0.5);
+  final _direction = Vector2(1.0, 0.0);
+  final _position = Vector2(0.0, 0.0);
 
-  Offset _position = Offset.zero;
+  Vector2 get position => _position;
 
-  Offset get position => _position;
+  set position(Vector2 value) {
+    _position[0] = value[0];
+    _position[1] = value[1];
 
-  set position(Offset value) {
-    _position = value;
-    _matrix[12] = value.dx;
-    _matrix[13] = value.dy;
+    _matrix[12] = value[0];
+    _matrix[13] = value[1];
   }
 
   Scale _scale = Scale.one;
@@ -84,42 +87,47 @@ class TransformMatrix {
 
   set scale(Scale value) {
     _scale = value;
-    _rebuildMatrix = true;
+    _rebuild = true;
   }
 
-  double _rotation = 0.0;
+  Vector2 get direction => _direction;
 
-  double get rotation => _rotation;
+  double get rotation => math.atan2(_direction[1], _direction[0]);
 
-  set rotation(double value) {
-    _rotation = value;
-    _rebuildMatrix = true;
+  set rotation(double radians) {
+    final s = math.sin(radians);
+    final c = math.cos(radians);
+
+    _direction[0] = c;
+    _direction[1] = s;
+    _rebuild = true;
   }
 
   Matrix4 get matrix {
-    if (!_rebuildMatrix) {
+    if (!_rebuild) {
       return _matrix;
     }
 
-    _rebuildMatrix = false;
+    _rebuild = false;
 
     final s = math.sin(rotation);
     final c = math.cos(rotation);
 
-    _matrix[0] = c * scale.width.abs();
-    _matrix[4] = s * scale.width.abs();
+    _matrix[0] = c * scale.x.abs();
+    _matrix[4] = s * scale.x.abs();
 
-    _matrix[1] = -s * scale.height.abs();
-    _matrix[5] = c * scale.height.abs();
+    _matrix[1] = -s * scale.y.abs();
+    _matrix[5] = c * scale.y.abs();
 
     return _matrix;
   }
 
-  bool _rebuildMatrix = false;
+  bool _rebuild = false;
 }
 
-/// Just fake inversion Matrix that mimics orthographic projection and view.
-class Viewport2D {
+/// Just fake 2D inversion Matrix that mimics orthographic projection & view.
+class Viewport2D extends BaseModel with NotifierComponent {
+  Rect screenFrame = Rect.zero;
   Size screenSize = Size.zero;
   Size viewSize = Size.zero;
 
@@ -132,7 +140,7 @@ class Viewport2D {
 
   Offset get origin => Offset(viewSize.width * 0.5 + position[0], viewSize.height * 0.5 + position[1]);
 
-  Matrix4 get matrix => _transformMatrix();
+  Matrix4 get matrix => _buildMatrix();
 
   double get scale => _scale;
 
@@ -164,7 +172,7 @@ class Viewport2D {
     _rebuild = true;
   }
 
-  Matrix4 _transformMatrix() {
+  Matrix4 _buildMatrix() {
     if (!_rebuild) {
       return _matrix;
     }
@@ -173,13 +181,12 @@ class Viewport2D {
 
     final s = math.sin(rotation);
     final c = math.cos(rotation);
-    final as = scale.abs();
 
-    _matrix[0] = c * as;
-    _matrix[4] = s * as;
+    _matrix[0] = c * scale;
+    _matrix[4] = s * scale;
 
-    _matrix[1] = -s * as;
-    _matrix[5] = c * as;
+    _matrix[1] = -s * scale;
+    _matrix[5] = c * scale;
 
     final dx = _position[0] * scale;
     final dy = _position[1] * scale;
@@ -194,9 +201,9 @@ class Viewport2D {
 
   Matrix4 multiply(Matrix4 local, [Matrix4? output]) => matrix.multiplied2DTransform(local, output);
 
-  Size updateViewport(Size frame, {double? requiredWidth, double? requiredHeight}) {
+  void updateViewport(Size frame, {double? requiredWidth, double? requiredHeight, double framePadding = 32.0, ValueCallback<Size>? onChanged}) {
     if (frame == screenSize) {
-      return viewSize;
+      return;
     }
 
     if (requiredWidth != null) {
@@ -208,6 +215,14 @@ class Viewport2D {
     screenSize = frame;
     viewSize = frame * reverseScale;
 
-    return viewSize;
+    screenFrame = Rect.fromLTRB(
+      -framePadding,
+      -framePadding,
+      (viewSize.width * scale) + framePadding,
+      (viewSize.height * scale) + framePadding,
+    );
+
+    onChanged?.call(viewSize);
+    notify();
   }
 }

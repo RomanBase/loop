@@ -70,10 +70,10 @@ class Spaceship extends SceneComponent with LoopCollisionComponent {
   void onInit() {
     super.onInit();
 
-    getLoop()!.frame.subscribe((value) {
-      transform.position = getLoop()!.size.bottomCenter(const Offset(0.0, 300));
+    getLoop()!.viewport.subscribe(() {
+      transform.position = getLoop()!.size.bottomCenter(const Offset(0.0, 300)).vector;
       _activateSideJiggle();
-    }, current: false).once();
+    }).once();
 
     config.clean();
     build();
@@ -86,12 +86,12 @@ class Spaceship extends SceneComponent with LoopCollisionComponent {
   void build() {
     transform.scale = const Scale.of(0.5);
 
-    attach(Gun()..transform.position = const Offset(0.0, -65.0));
+    attach(Gun()..transform.position = Vector2(0.0, -65.0));
 
     attach(
       Sprite(asset: Asset.get(config.flame.value))
         ..transform.origin = const Offset(0.5, 0.0)
-        ..transform.position = const Offset(0.0, 60.0)
+        ..transform.position = Vector2(0.0, 60.0)
         ..setDefaultSize(),
       slot: '${config.flame.key}1',
     );
@@ -99,7 +99,7 @@ class Spaceship extends SceneComponent with LoopCollisionComponent {
     attach(
       Sprite(asset: Asset.get(config.flame.value))
         ..transform.origin = const Offset(0.5, 0.0)
-        ..transform.position = const Offset(0.0, 60.0)
+        ..transform.position = Vector2(0.0, 60.0)
         ..alpha = 0.35
         ..setDefaultSize(),
       slot: '${config.flame.key}2',
@@ -108,7 +108,7 @@ class Spaceship extends SceneComponent with LoopCollisionComponent {
     attach(
       Sprite(asset: Asset.get(config.flame.value))
         ..transform.origin = const Offset(0.5, 0.0)
-        ..transform.position = const Offset(0.0, 60.0)
+        ..transform.position = Vector2(0.0, 60.0)
         ..alpha = 0.35
         ..setDefaultSize(),
       slot: '${config.flame.key}3',
@@ -116,7 +116,7 @@ class Spaceship extends SceneComponent with LoopCollisionComponent {
 
     attach(
       Sprite(asset: Asset.get(config.engine.value))
-        ..transform.position = const Offset(0.0, 60.0)
+        ..transform.position = Vector2(0.0, 60.0)
         ..setDefaultSize(),
       slot: config.engine.key,
     );
@@ -128,12 +128,12 @@ class Spaceship extends SceneComponent with LoopCollisionComponent {
 
     attach(
       LoopCollisionActor()
-        ..transform.position = const Offset(0.0, -35.0)
+        ..transform.position = Vector2(0.0, -35.0)
         ..attach(Sprite(asset: Asset.get(config.bodyAlt.value))
-          ..transform.position = const Offset(-40.0, 0.0)
+          ..transform.position = Vector2(-40.0, 0.0)
           ..setDefaultSize())
         ..attach(Sprite(asset: Asset.get(config.bodyAlt.value))
-          ..transform.position = const Offset(40.0, 0.0)
+          ..transform.position = Vector2(40.0, 0.0)
           ..transform.scale = const Scale(-1.0, 1.0)
           ..setDefaultSize()),
       slot: config.bodyAlt.key,
@@ -141,12 +141,12 @@ class Spaceship extends SceneComponent with LoopCollisionComponent {
 
     attach(
       LoopCollisionActor()
-        ..transform.position = const Offset(0.0, 16.0)
+        ..transform.position = Vector2(0.0, 16.0)
         ..attach(Sprite(asset: Asset.get(config.wing.value))
-          ..transform.position = const Offset(-70.0, 0.0)
+          ..transform.position = Vector2(-70.0, 0.0)
           ..setDefaultSize())
         ..attach(Sprite(asset: Asset.get(config.wing.value))
-          ..transform.position = const Offset(70.0, 0.0)
+          ..transform.position = Vector2(70.0, 0.0)
           ..transform.scale = const Scale(-1.0, 1.0)
           ..setDefaultSize()),
       slot: config.wing.key,
@@ -155,10 +155,10 @@ class Spaceship extends SceneComponent with LoopCollisionComponent {
     attach(
       SceneComponent()
         ..attach(Sprite(asset: Asset.get(config.bodySide.value))
-          ..transform.position = const Offset(-35.0, 0.0)
+          ..transform.position = Vector2(-35.0, 0.0)
           ..setDefaultSize())
         ..attach(Sprite(asset: Asset.get(config.bodySide.value))
-          ..transform.position = const Offset(35.0, 0.0)
+          ..transform.position = Vector2(35.0, 0.0)
           ..transform.scale = const Scale(-1.0, 1.0)
           ..setDefaultSize()),
       slot: config.bodySide.key,
@@ -166,12 +166,12 @@ class Spaceship extends SceneComponent with LoopCollisionComponent {
 
     attach(
       SceneComponent()
-        ..transform.position = const Offset(0.0, -20.0)
+        ..transform.position = Vector2(0.0, -20.0)
         ..attach(Sprite(asset: Asset.get(config.wingAlt.value))
-          ..transform.position = const Offset(-35.0, 0.0)
+          ..transform.position = Vector2(-35.0, 0.0)
           ..setDefaultSize())
         ..attach(Sprite(asset: Asset.get(config.wingAlt.value))
-          ..transform.position = const Offset(35.0, 0.0)
+          ..transform.position = Vector2(35.0, 0.0)
           ..transform.scale = const Scale(-1.0, 1.0)
           ..setDefaultSize()),
       slot: config.wingAlt.key,
@@ -179,14 +179,14 @@ class Spaceship extends SceneComponent with LoopCollisionComponent {
 
     attach(
       Sprite(asset: Asset.get(config.cabinAlt.value))
-        ..transform.position = const Offset(0.0, 40.0)
+        ..transform.position = Vector2(0.0, 40.0)
         ..setDefaultSize(),
       slot: config.cabinAlt.key,
     );
 
     attach(
       Sprite(asset: Asset.get(config.cabin.value))
-        ..transform.position = const Offset(0.0, -65.0)
+        ..transform.position = Vector2(0.0, -65.0)
         ..setDefaultSize()
         ..attach(LoopColliderComponent()),
       slot: config.cabin.key,
@@ -228,7 +228,7 @@ class Spaceship extends SceneComponent with LoopCollisionComponent {
       final originScale = element.transform.scale;
       final originPosition = element.transform.position;
 
-      element.applyScale(const Scale.of(3.0) & originScale, duration: const Duration(milliseconds: 300), reset: true)
+      element.applyScale(const Scale.of(3.0) * originScale, duration: const Duration(milliseconds: 300), reset: true)
         ..curve = Curves.ease
         ..onFinished = () {
           element.asset = Asset.get(pref.value);
@@ -244,14 +244,14 @@ class Spaceship extends SceneComponent with LoopCollisionComponent {
         ..curve = Curves.easeInQuad
         ..onValue = (value) => element.alpha = value;
 
-      element.applyTranslate(Offset(originPosition.dx * 5.0, originPosition.dy * 3.0), duration: const Duration(milliseconds: 200)).curve = Curves.ease;
-      element.applyTranslate(originPosition, duration: const Duration(milliseconds: 600)).curve = Curves.easeInQuad;
+      element.applyTranslate(Offset(originPosition.x * 5.0, originPosition.y * 3.0), duration: const Duration(milliseconds: 200)).curve = Curves.ease;
+      element.applyTranslate(originPosition.offset, duration: const Duration(milliseconds: 600)).curve = Curves.easeInQuad;
     }
 
     if (component is! Sprite) {
       final originPosition = component.transform.position;
-      component.applyTranslate(Offset(originPosition.dx, originPosition.dy * 3.0), duration: const Duration(milliseconds: 200)).curve = Curves.ease;
-      component.applyTranslate(originPosition, duration: const Duration(milliseconds: 600)).curve = Curves.easeInQuad;
+      component.applyTranslate(Offset(originPosition.x, originPosition.y * 3.0), duration: const Duration(milliseconds: 200)).curve = Curves.ease;
+      component.applyTranslate(originPosition.offset, duration: const Duration(milliseconds: 600)).curve = Curves.easeInQuad;
     }
 
     pref.value = pref.getAsset(index);

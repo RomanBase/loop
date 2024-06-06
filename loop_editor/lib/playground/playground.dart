@@ -39,11 +39,11 @@ extension _PlaygroundComponent on CoreContext {
           ..attach(Sprite(asset: Asset.get('placeholder'))
             ..tag = 'group_1'
             ..size = const Size(24.0, 24.0)
-            ..transform.position = const Offset(28.0, 0.0)
+            ..transform.position = Vector2(28.0, 0.0)
             ..attach(Sprite(asset: Asset.get('placeholder'))
               ..tag = 'group_2'
               ..size = const Size(16.0, 16.0)
-              ..transform.position = const Offset(20.0, 0.0)
+              ..transform.position = Vector2(20.0, 0.0)
               ..applyTranslate(const Offset(64.0, 0.0)).setLoopBehavior(LoopBehavior.reverseLoop)
               ..applyScale(const Scale.of(2.0)).setLoopBehavior(LoopBehavior.reverseLoop)
               ..applyRotate(360).setLoopBehavior(LoopBehavior.reverseLoop)))
@@ -61,19 +61,19 @@ extension _PlaygroundComponent on CoreContext {
           },
         )
           ..tag = 'fire'
-          ..transform.position = const Offset(320.0, 320.0)
+          ..transform.position = Vector2(320.0, 320.0)
           ..applyTranslate(const Offset(320.0, 280.0)).setLoopBehavior(LoopBehavior.loop)
           ..applyScale(const Scale.of(2.0)).setLoopBehavior(LoopBehavior.loop));
 
         loop.attach(DragSprite());
-        loop.attach(DragSprite()..transform.position = Offset(0, -50.0));
+        loop.attach(DragSprite()..transform.position = Vector2(0, -50.0));
 
         for (int i = 1; i < 10; i++) {
-          loop.attach(DragSprite()..transform.position = Offset(i * 400.0, 0));
+          loop.attach(DragSprite()..transform.position = Vector2(i * 400.0, 0));
         }
 
         for (int i = 1; i < 100; i++) {
-          loop.attach(DragSprite()..transform.position = Offset(0, i * 50.0));
+          loop.attach(DragSprite()..transform.position = Vector2(0, i * 50.0));
         }
 
         const s = 20.0;
@@ -88,7 +88,7 @@ extension _PlaygroundComponent on CoreContext {
             ..setFloat(2, 1.0)
             ..setFloat(3, 1.0),
         )
-          ..transform.position = const Offset(0, 0)
+          ..transform.position = Vector2(0, 0)
           ..applyScale(const Scale(1.25, 1.0)).setLoopBehavior(LoopBehavior.reverseLoop));
 
         return loop;
@@ -335,7 +335,7 @@ class PerformanceTest extends ControlWidget {
 
 class _RectRenderer extends SceneComponent with RenderComponent {
   @override
-  bool get visibleClip => false;
+  bool get unbounded => false;
 
   @override
   void render(Canvas canvas, Rect rect) {
@@ -354,7 +354,7 @@ class _RectRenderer extends SceneComponent with RenderComponent {
 
 class _MeshRenderer extends SceneComponent with RenderComponent {
   @override
-  bool get visibleClip => false;
+  bool get unbounded => false;
 
   final rectVertices = Float32List.fromList([0.0, 0.0, 24.0, 0.0, 24.0, 24.0, 0.0, 24.0]);
 

@@ -1,23 +1,23 @@
 import 'package:flutter_control/control.dart';
 import 'package:loop/loop.dart';
 
-class Mouse extends SceneActor with PointerComponent {
+class Mouse extends SceneComponent with RenderComponent, PointerComponent {
   Mouse() {
     zIndex = 999;
     pointer.primary = true;
 
     size = const Size.square(32.0);
-    visibleClip = false;
+    unbounded = false;
   }
 
   @override
   void render(Canvas canvas, Rect rect) {
     final viewport = getLoop()!.viewport;
-    final offset = (transform.position + Offset(viewport.position.x, viewport.position.y)) * viewport.scale;
+    final offset = (transform.position + viewport.position) * viewport.scale;
 
     final dst = Rect.fromLTWH(
-      offset.dx + viewport.screenSize.width * 0.5 - size.width * 0.5,
-      offset.dy + viewport.screenSize.height * 0.5 - size.height * 0.5,
+      offset.x + viewport.screenSize.width * 0.5 - size.width * 0.5,
+      offset.y + viewport.screenSize.height * 0.5 - size.height * 0.5,
       size.width,
       size.height,
     );
@@ -29,7 +29,7 @@ class Mouse extends SceneActor with PointerComponent {
       textAlign: TextAlign.center,
     )
       ..text = TextSpan(
-        text: '${transform.position.dx.toInt()}, ${transform.position.dy.toInt()}',
+        text: '${transform.position.x.toInt()}, ${transform.position.y.toInt()}',
         style: const TextStyle(
           letterSpacing: 0.0,
           fontSize: 10.0,
@@ -50,7 +50,7 @@ class Mouse extends SceneActor with PointerComponent {
 
   @override
   bool onPointerMove(Pointer event) {
-    transform.position = event.position;
+    transform.position = event.position.vector;
     pointer.move?.call(event);
     return false;
   }
@@ -71,7 +71,7 @@ class Mouse extends SceneActor with PointerComponent {
 
   @override
   bool onPointerHover(Pointer event) {
-    transform.position = event.position;
+    transform.position = event.position.vector;
     pointer.hover?.call(event);
     return false;
   }

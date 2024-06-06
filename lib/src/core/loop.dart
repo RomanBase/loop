@@ -32,34 +32,20 @@ mixin LoopComponent {
 }
 
 class Loop with LoopComponent, ObservableLoop, RenderComponent, RenderQueue, LoopLeaf, PointerDispatcher {
-  final viewport = Viewport2D();
   final items = <LoopComponent>[];
   final _actions = <_ComponentAction>[];
   bool _tickActive = false;
 
-  //TODO: custom struct
-  /// We don't care about rotation during visibility test, so [framePadding] extends viewport bounds.
-  final frame = ActionControl.broadcast<Rect>(Rect.zero);
+  Viewport2D? _viewport2d;
 
-  double get framePadding => 32.0;
+  Viewport2D get viewport => _viewport2d ??= Viewport2D();
 
-  void updateViewportSize(Size canvasSize, {double? requiredWidth, double? requiredHeight, double? ratio}) {
-    if (frame.internalData == canvasSize) {
-      return;
-    }
-
-    frame.internalData = canvasSize;
-    size = viewport.updateViewport(
+  void prepareViewport(Size canvasSize, {double? requiredWidth, double? requiredHeight}) {
+    viewport.updateViewport(
       canvasSize,
       requiredWidth: requiredWidth,
       requiredHeight: requiredHeight,
-    );
-
-    frame.value = Rect.fromLTRB(
-      -framePadding,
-      -framePadding,
-      (size.width * viewport.scale) + framePadding,
-      (size.height * viewport.scale) + framePadding,
+      onChanged: (viewSize) => size = viewSize,
     );
   }
 
@@ -148,10 +134,10 @@ class Loop with LoopComponent, ObservableLoop, RenderComponent, RenderQueue, Loo
     for (final element in items) {
       if (element.active) {
         element.tick(dt);
+      }
 
-        if (element is RenderComponent) {
-          pushRenderComponent(element);
-        }
+      if (element is RenderComponent) {
+        pushRenderComponent(element);
       }
     }
     _tickActive = false;
@@ -173,7 +159,7 @@ class Loop with LoopComponent, ObservableLoop, RenderComponent, RenderQueue, Loo
 
   @override
   void pushRenderComponent(RenderComponent component) {
-    if (!component.isVisible(frame.value)) {
+    if (!component.isVisible(viewport.screenFrame)) {
       return;
     }
 

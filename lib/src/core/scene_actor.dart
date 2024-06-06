@@ -23,6 +23,11 @@ abstract class SceneActor extends SceneComponent with RenderComponent {
     _screenBounds = null;
     super.tick(dt);
   }
+
+  @override
+  void render(Canvas canvas, Rect rect) => canvas.renderComponent(this, (dst) => renderComponent(canvas, dst));
+
+  void renderComponent(Canvas canvas, Rect rect);
 }
 
 class EmptySceneActor extends SceneActor {
@@ -30,5 +35,5 @@ class EmptySceneActor extends SceneActor {
   bool get visible => false;
 
   @override
-  void render(Canvas canvas, Rect rect) {}
+  void renderComponent(Canvas canvas, Rect rect) {}
 }

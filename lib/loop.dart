@@ -6,6 +6,7 @@ import 'dart:collection';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'dart:math' as math;
+import 'package:flutter/semantics.dart';
 import 'package:vector_math/vector_math.dart' as v_math;
 import 'package:flutter/animation.dart';
 import 'package:flutter/cupertino.dart';
@@ -72,6 +73,8 @@ extension OffsetExt on Offset {
   bool get isZero => dx == 0.0 && dy == 0.0;
 
   bool get isOne => dx == 1.0 && dy == 1.0;
+
+  Vector2 get vector => Vector2(dx, dy);
 }
 
 extension SizeExt on Size {
@@ -86,14 +89,25 @@ extension SizeExt on Size {
   Size scale(double rx, [double? ry]) => Size(width * rx, height * (ry ?? rx));
 }
 
-class Scale extends Size {
+class Scale {
+  final double x;
+  final double y;
+
+  bool get isNegative => x < 0.0 || y < 0.0;
+
+  double get dx => x < 0.0 ? -1.0 : 1.0;
+
+  double get dy => y < 0.0 ? -1.0 : 1.0;
+
+  const Scale(this.x, this.y);
+
+  const Scale.of(double value) : this(value, value);
+
   static const Scale one = Scale(1.0, 1.0);
 
-  const Scale(super.width, super.height);
+  Scale operator *(Scale other) => Scale(x * other.x, y * other.y);
 
-  const Scale.of(double value) : super(value, value);
+  Size operator &(Size other) => Size(x * other.width, y * other.height);
 
-  operator &(Size other) => Scale(width * other.width, height * other.height);
-
-  static Scale lerp(Scale a, Scale b, double t) => Scale(a.width + (b.width - a.width) * t, a.height + (b.height - a.height) * t);
+  static Scale lerp(Scale a, Scale b, double t) => Scale(a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t);
 }

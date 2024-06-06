@@ -31,7 +31,7 @@ extension CanvasRender on Canvas {
     save();
     translate(rect.left + origin.dx, rect.top + origin.dy);
     rotate(rotation);
-    this.scale(scale.width < 0.0 ? -1.0 : 1.0, scale.height < 0.0 ? -1.0 : 1.0);
+    this.scale(scale.dx, scale.dy);
 
     render(Rect.fromLTRB(-origin.dx, -origin.dy, rect.width - origin.dx, rect.height - origin.dy));
 
@@ -83,7 +83,7 @@ class ViewportPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    widget.scene.updateViewportSize(
+    widget.scene.prepareViewport(
       size,
       requiredWidth: widget.width,
       requiredHeight: widget.height,
@@ -146,7 +146,7 @@ class BBoxRenderComponent<T extends SceneComponent> extends SceneComponent with 
   late LoopComponent _boxParent;
 
   @override
-  bool get visibleClip => false;
+  bool get unbounded => false;
 
   Color color = Colors.red;
 

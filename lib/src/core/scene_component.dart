@@ -5,6 +5,10 @@ class SceneComponent with ObservableLoopComponent {
 
   final transform = TransformMatrix();
 
+  final _screenMatrixStorage = Matrix4.identity();
+  final _worldMatrixStorage = Matrix4.identity();
+
+  //fake pointers to matrix storage
   Matrix4? _screenMatrix;
   Matrix4? _worldMatrix;
 
@@ -133,10 +137,10 @@ class SceneComponent with ObservableLoopComponent {
 
   Matrix4 _screenSpace() {
     if (parent == null) {
-      return getLoop()?.viewport.multiply(transform.matrix) ?? transform.matrix;
+      return getLoop()?.viewport.multiply(transform.matrix, _screenMatrixStorage) ?? transform.matrix;
     }
 
-    return parent!.screenMatrix.multiplied2DTransform(transform.matrix);
+    return parent!.screenMatrix.multiplied2DTransform(transform.matrix, _screenMatrixStorage);
   }
 
   Matrix4 _worldSpace() {
@@ -144,7 +148,7 @@ class SceneComponent with ObservableLoopComponent {
       return transform.matrix;
     }
 
-    return parent!.worldMatrix.multiplied2DTransform(transform.matrix);
+    return parent!.worldMatrix.multiplied2DTransform(transform.matrix, _worldMatrixStorage);
   }
 
   Rect getBounds(Size size) {

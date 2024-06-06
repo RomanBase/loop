@@ -18,9 +18,9 @@ extension SceneComponentDeltaTransform on SceneComponent {
     return applyTransform(
       DeltaPosition(
         duration: duration,
-        begin: begin ?? transform.position,
+        begin: begin ?? transform.position.offset,
         end: location,
-      )..onValue = (value) => transform.position = value,
+      )..onValue = (value) => transform.position = Vector2(value.dx, value.dy),
       reset: reset,
     );
   }
@@ -73,10 +73,10 @@ extension SceneComponentDeltaTransform on SceneComponent {
     return applyTransform(
       DeltaCurve(
         duration: duration,
-        begin: begin ?? transform.position,
+        begin: begin ?? transform.position.offset,
         end: location,
         cp: controlPoint,
-      )..onValue = (value) => transform.position = value,
+      )..onValue = (value) => transform.position = Vector2(value.dx, value.dy),
       reset: reset,
     );
   }

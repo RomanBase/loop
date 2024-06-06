@@ -9,11 +9,11 @@ class DragSprite extends Sprite with PointerComponent {
   void onInit() {
     super.onInit();
 
-    pointer.move = (event) => transform.position = event.position;
+    pointer.move = (event) => transform.position = event.position.vector;
 
-    getLoop()!.frame.subscribe((value) {
+    getLoop()!.viewport.subscribe(() {
       //transform.position = getLoop()!.size.center(Offset.zero);
       size = Size(getLoop()!.size.width, 50.0);
-    }, current: false).once();
+    }).once();
   }
 }

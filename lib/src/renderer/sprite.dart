@@ -90,24 +90,22 @@ class Sprite extends SceneActor {
   }
 
   @override
-  void render(Canvas canvas, Rect rect) {
-    canvas.renderComponent(this, (dst) {
-      if (action != null && action!.blend != null && !sequence.atEdge) {
-        canvas.drawImageRect(
-          asset,
-          asset.tile(frame + 1, action),
-          dst,
-          Paint()..color = Color.fromRGBO(255, 255, 255, blend * alpha),
-        );
-      }
-
+  void renderComponent(Canvas canvas, Rect rect) {
+    if (action != null && action!.blend != null && !sequence.atEdge) {
       canvas.drawImageRect(
         asset,
-        asset.tile(frame, action),
-        dst,
-        Paint()..color = Color.fromRGBO(255, 255, 255, alpha),
+        asset.tile(frame + 1, action),
+        rect,
+        Paint()..color = Color.fromRGBO(255, 255, 255, blend * alpha),
       );
-    });
+    }
+
+    canvas.drawImageRect(
+      asset,
+      asset.tile(frame, action),
+      rect,
+      Paint()..color = Color.fromRGBO(255, 255, 255, alpha),
+    );
   }
 }
 

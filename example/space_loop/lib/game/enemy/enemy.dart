@@ -12,7 +12,7 @@ class Enemy extends Sprite with LoopCollisionComponent {
 
   Enemy() : super(asset: Asset.get('mine_0${1 + Random().nextInt(5)}')) {
     //spawn offscreen
-    transform.position = const Offset(0.0, -1000.0);
+    transform.position = Vector2(0.0, -1000.0);
   }
 
   @override
@@ -23,8 +23,8 @@ class Enemy extends Sprite with LoopCollisionComponent {
     final spaceship = findComponent<Spaceship>(root: true)!;
 
     applyTranslate(
-      spaceship.transform.position,
-      begin: Offset(random.nextDouble() * getLoop()!.frame.value.width, -100.0),
+      spaceship.transform.position.offset,
+      begin: Offset(random.nextDouble() * getLoop()!.size.width, -100.0),
       duration: const Duration(milliseconds: 3000),
     );
 

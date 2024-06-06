@@ -4,13 +4,13 @@ mixin RenderComponent on LoopComponent {
   Size size = const Size(100.0, 100.0);
 
   bool visible = true;
-  bool visibleClip = true;
+  bool unbounded = false;
 
   int zIndex = 0;
 
   Rect get screenBounds => Rect.largest;
 
-  bool isVisible(Rect rect) => visible && (!visibleClip || screenBounds.overlaps(rect));
+  bool isVisible(Rect rect) => visible && (unbounded || screenBounds.overlaps(rect));
 
   void render(Canvas canvas, Rect rect);
 }

@@ -31,7 +31,7 @@ class Bullet extends Sprite with LoopCollisionComponent {
   void onTick(double dt) {
     super.onTick(dt);
 
-    transform.position += Offset(0.0, speed * dt);
+    transform.position += Vector2(0.0, speed * dt);
   }
 
   @override

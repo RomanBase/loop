@@ -181,15 +181,13 @@ class Viewport2D {
     _matrix[1] = -s * as;
     _matrix[5] = c * as;
 
-    final x = _position[0] * scale;
-    final y = _position[1] * scale;
+    final dx = _position[0] * scale;
+    final dy = _position[1] * scale;
     final sx = screenSize.width * 0.5;
     final sy = screenSize.height * 0.5;
-    final dx = x ;
-    final dy = y ;
 
     _matrix[12] = dx * _direction.x + dy * _direction.y + sx;
-    _matrix[13] = dx * _direction.y + dy * _direction.x + sy;
+    _matrix[13] = -dx * _direction.y + dy * _direction.x + sy;
 
     return _matrix;
   }

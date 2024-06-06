@@ -45,10 +45,10 @@ packages:
     dependency: "direct main"
     description:
       name: control_core
-      sha256: "67a1c96f7c8648168c5f47c14c9139cb4e1fd1d615a693f9431c8afe57c91b96"
+      sha256: "0e3ffac7a2d1c452dec46fd14f04665ccb9c19502669dab90816b68307da0187"
       url: "https://pub.dev"
     source: hosted
-    version: "1.2.0"
+    version: "1.2.1"
   fake_async:
     dependency: transitive
     description:

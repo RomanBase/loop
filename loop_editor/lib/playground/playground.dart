@@ -68,8 +68,12 @@ extension _PlaygroundComponent on CoreContext {
         loop.attach(DragSprite());
         loop.attach(DragSprite()..transform.position = Offset(0, -50.0));
 
+        for (int i = 1; i < 10; i++) {
+          loop.attach(DragSprite()..transform.position = Offset(i * 400.0, 0));
+        }
+
         for (int i = 1; i < 100; i++) {
-          loop.attach(DragSprite()..transform.position = Offset(0.0, i * 50.0));
+          loop.attach(DragSprite()..transform.position = Offset(0, i * 50.0));
         }
 
         const s = 20.0;

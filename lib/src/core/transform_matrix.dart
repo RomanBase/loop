@@ -188,7 +188,7 @@ class Viewport2D {
     final dx = x ;
     final dy = y ;
 
-    _matrix[12] = dx * _direction.x - dy * _direction.y + sx;
+    _matrix[12] = dx * _direction.x + dy * _direction.y + sx;
     _matrix[13] = dx * _direction.y + dy * _direction.x + sy;
 
     return _matrix;

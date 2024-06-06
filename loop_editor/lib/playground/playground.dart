@@ -66,6 +66,8 @@ extension _PlaygroundComponent on CoreContext {
           ..applyScale(const Scale.of(2.0)).setLoopBehavior(LoopBehavior.loop));
 
         loop.attach(DragSprite());
+        loop.attach(DragSprite()..transform.position = Offset(-200.0, -50.0));
+        loop.attach(DragSprite()..transform.position = Offset(200.0, 50.0));
 
         const s = 20.0;
         loop.attach(StaticMesh(

@@ -190,7 +190,8 @@ class BBoxRenderComponent<T extends SceneComponent> extends SceneComponent with 
     if (_boxParent is Loop) {
       // render also scene bounds while rendering generic bounds
       if (shouldRender(EmptySceneActor())) {
-        _renderBBox(canvas, '$_boxParent', Matrix4.identity()..scale((_boxParent as Loop).viewport.scale));
+        final viewport = (_boxParent as Loop).viewport;
+        _renderBBox(canvas, '$_boxParent', Matrix4.identity()..scale(viewport.scale));
       }
 
       for (final element in (_boxParent as Loop).items) {

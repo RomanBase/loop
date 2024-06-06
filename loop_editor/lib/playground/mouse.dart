@@ -6,30 +6,39 @@ class Mouse extends SceneActor with PointerComponent {
     zIndex = 999;
     pointer.primary = true;
 
-    size = const Size.square(16.0);
+    size = const Size.square(32.0);
+    visibleClip = false;
   }
 
   @override
   void render(Canvas canvas, Rect rect) {
-    canvas.renderComponent(this, (dst) {
-      canvas.drawCircle(dst.center, dst.width * 0.5, Paint()..color = pointer.isDown ? Colors.blue : Colors.black);
+    final viewport = getLoop()!.viewport;
+    final offset = (transform.position + Offset(viewport.position.x, viewport.position.y)) * viewport.scale;
 
-      final text = TextPainter(
-        textDirection: TextDirection.ltr,
-        textAlign: TextAlign.center,
+    final dst = Rect.fromLTWH(
+      offset.dx + viewport.screenSize.width * 0.5 - size.width * 0.5,
+      offset.dy + viewport.screenSize.height * 0.5 - size.height * 0.5,
+      size.width,
+      size.height,
+    );
+
+    canvas.drawCircle(dst.center, dst.width * 0.5, Paint()..color = pointer.isDown ? Colors.blue : Colors.black);
+
+    final text = TextPainter(
+      textDirection: TextDirection.ltr,
+      textAlign: TextAlign.center,
+    )
+      ..text = TextSpan(
+        text: '${transform.position.dx.toInt()}, ${transform.position.dy.toInt()}',
+        style: const TextStyle(
+          letterSpacing: 0.0,
+          fontSize: 10.0,
+          color: Colors.blue,
+        ),
       )
-        ..text = TextSpan(
-          text: '${transform.position.dx.toInt()}, ${transform.position.dy.toInt()}',
-          style: const TextStyle(
-            letterSpacing: 0.0,
-            fontSize: 10.0,
-            color: Colors.blue,
-          ),
-        )
-        ..layout();
+      ..layout();
 
-      text.paint(canvas, Offset(dst.center.dx - text.width * 0.5, dst.bottom + 12.0));
-    });
+    text.paint(canvas, Offset(dst.center.dx - text.width * 0.5, dst.bottom + 12.0));
   }
 
   @override

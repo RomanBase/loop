@@ -32,7 +32,7 @@ mixin LoopComponent {
 }
 
 class Loop with LoopComponent, ObservableLoop, RenderComponent, RenderQueue, LoopLeaf, PointerDispatcher {
-  final viewport = ViewportMatrix();
+  final viewport = Viewport2D();
   final items = <LoopComponent>[];
   final _actions = <_ComponentAction>[];
   bool _tickActive = false;
@@ -54,20 +54,19 @@ class Loop with LoopComponent, ObservableLoop, RenderComponent, RenderQueue, Loo
       requiredWidth: requiredWidth,
       requiredHeight: requiredHeight,
     );
+
     frame.value = Rect.fromLTRB(
       -framePadding,
       -framePadding,
       (size.width * viewport.scale) + framePadding,
       (size.height * viewport.scale) + framePadding,
     );
-
-    viewport.originOffset = size.center(Offset.zero);
   }
 
   @override
   Pointer transformPointer(PointerEvent event) => Pointer(
         event,
-        (event.localPosition * viewport.reverseScale) + viewport.position,
+        (event.localPosition * viewport.reverseScale) - Offset(viewport.viewSize.width * 0.5, viewport.viewSize.height * 0.5) - Offset(viewport.position[0], viewport.position[1]),
       );
 
   void attach(LoopComponent component) {

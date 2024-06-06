@@ -1,5 +1,7 @@
 library loop;
 
+export 'package:vector_math/vector_math_64.dart' hide Colors;
+
 import 'dart:collection';
 import 'dart:typed_data';
 import 'dart:ui' as ui;

@@ -9,7 +9,7 @@ extension Matrix4Ext on Matrix4 {
 
   double get angle2D => math.atan2(this[1], this[0]);
 
-  Matrix4 multiplied2DTransform(Matrix4 other) {
+  Matrix4 multiplied2DTransform(Matrix4 other, [Matrix4? output]) {
     final m00 = this[0];
     final m01 = this[4];
     final m03 = this[12];
@@ -24,7 +24,9 @@ extension Matrix4Ext on Matrix4 {
     final n11 = other[5];
     final n13 = other[13];
 
-    return Matrix4(
+    output ??= Matrix4.zero();
+
+    output.setValues(
       (m00 * n00) + (m01 * n10),
       (m10 * n00) + (m11 * n10),
       0.0,
@@ -42,7 +44,11 @@ extension Matrix4Ext on Matrix4 {
       0.0,
       1.0,
     );
+
+    return output;
   }
+
+  Matrix4 copy() => Matrix4.fromList(storage);
 }
 
 /// Currently holds only local transforms
@@ -101,48 +107,91 @@ class TransformMatrix {
   bool _rebuildMatrix = false;
 }
 
-/// Just fake inversion Matrix that mimics orthographic projection when multiplied with model matrix.
-/// Viewport size is 'ignored' because we are using mobile space (dp) resolution and we don't deal with frustrum in pure 2d scene. With proper scaling we can fake world size.
-class ViewportMatrix {
-  final _transform = TransformMatrix();
-  final _view = TransformMatrix();
+/// Just fake inversion Matrix that mimics orthographic projection and view.
+class Viewport2D {
+  Size screenSize = Size.zero;
+  Size viewSize = Size.zero;
 
-  Matrix4 get matrix => _transform.matrix;
+  final _matrix = Matrix4.identity();
+  final _position = Vector2(0.0, 0.0);
+  final _direction = Vector2(1.0, 0.0);
+  double _scale = 1.0;
 
-  Offset originOffset = Offset.zero;
+  bool _rebuild = true;
 
-  Offset get position => -_transform.position;
+  Offset get origin => Offset(viewSize.width * 0.5 + position[0], viewSize.height * 0.5 + position[1]);
 
-  set position(Offset value) => _transform.position = -value;
+  Matrix4 get matrix => _transformMatrix();
 
-  double get rotation => -_view.rotation;
+  double get scale => _scale;
 
-  set rotation(double value) => _view.rotation = -value;
-
-  double get scale => _transform.scale.width;
-
-  set scale(double value) => _transform.scale = Scale.of(value);
-
-  double get reverseScale => 1.0 / scale;
-
-  Matrix4 multiply(Matrix4 local) {
-    var vp = _transform.matrix.multiplied2DTransform(_view.matrix);
-    vp.translate(originOffset.dx, originOffset.dy);
-    vp = vp.multiplied2DTransform(local);
-
-    return vp;
+  set scale(double value) {
+    _scale = value;
+    _rebuild = true;
   }
 
+  double get reverseScale => 1.0 / _scale;
+
+  Vector2 get direction => _direction;
+
+  double get rotation => -math.atan2(_direction[1], _direction[0]);
+
+  set rotation(double radians) {
+    final s = math.sin(radians);
+    final c = math.cos(radians);
+
+    _direction[0] = c;
+    _direction[1] = -s;
+    _rebuild = true;
+  }
+
+  Vector2 get position => _position;
+
+  set position(Vector2 value) {
+    _position[0] = value[0];
+    _position[1] = value[1];
+    _rebuild = true;
+  }
+
+  Matrix4 _transformMatrix() {
+    if (!_rebuild) {
+      return _matrix;
+    }
+
+    _rebuild = false;
+
+    final s = math.sin(rotation);
+    final c = math.cos(rotation);
+    final as = scale.abs();
+
+    _matrix[0] = c * as;
+    _matrix[4] = s * as;
+
+    _matrix[1] = -s * as;
+    _matrix[5] = c * as;
+
+    _matrix[12] = _position[0] * scale + (screenSize.width * 0.5);
+    _matrix[13] = _position[1] * scale + (screenSize.height * 0.5);
+
+    return _matrix;
+  }
+
+  Matrix4 multiply(Matrix4 local, [Matrix4? output]) => matrix.multiplied2DTransform(local, output);
+
   Size updateViewport(Size frame, {double? requiredWidth, double? requiredHeight}) {
+    if (frame == screenSize) {
+      return viewSize;
+    }
+
     if (requiredWidth != null) {
       scale = frame.width / requiredWidth;
     } else if (requiredHeight != null) {
       scale = frame.height / requiredHeight;
     }
 
-    _view._rebuildMatrix = true;
-    _transform._rebuildMatrix = true;
+    screenSize = frame;
+    viewSize = frame * reverseScale;
 
-    return frame * reverseScale;
+    return viewSize;
   }
 }

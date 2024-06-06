@@ -22,23 +22,23 @@ class ViewportView extends ControllableWidget<Loop> {
             mainAxisSize: MainAxisSize.min,
             children: [
               IconButton(
-                onPressed: () => control.viewport.position = -Offset(control.size.width * 0.5, control.size.height * 0.5),
+                onPressed: () => control.viewport.position = -Vector2(control.size.width * 0.5, control.size.height * 0.5),
                 icon: const Icon(Icons.center_focus_strong),
               ),
               IconButton(
-                onPressed: () => control.viewport.position += const Offset(0.0, -step),
+                onPressed: () => control.viewport.position += Vector2(0.0, -step),
                 icon: const Icon(Icons.arrow_upward),
               ),
               IconButton(
-                onPressed: () => control.viewport.position += const Offset(0.0, step),
+                onPressed: () => control.viewport.position += Vector2(0.0, step),
                 icon: const Icon(Icons.arrow_downward),
               ),
               IconButton(
-                onPressed: () => control.viewport.position += const Offset(-step, 0.0),
+                onPressed: () => control.viewport.position += Vector2(-step, 0.0),
                 icon: const Icon(Icons.arrow_back),
               ),
               IconButton(
-                onPressed: () => control.viewport.position += const Offset(step, 0.0),
+                onPressed: () => control.viewport.position += Vector2(step, 0.0),
                 icon: const Icon(Icons.arrow_forward),
               ),
               IconButton(
@@ -61,7 +61,7 @@ class ViewportView extends ControllableWidget<Loop> {
               ),
               Expanded(
                 child: Text(
-                  '[${control.viewport.position.dx.toInt()}, ${control.viewport.position.dy.toInt()}] (${control.viewport.rotation * 180.0 ~/ math.pi})',
+                  '[${control.viewport.position.x.toInt()}, ${control.viewport.position.y.toInt()}] (${control.viewport.rotation * 180.0 ~/ math.pi})',
                   textAlign: TextAlign.center,
                 ),
               ),

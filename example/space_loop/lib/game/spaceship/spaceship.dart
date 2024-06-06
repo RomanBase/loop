@@ -71,7 +71,7 @@ class Spaceship extends SceneComponent with LoopCollisionComponent {
     super.onInit();
 
     getLoop()!.viewport.subscribe(() {
-      transform.position = getLoop()!.size.bottomCenter(const Offset(0.0, 300)).vector;
+      transform.position = Vector2(0.0, getLoop()!.size.height * 0.65);
       _activateSideJiggle();
     }).once();
 
@@ -209,7 +209,7 @@ class Spaceship extends SceneComponent with LoopCollisionComponent {
 
   void _activateSideJiggle() {
     final random = Random();
-    applyTranslate(getLoop()!.size.bottomCenter(const Offset(0.0, -200)) + Offset(64.0 * (random.nextDouble() - 0.5) * 2.0, 32.0 * (random.nextDouble() - 0.5) * 2.0))
+    applyTranslate(Offset(0.0, getLoop()!.size.height * 0.25) + Offset(64.0 * (random.nextDouble() - 0.5) * 2.0, 32.0 * (random.nextDouble() - 0.5) * 2.0))
       ..curve = Curves.easeInOut
       ..onFinished = () => _activateSideJiggle();
   }

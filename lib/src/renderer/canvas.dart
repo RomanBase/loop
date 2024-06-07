@@ -47,100 +47,6 @@ extension CanvasRender on Canvas {
   }
 }
 
-class ViewportBuilder extends StatelessWidget {
-  final Loop scene;
-  final double? width;
-  final double? height;
-  final double? ratio;
-
-  const ViewportBuilder({
-    super.key,
-    required this.scene,
-    this.width,
-    this.height,
-    this.ratio,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constrains) => CustomPaint(
-        painter: ViewportPainter(
-          widget: this,
-        ),
-        size: (constrains.hasBoundedWidth && constrains.hasBoundedHeight) ? Size(constrains.maxWidth, constrains.maxHeight) : Size.zero,
-      ),
-    );
-  }
-}
-
-class ViewportPainter extends CustomPainter {
-  final ViewportBuilder widget;
-
-  const ViewportPainter({
-    required this.widget,
-  });
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    widget.scene.prepareViewport(
-      size,
-      requiredWidth: widget.width,
-      requiredHeight: widget.height,
-    );
-
-    widget.scene.render(canvas, Offset.zero & size);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
-}
-
-class CanvasBuilder extends StatelessWidget {
-  final RenderComponent component;
-
-  const CanvasBuilder({
-    super.key,
-    required this.component,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constrains) {
-        return CustomPaint(
-          painter: ComponentPainter(
-            component: component,
-          ),
-          size: (constrains.hasBoundedWidth && constrains.hasBoundedHeight) ? Size(constrains.maxWidth, constrains.maxHeight) : Size.zero,
-        );
-      },
-    );
-  }
-}
-
-class ComponentPainter extends CustomPainter {
-  final RenderComponent component;
-  final Offset offset;
-
-  const ComponentPainter({
-    required this.component,
-    this.offset = Offset.zero,
-  });
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    if (component.size != size) {
-      component.size = size;
-    }
-
-    component.render(canvas, offset & size);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
-}
-
 /// Just for debug
 class BBoxRenderComponent<T extends SceneComponent> extends SceneComponent with RenderComponent {
   late LoopComponent _boxParent;
@@ -264,5 +170,34 @@ class BBoxRenderComponent<T extends SceneComponent> extends SceneComponent with 
         text.paint(canvas, Offset(rect.left, rect.top - 12.0));
       },
     );
+  }
+
+  void _renderSBox(Canvas canvas, String name, Rect rect, [Offset origin = Offset.zero]) {
+    canvas.drawCircle(
+      rect.topLeft + Offset(rect.width * origin.dx, rect.height * origin.dy),
+      4.0,
+      Paint()..color = color,
+    );
+
+    canvas.drawRect(
+      rect,
+      Paint()
+        ..color = color
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 3.0,
+    );
+
+    final text = TextPainter(textDirection: TextDirection.ltr)
+      ..text = TextSpan(
+        text: name.startsWith('Instance of') ? name.substring(name.indexOf('\'') + 1, name.length - 1) : name,
+        style: TextStyle(
+          letterSpacing: 0.0,
+          fontSize: 10.0,
+          color: color,
+        ),
+      );
+
+    text.layout(maxWidth: double.infinity);
+    text.paint(canvas, Offset(rect.left, rect.top - 12.0));
   }
 }

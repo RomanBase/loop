@@ -7,20 +7,25 @@ class Mouse extends SceneComponent with RenderComponent, PointerComponent {
     pointer.primary = true;
 
     size = const Size.square(32.0);
-    unbounded = false;
+    unbounded = true;
   }
 
   @override
-  void render(Canvas canvas, Rect rect) {
+  Rect get screenBounds {
     final viewport = getLoop()!.viewport;
-    final offset = (transform.position + viewport.position) * viewport.scale;
+    final offset = (viewport.transformViewPosition(transform.position) + viewport.position) * viewport.scale;
 
-    final dst = Rect.fromLTWH(
+    return Rect.fromLTWH(
       offset.x + viewport.screenSize.width * 0.5 - size.width * 0.5,
       offset.y + viewport.screenSize.height * 0.5 - size.height * 0.5,
       size.width,
       size.height,
     );
+  }
+
+  @override
+  void render(Canvas canvas, Rect rect) {
+    final dst = screenBounds;
 
     canvas.drawCircle(dst.center, dst.width * 0.5, Paint()..color = pointer.isDown ? Colors.blue : Colors.black);
 

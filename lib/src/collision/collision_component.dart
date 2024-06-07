@@ -13,7 +13,7 @@ mixin LoopCollisionComponent on SceneComponent {
 
   Size? get collisionSize => this is RenderComponent ? (this as RenderComponent).size : null;
 
-  bool get canCollide => active && collisionMask > 0;
+  bool get canCollide => collisionMask > 0;
 
   Function(LoopCollisionComponent other)? onCollision;
   Function(LoopCollisionComponent other)? onCollisionEnded;

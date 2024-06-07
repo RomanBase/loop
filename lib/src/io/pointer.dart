@@ -41,10 +41,10 @@ mixin PointerDispatcher on LoopComponent {
 
   bool onPointerHover(PointerEvent event) => _proceed(_pointers, event, (component, event) => component.onPointerHover(event));
 
-  Pointer transformPointer(PointerEvent event) => Pointer(event, event.localPosition);
+  Pointer transformPointerEvent(PointerEvent event) => Pointer(event, event.localPosition);
 
   bool _proceed(Iterable<PointerListener> items, PointerEvent event, bool Function(PointerListener component, Pointer event) action) {
-    final pointer = transformPointer(event);
+    final pointer = transformPointerEvent(event);
 
     for (final element in items) {
       if (action.call(element, pointer)) {

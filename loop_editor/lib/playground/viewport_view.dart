@@ -3,14 +3,17 @@ import 'package:loop/loop.dart';
 import 'dart:math' as math;
 
 class ViewportView extends ControllableWidget<Loop> {
+  final bool reverse;
+
   const ViewportView({
     super.key,
     required super.control,
+    this.reverse = false,
   });
 
   @override
   Widget build(CoreElement context) {
-    const step = 50.0;
+    final step = 50.0 * (reverse ? -1.0 : 1.0);
 
     return Container(
       width: 320.0,
@@ -22,7 +25,7 @@ class ViewportView extends ControllableWidget<Loop> {
             mainAxisSize: MainAxisSize.min,
             children: [
               IconButton(
-                onPressed: () => control.viewport.position = -Vector2(control.size.width * 0.5, control.size.height * 0.5),
+                onPressed: () => control.viewport.position = !control.viewport.position.isZero ? Vector2(0.0, 0.0) : -Vector2(control.size.width * 0.5, control.size.height * 0.5),
                 icon: const Icon(Icons.center_focus_strong),
               ),
               IconButton(
@@ -34,11 +37,11 @@ class ViewportView extends ControllableWidget<Loop> {
                 icon: const Icon(Icons.arrow_downward),
               ),
               IconButton(
-                onPressed: () => control.viewport.position += Vector2(step, 0.0),
+                onPressed: () => control.viewport.position += Vector2(-step, 0.0),
                 icon: const Icon(Icons.arrow_back),
               ),
               IconButton(
-                onPressed: () => control.viewport.position += Vector2(-step, 0.0),
+                onPressed: () => control.viewport.position += Vector2(step, 0.0),
                 icon: const Icon(Icons.arrow_forward),
               ),
               IconButton(

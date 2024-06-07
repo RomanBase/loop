@@ -32,7 +32,46 @@ extension Matrix4Ext on Matrix4 {
       0.0,
       0.0,
       (m00 * n01) + (m01 * n11),
-      (m10 * n01) + (m11 * n11),
+      ((m10 * n01) + (m11 * n11)),
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      (m00 * n03) + (m01 * n13) + m03,
+      (m10 * n03) + (m11 * n13) + m13,
+      0.0,
+      1.0,
+    );
+
+    return output;
+  }
+
+  Matrix4 multiplied2DViewTransform(Matrix4 other, Vector2 view, [Matrix4? output]) {
+    final m00 = this[0] * view[0];
+    final m01 = this[4] * view[0];
+    final m03 = this[12];
+    final m10 = this[1] * view[1];
+    final m11 = this[5] * view[1];
+    final m13 = this[13];
+
+    final n00 = other[0];
+    final n01 = other[4];
+    final n03 = other[12];
+    final n10 = other[1];
+    final n11 = other[5];
+    final n13 = other[13];
+
+    output ??= Matrix4.zero();
+
+    output.setValues(
+      (m00 * n00) + (m01 * n10),
+      (m10 * n00) + (m11 * n10),
+      0.0,
+      0.0,
+      (m00 * n01) + (m01 * n11),
+      ((m10 * n01) + (m11 * n11)),
       0.0,
       0.0,
       0.0,
@@ -114,9 +153,9 @@ class TransformMatrix {
     final c = math.cos(rotation);
 
     _matrix[0] = c * scale.x.abs();
-    _matrix[4] = s * scale.x.abs();
-
     _matrix[1] = -s * scale.y.abs();
+
+    _matrix[4] = s * scale.x.abs();
     _matrix[5] = c * scale.y.abs();
 
     return _matrix;
@@ -134,6 +173,7 @@ class Viewport2D extends BaseModel with NotifierComponent {
   final _matrix = Matrix4.identity();
   final _position = Vector2(0.0, 0.0);
   final _direction = Vector2(1.0, 0.0);
+  final _view = Vector2(1.0, 1.0);
   double _scale = 1.0;
 
   bool _rebuild = true;
@@ -183,9 +223,9 @@ class Viewport2D extends BaseModel with NotifierComponent {
     final c = math.cos(rotation);
 
     _matrix[0] = c * scale;
-    _matrix[4] = s * scale;
-
     _matrix[1] = -s * scale;
+
+    _matrix[4] = s * scale;
     _matrix[5] = c * scale;
 
     final dx = _position[0] * scale;
@@ -194,27 +234,29 @@ class Viewport2D extends BaseModel with NotifierComponent {
     final sy = screenSize.height * 0.5;
 
     _matrix[12] = dx * _direction.x + dy * _direction.y + sx;
-    _matrix[13] = -dx * _direction.y + dy * _direction.x + sy;
+    _matrix[13] = (-dx * _view[1]) * _direction.y + _view[1] * dy * _direction.x + sy;
 
     return _matrix;
   }
 
-  Matrix4 multiply(Matrix4 local, [Matrix4? output]) => matrix.multiplied2DTransform(local, output);
+  void updateViewUp({double x = 1.0, double y = 1.0}) {
+    _view[0] = x;
+    _view[1] = y;
+  }
 
-  void updateViewport(Size frame, {double? requiredWidth, double? requiredHeight, double framePadding = 32.0, ValueCallback<Size>? onChanged}) {
-    if (frame == screenSize) {
+  void updateViewportFrame(Size size, {double? requiredWidth, double? requiredHeight, double framePadding = 32.0, ValueCallback<Size>? onChanged}) {
+    if (size == screenSize) {
       return;
     }
 
     if (requiredWidth != null) {
-      scale = frame.width / requiredWidth;
+      scale = size.width / requiredWidth;
     } else if (requiredHeight != null) {
-      scale = frame.height / requiredHeight;
+      scale = size.height / requiredHeight;
     }
 
-    screenSize = frame;
-    viewSize = frame * reverseScale;
-
+    viewSize = size * reverseScale;
+    screenSize = size;
     screenFrame = Rect.fromLTRB(
       -framePadding,
       -framePadding,
@@ -224,5 +266,15 @@ class Viewport2D extends BaseModel with NotifierComponent {
 
     onChanged?.call(viewSize);
     notify();
+  }
+
+  Matrix4 transformViewPerspective(Matrix4 local, [Matrix4? output]) => matrix.multiplied2DViewTransform(local, _view, output);
+
+  Vector2 transformViewPosition(Vector2 vector) => Vector2(vector[0] * _view[0], vector[1] * _view[1]);
+
+  Offset transformLocalPoint(Offset localPoint) {
+    final point = ((localPoint * reverseScale) - Offset(viewSize.width * 0.5, viewSize.height * 0.5) - Offset(position[0], position[1]));
+
+    return Offset(point.dx * _view[0], point.dy * _view[1]);
   }
 }

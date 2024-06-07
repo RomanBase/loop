@@ -78,7 +78,7 @@ extension _PlaygroundComponent on CoreContext {
 
         const s = 20.0;
         loop.attach(StaticMesh(
-          Float32List.fromList([-s, -s, s, -s, s, s, -s, s]),
+          Float32List.fromList([-s, s, s, s, s, -s, -s, -s]),
           faces: Uint16List.fromList([0, 1, 2, 0, 2, 3]),
           uvs: Float32List.fromList([0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0]),
           shader: Asset.get<ui.FragmentProgram>('shader').fragmentShader()
@@ -101,6 +101,8 @@ class Playground extends ControlWidget {
   @override
   void onInit(Map args, CoreContext context) {
     super.onInit(args, context);
+
+    context.scene.viewport.updateViewUp(y: -1.0);
 
     context.c1
       ..applyTranslate(Offset(320.0, UITheme.device.height * 0.5), duration: const Duration(seconds: 2)).curve = Curves.easeOutQuad

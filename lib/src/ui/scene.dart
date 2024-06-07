@@ -1,30 +1,5 @@
 part of '../../loop.dart';
 
-class SceneViewport extends StatefulWidget {
-  final double? width;
-  final double? height;
-  final double? ratio;
-  final Widget child;
-
-  const SceneViewport({
-    super.key,
-    this.width,
-    this.height,
-    this.ratio,
-    required this.child,
-  });
-
-  static SceneViewportState? of(BuildContext context) => context.findRootAncestorStateOfType<SceneViewportState>();
-
-  @override
-  State<StatefulWidget> createState() => SceneViewportState();
-}
-
-class SceneViewportState extends State<SceneViewport> {
-  @override
-  Widget build(BuildContext context) => widget.child;
-}
-
 class Scene extends SceneWidget {
   final List<Widget> children;
   final List<SceneItemBuilder> builders;

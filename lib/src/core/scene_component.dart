@@ -137,7 +137,7 @@ class SceneComponent with ObservableLoopComponent {
 
   Matrix4 _screenSpace() {
     if (parent == null) {
-      return getLoop()?.viewport.multiply(transform.matrix, _screenMatrixStorage) ?? transform.matrix;
+      return getLoop()?.viewport.transformViewPerspective(transform.matrix, _screenMatrixStorage) ?? transform.matrix;
     }
 
     return parent!.screenMatrix.multiplied2DTransform(transform.matrix, _screenMatrixStorage);

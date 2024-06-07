@@ -40,20 +40,15 @@ class Loop with LoopComponent, ObservableLoop, RenderComponent, RenderQueue, Loo
 
   Viewport2D get viewport => _viewport2d ??= Viewport2D();
 
+  //This can be called every frame
   void prepareViewport(Size canvasSize, {double? requiredWidth, double? requiredHeight}) {
-    viewport.updateViewport(
+    viewport.updateViewportFrame(
       canvasSize,
       requiredWidth: requiredWidth,
       requiredHeight: requiredHeight,
       onChanged: (viewSize) => size = viewSize,
     );
   }
-
-  @override
-  Pointer transformPointer(PointerEvent event) => Pointer(
-        event,
-        (event.localPosition * viewport.reverseScale) - Offset(viewport.viewSize.width * 0.5, viewport.viewSize.height * 0.5) - Offset(viewport.position[0], viewport.position[1]),
-      );
 
   void attach(LoopComponent component) {
     assert(component is! SceneComponent || !component.isMounted, 'Can\'t use one Component in multiple Scenes');
@@ -185,6 +180,9 @@ class Loop with LoopComponent, ObservableLoop, RenderComponent, RenderQueue, Loo
 
     return null;
   }
+
+  @override
+  Pointer transformPointerEvent(PointerEvent event) => Pointer(event, viewport.transformLocalPoint(event.localPosition));
 
   @override
   void dispose() {

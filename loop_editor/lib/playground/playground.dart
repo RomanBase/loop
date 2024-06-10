@@ -89,7 +89,8 @@ extension _PlaygroundComponent on CoreContext {
             ..setFloat(3, 1.0),
         )
           ..transform.position = Vector2(0, 0)
-          ..applyScale(const Scale(1.25, 1.0)).setLoopBehavior(LoopBehavior.reverseLoop));
+          ..applyScale(const Scale(1.25, 1.0))
+          ..applyDeltaLoopBehavior(LoopBehavior.reverseLoop));
 
         return loop;
       })!;

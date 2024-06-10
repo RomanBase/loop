@@ -48,12 +48,12 @@ extension Matrix4Ext on Matrix4 {
     return output;
   }
 
-  Matrix4 multiplied2DViewTransform(Matrix4 other, Vector2 view, [Matrix4? output]) {
-    final m00 = this[0] * view[0];
-    final m01 = this[4] * view[0];
+  Matrix4 multiplied2DViewTransform(Matrix4 other, [Matrix4? output]) {
+    final m00 = this[0];
+    final m01 = this[4];
     final m03 = this[12];
-    final m10 = this[1] * view[1];
-    final m11 = this[5] * view[1];
+    final m10 = this[1];
+    final m11 = this[5];
     final m13 = this[13];
 
     final n00 = other[0];
@@ -87,12 +87,10 @@ extension Matrix4Ext on Matrix4 {
     return output;
   }
 
-  Matrix4 multiplied2DViewBillboard(Matrix4 other, Vector2 view, [Matrix4? output]) {
-    final m00 = this[0] * view[0];
-    final m01 = this[4] * view[0];
+  Matrix4 multiplied2DViewBillboard(Matrix4 other, Vector2 scale, [Matrix4? output]) {
+    final m00 = scale[0];
     final m03 = this[12];
-    final m10 = this[1] * view[1];
-    final m11 = this[5] * view[1];
+    final m11 = scale[1];
     final m13 = this[13];
 
     final n00 = other[0];
@@ -105,20 +103,20 @@ extension Matrix4Ext on Matrix4 {
     output ??= Matrix4.zero();
 
     output.setValues(
-      (m00 * n00) + (m01 * n10),
-      (m10 * n00) + (m11 * n10),
+      m00 * n00,
+      m11 * n10,
       0.0,
       0.0,
-      (m00 * n01) + (m01 * n11),
-      (m10 * n01) + (m11 * n11),
+      m00 * n01,
+      m11 * n11,
       0.0,
       0.0,
       0.0,
       0.0,
       1.0,
       0.0,
-      (m00 * n03) + (m01 * n13) + m03,
-      (m10 * n03) + (m11 * n13) + m13,
+      (m00 * n03) + m03,
+      (m11 * n13) + m13,
       0.0,
       1.0,
     );
@@ -225,10 +223,12 @@ class Viewport2D extends BaseModel with NotifierComponent {
   Size viewSize = Size.zero;
 
   final _matrix = Matrix4.identity();
+  final _matrixBillboard = Matrix4.identity();
   final _position = Vector2(0.0, 0.0);
   final _direction = Vector2(1.0, 0.0);
-  final _view = Vector2(1.0, 1.0);
-  final _skew = Vector2(0.25, 0.1);
+  final _viewFactor = Vector2(1.0, 1.0);
+  final _skewFactor = Vector2(0.25, 0.1);
+  final _viewScale = Vector2(1.0, 1.0);
   double _scale = 1.0;
 
   bool _rebuild = true;
@@ -242,6 +242,7 @@ class Viewport2D extends BaseModel with NotifierComponent {
   set scale(double value) {
     _scale = value;
     _rebuild = true;
+    _updateViewScale();
   }
 
   double get reverseScale => 1.0 / _scale;
@@ -274,14 +275,13 @@ class Viewport2D extends BaseModel with NotifierComponent {
 
     _rebuild = false;
 
-    final s = math.sin(rotation) * scale;
-    final c = math.cos(rotation) * scale;
-    final sk10 = math.atan(_skew[1]);
-    final sk01 = math.atan(_skew[0]);
+    final c = _direction[0] * scale;
+    final s = _direction[1] * scale;
+    final sk10 = math.atan(_skewFactor[1]);
+    final sk01 = math.atan(_skewFactor[0]);
 
     _matrix[0] = c + sk01 * -s;
     _matrix[1] = -s + sk10 * c;
-
     _matrix[4] = s + sk01 * c;
     _matrix[5] = c + sk10 * s;
 
@@ -290,15 +290,33 @@ class Viewport2D extends BaseModel with NotifierComponent {
     final sx = screenSize.width * 0.5;
     final sy = screenSize.height * 0.5;
 
-    _matrix[12] = dx * _direction.x + dy * _direction.y + sx;
-    _matrix[13] = -dx * _view[1] * _direction.y + _view[1] * dy * _direction.x + sy;
+    _matrix[12] = dx * _direction[0] + dy * _direction[1] + sx;
+    _matrix[13] = -dx * _viewFactor[1] * _direction[1] + _viewFactor[1] * dy * _direction[0] + sy;
+
+    _matrix[0] *= _viewFactor[0];
+    _matrix[1] *= _viewFactor[1];
+    _matrix[4] *= _viewFactor[0];
+    _matrix[5] *= _viewFactor[1];
+
+    _matrixBillboard[0] = c * _viewFactor[0];
+    _matrixBillboard[1] = -s * _viewFactor[1];
+    _matrixBillboard[4] = s * _viewFactor[0];
+    _matrixBillboard[5] = c * _viewFactor[1];
+    _matrixBillboard[12] = _matrix[12];
+    _matrixBillboard[13] = _matrix[13];
 
     return _matrix;
   }
 
   void updateViewUp({double x = 1.0, double y = 1.0}) {
-    _view[0] = x;
-    _view[1] = y;
+    _viewFactor[0] = x;
+    _viewFactor[1] = y;
+    _updateViewScale();
+  }
+
+  void _updateViewScale() {
+    _viewScale[0] = _viewFactor[0] * _scale;
+    _viewScale[1] = _viewFactor[1] * _scale;
   }
 
   void updateViewportFrame(Size size, {double? requiredWidth, double? requiredHeight, double framePadding = 32.0, ValueCallback<Size>? onChanged}) {
@@ -325,15 +343,15 @@ class Viewport2D extends BaseModel with NotifierComponent {
     notify();
   }
 
-  Matrix4 transformViewPerspective(Matrix4 local, [Matrix4? output]) => matrix.multiplied2DViewTransform(local, _view, output);
+  Matrix4 transformViewPerspective(Matrix4 local, [Matrix4? output]) => matrix.multiplied2DViewTransform(local, output);
 
-  Matrix4 transformViewBillboard(Matrix4 local, [Matrix4? output]) => matrix.multiplied2DViewBillboard(local, _view, output);
+  Matrix4 transformViewBillboard(Matrix4 local, bool static, [Matrix4? output]) => static ? matrix.multiplied2DViewBillboard(local, _viewScale, output) : _matrixBillboard.multiplied2DViewTransform(local, output);
 
-  Vector2 transformViewPosition(Vector2 vector) => Vector2(vector[0] * _view[0], vector[1] * _view[1]);
+  Vector2 transformViewPosition(Vector2 vector) => Vector2(vector[0] * _viewFactor[0], vector[1] * _viewFactor[1]);
 
   Offset transformLocalPoint(Offset localPoint) {
     final point = ((localPoint * reverseScale) - Offset(viewSize.width * 0.5, viewSize.height * 0.5) - Offset(position[0], position[1]));
 
-    return Offset(point.dx * _view[0], point.dy * _view[1]);
+    return Offset(point.dx * _viewFactor[0], point.dy * _viewFactor[1]);
   }
 }

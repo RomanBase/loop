@@ -42,8 +42,11 @@ class StaticMesh extends SceneActor {
 
   @override
   void render(Canvas canvas, Rect rect) {
+
+    final matrix = getLoop()!.viewport.transformViewBillboard(transform.matrix);
+
     canvas.save();
-    canvas.transform(screenMatrix.storage);
+    canvas.transform(matrix.storage);
 
     renderComponent(canvas, rect);
 

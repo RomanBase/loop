@@ -90,6 +90,15 @@ class Sprite extends SceneActor {
   }
 
   @override
+  void render(Canvas canvas, Rect rect) {
+
+    canvas.save();
+    canvas.transform(screenMatrix.storage);
+    renderComponent(canvas, Rect.fromLTWH(-size.width*0.5, -size.height*0.5, size.width, size.height));
+    canvas.restore();
+  }
+
+  @override
   void renderComponent(Canvas canvas, Rect rect) {
     if (action != null && action!.blend != null && !sequence.atEdge) {
       canvas.drawImageRect(

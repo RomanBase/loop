@@ -296,28 +296,31 @@ class Viewport2D extends BaseModel with NotifierComponent {
     final sk10 = math.atan(_skewFactor[1]);
     final sk01 = math.atan(_skewFactor[0]);
 
-    _matrix[0] = c + sk10 * -s;
-    _matrix[1] = s + sk10 * c;
-    _matrix[4] = -s + sk01 * c;
-    _matrix[5] = c + sk01 * s;
+    final dx = _position[0];
+    final dy = _position[1];
+    final w = screenSize.width * 0.5;
+    final h = screenSize.height * 0.5;
 
-    final dx = _position[0] * scale;
-    final dy = _position[1] * scale;
-    final sx = screenSize.width * 0.5;
-    final sy = screenSize.height * 0.5;
+    final m00 = c + sk10 * -s;
+    final m10 = s + sk10 * c;
+    final m01 = -s + sk01 * c;
+    final m11 = c + sk01 * s;
 
-    _matrix[12] = dx * _viewFactor[0] * _matrix[0] + dy * _viewFactor[1] * _matrix[4] + sx;
-    _matrix[13] = -dx * _viewFactor[1] * _matrix[1] + dy * _viewFactor[0] * _matrix[5] + sy;
+    // view projection matrix
+    _matrix[0] = m00 * _viewScale[0];
+    _matrix[1] = m10 * _viewScale[1];
+    _matrix[4] = m01 * _viewScale[0];
+    _matrix[5] = m11 * _viewScale[1];
 
-    _matrix[0] *= _viewScale[0];
-    _matrix[1] *= _viewScale[1];
-    _matrix[4] *= _viewScale[0];
-    _matrix[5] *= _viewScale[1];
+    _matrix[12] = dx * _viewScale[0] * m00 + dy * _viewScale[1] * m01 + w;
+    _matrix[13] = -dx * _viewScale[1] * m10 + dy * _viewScale[0] * m11 + h;
 
+    // view camera matrix
     _matrixCamera[0] = c * _viewScale[0];
     _matrixCamera[1] = s * _viewScale[1];
     _matrixCamera[4] = -s * _viewScale[0];
     _matrixCamera[5] = c * _viewScale[1];
+
     _matrixCamera[12] = _matrix[12];
     _matrixCamera[13] = _matrix[13];
 

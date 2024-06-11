@@ -12,7 +12,17 @@ class SceneComponent with ObservableLoopComponent {
   Matrix4? _screenMatrix;
   Matrix4? _worldMatrix;
 
-  Matrix4 get screenMatrix => _screenMatrix ??= _screenSpace();
+  Matrix4 get screenMatrix {
+    if (_screenMatrix != null) {
+      return _screenMatrix!;
+    }
+
+    if (parent == null) {
+      return _screenMatrix = getScreenSpace();
+    }
+
+    return _screenMatrix = parent!.screenMatrix.multiplied2DTransform(transform.matrix, _screenMatrixStorage);
+  }
 
   Matrix4 get worldMatrix => _worldMatrix ??= _worldSpace();
 
@@ -135,13 +145,7 @@ class SceneComponent with ObservableLoopComponent {
 
   void onTick(double dt) {}
 
-  Matrix4 _screenSpace() {
-    if (parent == null) {
-      return getLoop()?.viewport.transformViewPerspective(transform.matrix, _screenMatrixStorage) ?? transform.matrix;
-    }
-
-    return parent!.screenMatrix.multiplied2DTransform(transform.matrix, _screenMatrixStorage);
-  }
+  Matrix4 getScreenSpace() => getLoop()?.viewport.transformViewPerspective(transform.matrix, _screenMatrixStorage) ?? transform.matrix;
 
   Matrix4 _worldSpace() {
     if (parent == null) {

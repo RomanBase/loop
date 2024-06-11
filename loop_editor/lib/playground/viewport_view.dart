@@ -64,7 +64,7 @@ class ViewportView extends ControllableWidget<Loop> {
               ),
               Expanded(
                 child: Text(
-                  '[${control.viewport.position.x.toInt()}, ${control.viewport.position.y.toInt()}] (${control.viewport.rotation * 180.0 ~/ math.pi})',
+                  '[${control.viewport.position.x.toInt()}, ${control.viewport.position.y.toInt()}] (${control.viewport.rotation.toInt()})',
                   textAlign: TextAlign.center,
                 ),
               ),

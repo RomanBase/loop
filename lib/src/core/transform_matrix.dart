@@ -87,10 +87,12 @@ extension Matrix4Ext on Matrix4 {
     return output;
   }
 
-  Matrix4 multiplied2DViewBillboard(Matrix4 other, Vector2 scale, [Matrix4? output]) {
-    final m00 = scale[0];
+  Matrix4 multiplied2DViewBillboard(Matrix4 camera, Vector2 viewScale, bool static, Matrix4 other, [Matrix4? output]) {
+    final m00 = this[0];
+    final m01 = this[4];
     final m03 = this[12];
-    final m11 = scale[1];
+    final m10 = this[1];
+    final m11 = this[5];
     final m13 = this[13];
 
     final n00 = other[0];
@@ -102,42 +104,52 @@ extension Matrix4Ext on Matrix4 {
 
     output ??= Matrix4.zero();
 
-    output.setValues(
-      m00 * n00,
-      m11 * n10,
-      0.0,
-      0.0,
-      m00 * n01,
-      m11 * n11,
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      1.0,
-      0.0,
-      (m00 * n03) + m03,
-      (m11 * n13) + m13,
-      0.0,
-      1.0,
-    );
+    if (static) {
+      output.setValues(
+        viewScale[0] * n00,
+        viewScale[1] * n10,
+        0.0,
+        0.0,
+        viewScale[0] * n01,
+        viewScale[1] * n11,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        (m00 * n03) + (m01 * n13) + m03,
+        (m10 * n03) + (m11 * n13) + m13,
+        0.0,
+        1.0,
+      );
+    } else {
+      final c00 = camera[0];
+      final c01 = camera[4];
+      final c10 = camera[1];
+      final c11 = camera[5];
+
+      output.setValues(
+        (c00 * n00) + (c01 * n10),
+        (c10 * n00) + (c11 * n10),
+        0.0,
+        0.0,
+        (c00 * n01) + (c01 * n11),
+        (c10 * n01) + (c11 * n11),
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        (m00 * n03) + (m01 * n13) + m03,
+        (m10 * n03) + (m11 * n13) + m13,
+        0.0,
+        1.0,
+      );
+    }
 
     return output;
-  }
-
-  void addSkew(double alfa, double beta) {
-    final m10 = math.atan(beta);
-    final m01 = math.atan(alfa);
-
-    final n00 = this[0];
-    final n01 = this[4];
-    final n10 = this[1];
-    final n11 = this[5];
-
-    storage[0] = n00 + (m01 * n10);
-    storage[1] = (m10 * n00) + n10;
-
-    storage[4] = n01 + (m01 * n11);
-    storage[5] = (m10 * n01) + n11;
   }
 
   Matrix4 copy() => Matrix4.fromList(storage);
@@ -223,7 +235,7 @@ class Viewport2D extends BaseModel with NotifierComponent {
   Size viewSize = Size.zero;
 
   final _matrix = Matrix4.identity();
-  final _matrixBillboard = Matrix4.identity();
+  final _matrixCamera = Matrix4.identity();
   final _position = Vector2(0.0, 0.0);
   final _direction = Vector2(1.0, 0.0);
   final _viewFactor = Vector2(1.0, 1.0);
@@ -302,12 +314,12 @@ class Viewport2D extends BaseModel with NotifierComponent {
     _matrix[4] *= _viewFactor[0];
     _matrix[5] *= _viewFactor[1];
 
-    _matrixBillboard[0] = c * _viewFactor[0];
-    _matrixBillboard[1] = -s * _viewFactor[1];
-    _matrixBillboard[4] = s * _viewFactor[0];
-    _matrixBillboard[5] = c * _viewFactor[1];
-    _matrixBillboard[12] = _matrix[12];
-    _matrixBillboard[13] = _matrix[13];
+    _matrixCamera[0] = c * _viewFactor[0];
+    _matrixCamera[1] = -s * _viewFactor[1];
+    _matrixCamera[4] = s * _viewFactor[0];
+    _matrixCamera[5] = c * _viewFactor[1];
+    _matrixCamera[12] = _matrix[12];
+    _matrixCamera[13] = _matrix[13];
 
     return _matrix;
   }
@@ -363,7 +375,7 @@ class Viewport2D extends BaseModel with NotifierComponent {
 
   Matrix4 transformViewPerspective(Matrix4 local, [Matrix4? output]) => matrix.multiplied2DViewTransform(local, output);
 
-  Matrix4 transformViewBillboard(Matrix4 local, bool static, [Matrix4? output]) => static ? matrix.multiplied2DViewBillboard(local, _viewScale, output) : _matrixBillboard.multiplied2DViewTransform(local, output);
+  Matrix4 transformViewBillboard(Matrix4 local, bool static, [Matrix4? output]) => matrix.multiplied2DViewBillboard(_matrixCamera, _viewScale, static, local, output);
 
   Vector2 transformViewPosition(Vector2 vector) => Vector2(vector[0] * _viewFactor[0], vector[1] * _viewFactor[1]);
 

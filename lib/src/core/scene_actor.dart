@@ -1,6 +1,15 @@
 part of '../../loop.dart';
 
+enum RenderScreenType {
+  basic,
+  complex,
+  billboard,
+  billboardRelative,
+}
+
 abstract class SceneActor extends SceneComponent with RenderComponent {
+  RenderScreenType renderType = RenderScreenType.complex;
+
   Rect? _screenBounds;
 
   @override
@@ -25,7 +34,30 @@ abstract class SceneActor extends SceneComponent with RenderComponent {
   }
 
   @override
-  void render(Canvas canvas, Rect rect) => canvas.renderComponent(this, (dst) => renderComponent(canvas, dst));
+  void render(Canvas canvas, Rect rect) {
+    switch (renderType) {
+      case RenderScreenType.basic:
+        canvas.renderComponent(this, (dst) => renderComponent(canvas, dst));
+        break;
+      default:
+        canvas.save();
+        canvas.transform(screenMatrix.storage);
+        renderComponent(canvas, Rect.fromLTWH(-size.width * transform.origin.dx, -size.height * transform.origin.dy, size.width, size.height));
+        canvas.restore();
+    }
+  }
+
+  @override
+  Matrix4 getScreenSpace() {
+    switch (renderType) {
+      case RenderScreenType.billboard:
+        return getLoop()?.viewport.transformViewBillboard(transform.matrix, true, _screenMatrixStorage) ?? transform.matrix;
+      case RenderScreenType.billboardRelative:
+        return getLoop()?.viewport.transformViewBillboard(transform.matrix, false, _screenMatrixStorage) ?? transform.matrix;
+      default:
+        return super.getScreenSpace();
+    }
+  }
 
   void renderComponent(Canvas canvas, Rect rect);
 }

@@ -41,16 +41,6 @@ class StaticMesh extends SceneActor {
   }
 
   @override
-  void render(Canvas canvas, Rect rect) {
-    canvas.save();
-    canvas.transform(screenMatrix.storage);
-
-    renderComponent(canvas, rect);
-
-    canvas.restore();
-  }
-
-  @override
   void renderComponent(Canvas canvas, Rect rect) {
     canvas.drawVertices(
       ui.Vertices.raw(

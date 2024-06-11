@@ -76,21 +76,24 @@ extension _PlaygroundComponent on CoreContext {
           loop.attach(DragSprite()..transform.position = Vector2(0, i * 50.0));
         }
 
-        const s = 20.0;
-        loop.attach(StaticMesh(
-          Float32List.fromList([-s, s, s, s, s, -s, -s, -s]),
-          faces: Uint16List.fromList([0, 1, 2, 0, 2, 3]),
-          uvs: Float32List.fromList([0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0]),
-          shader: Asset.get<ui.FragmentProgram>('shader').fragmentShader()
-            ..setImageSampler(0, Asset.get('img'))
-            ..setFloat(0, 1.0)
-            ..setFloat(1, 1.0)
-            ..setFloat(2, 1.0)
-            ..setFloat(3, 1.0),
-        )
-          ..transform.position = Vector2(0, 0)
-          ..applyScale(const Scale(1.25, 1.0))
-          ..applyDeltaLoopBehavior(LoopBehavior.reverseLoop));
+        for (int i = 1; i < 10; i++) {
+          const s = 20.0;
+          loop.attach(StaticMesh(
+            Float32List.fromList([-s, s, s, s, s, -s, -s, -s]),
+            faces: Uint16List.fromList([0, 1, 2, 0, 2, 3]),
+            uvs: Float32List.fromList([0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0]),
+            shader: Asset.get<ui.FragmentProgram>('shader').fragmentShader()
+              ..setImageSampler(0, Asset.get('img'))
+              ..setFloat(0, 1.0)
+              ..setFloat(1, 1.0)
+              ..setFloat(2, 1.0)
+              ..setFloat(3, 1.0),
+          ) ..renderType = RenderScreenType.billboardRelative
+            ..transform.position = Vector2(0, i * 50.0)
+            ..applyScale(const Scale(1.25, 1.0))
+         //   ..applyRotate(90.0)
+            ..applyDeltaLoopBehavior(LoopBehavior.reverseLoop));
+        }
 
         return loop;
       })!;
@@ -103,7 +106,7 @@ class Playground extends ControlWidget {
   void onInit(Map args, CoreContext context) {
     super.onInit(args, context);
 
-    context.scene.viewport.updatePerspective(dirY: -1.0);
+    context.scene.viewport.updatePerspective(dirY: -1.0, skewAlpha: 0.25, skewBeta: 0.1);
 
     context.c1
       ..applyTranslate(Offset(320.0, UITheme.device.height * 0.5), duration: const Duration(seconds: 2)).curve = Curves.easeOutQuad

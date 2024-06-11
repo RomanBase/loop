@@ -276,11 +276,11 @@ class Viewport2D extends BaseModel with NotifierComponent {
     _rebuild = true;
   }
 
-  Vector2 get position => Vector2(-_position[0], -_position[1]);
+  Vector2 get position => Vector2(-_position[0] * _viewFactor[0], -_position[1] * _viewFactor[1]);
 
   set position(Vector2 value) {
-    _position[0] = -value[0];
-    _position[1] = -value[1];
+    _position[0] = -value[0] * _viewFactor[0];
+    _position[1] = -value[1] * _viewFactor[1];
     _rebuild = true;
   }
 

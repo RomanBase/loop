@@ -103,7 +103,7 @@ class Playground extends ControlWidget {
   void onInit(Map args, CoreContext context) {
     super.onInit(args, context);
 
-    context.scene.viewport.updateViewUp(y: -1.0);
+    context.scene.viewport.updatePerspective(dirY: -1.0);
 
     context.c1
       ..applyTranslate(Offset(320.0, UITheme.device.height * 0.5), duration: const Duration(seconds: 2)).curve = Curves.easeOutQuad

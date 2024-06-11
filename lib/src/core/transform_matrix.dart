@@ -227,7 +227,7 @@ class Viewport2D extends BaseModel with NotifierComponent {
   final _position = Vector2(0.0, 0.0);
   final _direction = Vector2(1.0, 0.0);
   final _viewFactor = Vector2(1.0, 1.0);
-  final _skewFactor = Vector2(0.25, 0.1);
+  final _skewFactor = Vector2(0.0, 0.0);
   final _viewScale = Vector2(1.0, 1.0);
   double _scale = 1.0;
 
@@ -308,9 +308,23 @@ class Viewport2D extends BaseModel with NotifierComponent {
     return _matrix;
   }
 
-  void updateViewUp({double x = 1.0, double y = 1.0}) {
-    _viewFactor[0] = x;
-    _viewFactor[1] = y;
+  void updatePerspective({double? dirX, double? dirY, double? skewAlpha, double? skewBeta}) {
+    if (dirX != null) {
+      _viewFactor[0] = dirX;
+    }
+
+    if (dirY != null) {
+      _viewFactor[1] = dirY;
+    }
+
+    if (skewAlpha != null) {
+      _skewFactor[0] = skewAlpha;
+    }
+
+    if (skewBeta != null) {
+      _skewFactor[1] = skewBeta;
+    }
+
     _updateViewScale();
   }
 

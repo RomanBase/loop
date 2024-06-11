@@ -306,8 +306,8 @@ class Viewport2D extends BaseModel with NotifierComponent {
     final sx = screenSize.width * 0.5;
     final sy = screenSize.height * 0.5;
 
-    _matrix[12] = dx * _direction[0] + dy * _direction[1] + sx;
-    _matrix[13] = -dx * _viewFactor[1] * _direction[1] + _viewFactor[1] * dy * _direction[0] + sy;
+    _matrix[12] = dx * _viewFactor[0] * _direction[0] + dy * _viewFactor[0] * -_direction[1] + sx;
+    _matrix[13] = -dx * _viewFactor[1] * _direction[1] + dy * _viewFactor[1] * _direction[0] + sy;
 
     _matrix[0] *= _viewFactor[0];
     _matrix[1] *= _viewFactor[1];
@@ -315,8 +315,8 @@ class Viewport2D extends BaseModel with NotifierComponent {
     _matrix[5] *= _viewFactor[1];
 
     _matrixCamera[0] = c * _viewFactor[0];
-    _matrixCamera[1] = -s * _viewFactor[1];
-    _matrixCamera[4] = s * _viewFactor[0];
+    _matrixCamera[1] = s * _viewFactor[1];
+    _matrixCamera[4] = -s * _viewFactor[0];
     _matrixCamera[5] = c * _viewFactor[1];
     _matrixCamera[12] = _matrix[12];
     _matrixCamera[13] = _matrix[13];

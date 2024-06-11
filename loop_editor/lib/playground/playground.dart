@@ -88,12 +88,15 @@ extension _PlaygroundComponent on CoreContext {
               ..setFloat(1, 1.0)
               ..setFloat(2, 1.0)
               ..setFloat(3, 1.0),
-          ) ..renderType = ScreenRenderType.billboardRelative
+          )
+            ..renderType = ScreenRenderType.billboardRelative
             ..transform.position = Vector2(0, i * 50.0)
             ..applyScale(const Scale(1.25, 1.0))
-         //   ..applyRotate(90.0)
+            //   ..applyRotate(90.0)
             ..applyDeltaLoopBehavior(LoopBehavior.reverseLoop));
         }
+
+        loop.viewport.updatePerspective(dirY: -1.0);
 
         return loop;
       })!;
@@ -105,8 +108,6 @@ class Playground extends ControlWidget {
   @override
   void onInit(Map args, CoreContext context) {
     super.onInit(args, context);
-
-    context.scene.viewport.updatePerspective(dirY: -1.0, skewAlpha: 0.25, skewBeta: 0.1);
 
     context.c1
       ..applyTranslate(Offset(320.0, UITheme.device.height * 0.5), duration: const Duration(seconds: 2)).curve = Curves.easeOutQuad

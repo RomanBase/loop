@@ -160,11 +160,6 @@ extension Vector2Ext on Vector2 {
 
   bool get isOne => x == 1.0 && y == 1.0;
 
-  void move(double step) {
-    storage[0] *= step;
-    storage[1] *= step;
-  }
-
   Offset get offset => Offset(storage[0], storage[1]);
 }
 
@@ -327,6 +322,11 @@ class Viewport2D extends BaseModel with NotifierComponent {
     return _matrix;
   }
 
+  void _updateViewScale() {
+    _viewScale[0] = _viewFactor[0] * _scale;
+    _viewScale[1] = _viewFactor[1] * _scale;
+  }
+
   void updatePerspective({double? dirX, double? dirY, double? skewAlpha, double? skewBeta}) {
     if (dirX != null) {
       _viewFactor[0] = dirX;
@@ -345,11 +345,6 @@ class Viewport2D extends BaseModel with NotifierComponent {
     }
 
     _updateViewScale();
-  }
-
-  void _updateViewScale() {
-    _viewScale[0] = _viewFactor[0] * _scale;
-    _viewScale[1] = _viewFactor[1] * _scale;
   }
 
   void updateViewportFrame(Size size, {double? requiredWidth, double? requiredHeight, double framePadding = 32.0, ValueCallback<Size>? onChanged}) {

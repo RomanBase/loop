@@ -296,10 +296,10 @@ class Viewport2D extends BaseModel with NotifierComponent {
     final sk10 = math.atan(_skewFactor[1]);
     final sk01 = math.atan(_skewFactor[0]);
 
-    _matrix[0] = c + sk01 * -s;
-    _matrix[1] = -s + sk10 * c;
-    _matrix[4] = s + sk01 * c;
-    _matrix[5] = c + sk10 * s;
+    _matrix[0] = c + sk10 * -s;
+    _matrix[1] = s + sk10 * c;
+    _matrix[4] = -s + sk01 * c;
+    _matrix[5] = c + sk01 * s;
 
     final dx = _position[0] * scale;
     final dy = _position[1] * scale;

@@ -88,7 +88,7 @@ extension _PlaygroundComponent on CoreContext {
               ..setFloat(1, 1.0)
               ..setFloat(2, 1.0)
               ..setFloat(3, 1.0),
-          ) ..renderType = RenderScreenType.billboardRelative
+          ) ..renderType = ScreenRenderType.billboardRelative
             ..transform.position = Vector2(0, i * 50.0)
             ..applyScale(const Scale(1.25, 1.0))
          //   ..applyRotate(90.0)

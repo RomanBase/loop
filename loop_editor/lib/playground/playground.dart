@@ -96,7 +96,7 @@ extension _PlaygroundComponent on CoreContext {
             ..applyDeltaLoopBehavior(LoopBehavior.reverseLoop));
         }
 
-        loop.viewport.updatePerspective(dirY: -1.0);
+        loop.viewport.updatePerspective(dirY: -1.0, skewAlpha: 0.25);
 
         return loop;
       })!;

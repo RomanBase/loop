@@ -249,9 +249,13 @@ class Viewport2D extends BaseModel with NotifierComponent {
 
   Vector2 get direction => _direction;
 
-  double get rotation => math.atan2(_direction[1], _direction[0]);
+  double get rotation => rotationRad * _toDegrees;
 
-  set rotation(double radians) {
+  double get rotationRad => math.atan2(_direction[1], _direction[0]);
+
+  set rotation(double radians) => rotationRad = radians * _toRadian;
+
+  set rotationRad(double radians) {
     final s = math.sin(radians);
     final c = math.cos(radians);
 

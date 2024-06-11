@@ -155,14 +155,6 @@ extension Matrix4Ext on Matrix4 {
   Matrix4 copy() => Matrix4.fromList(storage);
 }
 
-extension Vector2Ext on Vector2 {
-  bool get isZero => x == 0.0 && y == 0.0;
-
-  bool get isOne => x == 1.0 && y == 1.0;
-
-  Offset get offset => Offset(storage[0], storage[1]);
-}
-
 class TransformMatrix {
   final _matrix = Matrix4.identity();
   final _direction = Vector2(1.0, 0.0);

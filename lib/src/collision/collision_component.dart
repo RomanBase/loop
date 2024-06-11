@@ -76,27 +76,20 @@ mixin LoopCollisionComponent on SceneComponent {
   }
 
   @override
-  void attach(LoopComponent component, {slot}) {
-    super.attach(component, slot: slot);
-
-    if (component is LoopCollisionComponent) {
-      _collisionChild.add(component);
-    }
-  }
-
-  @override
-  void preTick(double dt) {
-    super.preTick(dt);
-
-    _bounds = null;
-  }
-
-  @override
   void onInit() {
     super.onInit();
 
     if (_collisionParent == null) {
       (_collisionParent = getSubsystem<LoopCollisionSubsystem>())?.addCollisionComponent(this);
+    }
+  }
+
+  @override
+  void attach(LoopComponent component, {slot}) {
+    super.attach(component, slot: slot);
+
+    if (component is LoopCollisionComponent) {
+      _collisionChild.add(component);
     }
   }
 
@@ -118,6 +111,13 @@ mixin LoopCollisionComponent on SceneComponent {
     _collisionParent = null;
 
     super.removeFromParent();
+  }
+
+  @override
+  void preTick(double dt) {
+    super.preTick(dt);
+
+    _bounds = null;
   }
 }
 

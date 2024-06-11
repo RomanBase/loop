@@ -1,6 +1,22 @@
 part of '../../loop.dart';
 
 extension CanvasRender on Canvas {
+  void _renderRotated(Rect rect, Offset origin, double rotation, Scale scale, void Function(Rect dst) render) {
+    if (rotation == 0.0 && !scale.isNegative) {
+      render(rect);
+      return;
+    }
+
+    save();
+    translate(rect.left + origin.dx, rect.top + origin.dy);
+    rotate(rotation);
+    this.scale(scale.dx, scale.dy);
+
+    render(Rect.fromLTRB(-origin.dx, -origin.dy, rect.width - origin.dx, rect.height - origin.dy));
+
+    restore();
+  }
+
   void renderComponent(SceneActor component, void Function(Rect dst) render) {
     _renderRotated(
       component.screenBounds,
@@ -22,23 +38,7 @@ extension CanvasRender on Canvas {
     _renderRotated(dst, dstOrigin, matrix.angle2D, Scale(sx, sy), render);
   }
 
-  void _renderRotated(Rect rect, Offset origin, double rotation, Scale scale, void Function(Rect dst) render) {
-    if (rotation == 0.0 && !scale.isNegative) {
-      render(rect);
-      return;
-    }
-
-    save();
-    translate(rect.left + origin.dx, rect.top + origin.dy);
-    rotate(rotation);
-    this.scale(scale.dx, scale.dy);
-
-    render(Rect.fromLTRB(-origin.dx, -origin.dy, rect.width - origin.dx, rect.height - origin.dy));
-
-    restore();
-  }
-
-  void renderRaw(Matrix4 matrix, void Function() render) {
+  void renderTransformed(Matrix4 matrix, void Function() render) {
     save();
     transform(matrix.storage);
     render();

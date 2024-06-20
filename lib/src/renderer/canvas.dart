@@ -1,6 +1,9 @@
 part of '../../loop.dart';
 
 extension CanvasRender on Canvas {
+  static final _rectFaces = Uint16List.fromList([0, 1, 2, 0, 2, 3]);
+  static final _rectUvs = Float32List.fromList([0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0]);
+
   void renderComponent(SceneActor component, void Function(Rect dst) render) {
     _renderRotated(
       component.screenBounds,
@@ -44,6 +47,19 @@ extension CanvasRender on Canvas {
     render();
 
     restore();
+  }
+
+  void drawRectMesh(Rect dst, Paint paint) {
+    drawVertices(
+      ui.Vertices.raw(
+        VertexMode.triangles,
+        Float32List.fromList([dst.left, dst.bottom, dst.right, dst.bottom, dst.right, dst.top, dst.left, dst.top]),
+        textureCoordinates: _rectUvs,
+        indices: _rectFaces,
+      ),
+      BlendMode.src,
+      paint,
+    );
   }
 }
 

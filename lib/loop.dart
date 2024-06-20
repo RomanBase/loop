@@ -51,8 +51,6 @@ part 'src/core/transform_matrix.dart';
 
 part 'src/io/pointer.dart';
 
-part 'src/renderer/builder.dart';
-
 part 'src/renderer/canvas.dart';
 
 part 'src/renderer/skeletal_mesh.dart';
@@ -61,15 +59,21 @@ part 'src/renderer/sprite.dart';
 
 part 'src/renderer/static_mesh.dart';
 
+part 'src/ui/builder.dart';
+
 part 'src/ui/fps_view.dart';
 
 part 'src/ui/scene.dart';
 
 part 'src/ui/viewport.dart';
 
-///
-/// TODO: Probably switch everything to Vector2 or create custom struct..
-///
+extension Vector2Ext on Vector2 {
+  bool get isZero => x == 0.0 && y == 0.0;
+
+  bool get isOne => x == 1.0 && y == 1.0;
+
+  Offset get offset => Offset(storage[0], storage[1]);
+}
 
 extension OffsetExt on Offset {
   bool get isZero => dx == 0.0 && dy == 0.0;

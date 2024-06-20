@@ -155,19 +155,6 @@ extension Matrix4Ext on Matrix4 {
   Matrix4 copy() => Matrix4.fromList(storage);
 }
 
-extension Vector2Ext on Vector2 {
-  bool get isZero => x == 0.0 && y == 0.0;
-
-  bool get isOne => x == 1.0 && y == 1.0;
-
-  void move(double step) {
-    storage[0] *= step;
-    storage[1] *= step;
-  }
-
-  Offset get offset => Offset(storage[0], storage[1]);
-}
-
 class TransformMatrix {
   final _matrix = Matrix4.identity();
   final _direction = Vector2(1.0, 0.0);
@@ -327,6 +314,11 @@ class Viewport2D extends BaseModel with NotifierComponent {
     return _matrix;
   }
 
+  void _updateViewScale() {
+    _viewScale[0] = _viewFactor[0] * _scale;
+    _viewScale[1] = _viewFactor[1] * _scale;
+  }
+
   void updatePerspective({double? dirX, double? dirY, double? skewAlpha, double? skewBeta}) {
     if (dirX != null) {
       _viewFactor[0] = dirX;
@@ -345,11 +337,6 @@ class Viewport2D extends BaseModel with NotifierComponent {
     }
 
     _updateViewScale();
-  }
-
-  void _updateViewScale() {
-    _viewScale[0] = _viewFactor[0] * _scale;
-    _viewScale[1] = _viewFactor[1] * _scale;
   }
 
   void updateViewportFrame(Size size, {double? requiredWidth, double? requiredHeight, double framePadding = 32.0, ValueCallback<Size>? onChanged}) {
@@ -380,10 +367,22 @@ class Viewport2D extends BaseModel with NotifierComponent {
 
   Matrix4 transformViewBillboard(Matrix4 local, bool static, [Matrix4? output]) => matrix.multiplied2DViewBillboard(_matrixCamera, _viewScale, static, local, output);
 
-  Vector2 transformViewPosition(Vector2 vector) => Vector2(vector[0] * _viewFactor[0], vector[1] * _viewFactor[1]);
+  //TODO: add un-rotation/skew modifiers
+  Vector2 transformViewPoint(Vector2 local, {bool reverse = false}) {
+    local = Vector2(local[0] * _viewFactor[0], local[1] * _viewFactor[1]);
 
-  Offset transformLocalPoint(Offset localPoint) {
-    final point = ((localPoint * reverseScale) - Offset(viewSize.width * 0.5, viewSize.height * 0.5) - Offset(position[0], position[1]));
+    if (reverse) {
+      local = (local + position) * scale;
+      local[0] += screenSize.width * 0.5;
+      local[1] += screenSize.height * 0.5;
+    }
+
+    return local;
+  }
+
+  //TODO: add rotation/skew modifiers
+  Offset transformLocalPoint(Offset local) {
+    final point = ((local * reverseScale) - Offset(viewSize.width * 0.5, viewSize.height * 0.5) - Offset(position[0], position[1]));
 
     return Offset(point.dx * _viewFactor[0], point.dy * _viewFactor[1]);
   }

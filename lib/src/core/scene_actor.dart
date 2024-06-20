@@ -51,9 +51,9 @@ abstract class SceneActor extends SceneComponent with RenderComponent {
   Matrix4 getScreenSpace() {
     switch (renderType) {
       case ScreenRenderType.billboard:
-        return getLoop()?.viewport.transformViewBillboard(transform.matrix, true, _screenMatrixStorage) ?? transform.matrix;
+        return getLoop()?.viewport.transformViewBillboard(transform.matrix, true, screenMatrixStorage) ?? transform.matrix;
       case ScreenRenderType.billboardRelative:
-        return getLoop()?.viewport.transformViewBillboard(transform.matrix, false, _screenMatrixStorage) ?? transform.matrix;
+        return getLoop()?.viewport.transformViewBillboard(transform.matrix, false, screenMatrixStorage) ?? transform.matrix;
       default:
         return super.getScreenSpace();
     }

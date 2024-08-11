@@ -134,6 +134,8 @@ mixin PointerComponent on SceneComponent, RenderComponent implements PointerList
         pointer.up?.call(event);
 
         return true;
+      } else {
+        pointer.cancel?.call(event);
       }
     }
 

@@ -91,6 +91,7 @@ class ControlLoop with ObservableLoop {
   void dispose() {
     super.dispose();
 
+    stop();
     _ticker.dispose();
   }
 }

@@ -1,6 +1,9 @@
 part of '../../loop.dart';
 
 extension CanvasRender on Canvas {
+  static final _rectFaces = Uint16List.fromList([0, 1, 2, 0, 2, 3]);
+  static final _rectUvs = Float32List.fromList([0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0]);
+
   void _renderRotated(Rect rect, Offset origin, double rotation, Scale scale, void Function(Rect dst) render) {
     if (rotation == 0.0 && !scale.isNegative) {
       render(rect);
@@ -38,12 +41,25 @@ extension CanvasRender on Canvas {
     _renderRotated(dst, dstOrigin, matrix.angle2D, Scale(sx, sy), render);
   }
 
-  void renderTransformed(Matrix4 matrix, void Function() render) {
+  void renderRaw(Matrix4 matrix, void Function() render) {
     save();
     transform(matrix.storage);
     render();
 
     restore();
+  }
+
+  void drawRectMesh(Rect dst, Paint paint) {
+    drawVertices(
+      ui.Vertices.raw(
+        VertexMode.triangles,
+        Float32List.fromList([dst.left, dst.bottom, dst.right, dst.bottom, dst.right, dst.top, dst.left, dst.top]),
+        textureCoordinates: _rectUvs,
+        indices: _rectFaces,
+      ),
+      BlendMode.src,
+      paint,
+    );
   }
 }
 

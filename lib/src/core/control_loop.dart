@@ -37,8 +37,15 @@ class ControlLoop with ObservableLoop {
   }
 
   void _tick(Duration elapsed) {
-    deltaTime = (elapsed - _lastTick).inMicroseconds / Duration.microsecondsPerSecond;
-    _lastTick = elapsed;
+    final tickTime = elapsed - _lastTick;
+
+    if (tickTime.isNegative) {
+      _lastTick = Duration.zero;
+      deltaTime = 0.0;
+    } else {
+      deltaTime = tickTime.inMicroseconds / Duration.microsecondsPerSecond;
+      _lastTick = elapsed;
+    }
 
     setValue(deltaTime);
     onTick(value);
@@ -52,6 +59,7 @@ class ControlLoop with ObservableLoop {
       return;
     }
 
+    _lastTick = Duration.zero;
     _ticker.start();
   }
 

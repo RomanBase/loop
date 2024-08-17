@@ -12,11 +12,13 @@ class _ComponentAction {
   final dynamic key;
   final ComponentAction action;
   final LoopComponent component;
+  final VoidCallback? callback;
 
   const _ComponentAction({
     this.key,
     this.action = ComponentAction.none,
     required this.component,
+    this.callback,
   });
 }
 
@@ -48,6 +50,18 @@ class Loop with LoopComponent, ObservableLoop, RenderComponent, RenderQueue, Loo
       requiredHeight: requiredHeight,
       onChanged: (viewSize) => size = viewSize,
     );
+  }
+
+  void syncAction(LoopComponent component, VoidCallback callback) {
+    if (_tickActive) {
+      _actions.add(_ComponentAction(
+        component: component,
+        callback: callback,
+      ));
+      return;
+    }
+
+    callback();
   }
 
   void attach(LoopComponent component) {
@@ -108,6 +122,10 @@ class Loop with LoopComponent, ObservableLoop, RenderComponent, RenderQueue, Loo
             items.remove(element.component);
             break;
           default:
+        }
+
+        if (element.callback != null) {
+          element.callback!();
         }
       }
 

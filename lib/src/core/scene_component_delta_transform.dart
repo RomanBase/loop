@@ -4,14 +4,16 @@ extension SceneComponentDeltaTransform on SceneComponent {
   T applyTransform<T extends DeltaTransform>(T transform, {bool reset = false}) {
     final key = T == dynamic ? transform.runtimeType : T;
 
-    if (reset || !components.containsKey(key)) {
-      getComponent<T>()?.destroy();
-      components[key] = transform;
-    } else {
-      components[key] = (components[key] as DeltaTransform).chain(transform);
-    }
+    syncAction(() {
+      if (reset || !components.containsKey(key)) {
+        getComponent<T>()?.destroy();
+        components[key] = transform;
+      } else {
+        components[key] = (components[key] as DeltaTransform).chain(transform);
+      }
+    });
 
-    return components[key] as T;
+    return transform;
   }
 
   DeltaPosition applyTranslate(Offset location, {Offset? begin, Duration duration = const Duration(seconds: 1), bool reset = false}) {

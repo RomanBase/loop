@@ -40,6 +40,15 @@ class SceneComponent with ObservableLoopComponent {
 
   void onInit() {}
 
+  void syncAction(VoidCallback callback) {
+    if (_tickActive) {
+      getLoop()?.syncAction(this, callback);
+      return;
+    }
+
+    callback();
+  }
+
   Loop? _initLoop(Loop? scene) {
     assert(_loop == null, 'Can\'t attach to multiple loops');
 

@@ -133,10 +133,10 @@ mixin ObservableLoop implements ObservableValue<double>, ObservableNotifier, Dis
       );
 
   @override
-  void cancel(ControlSubscription<double> subscription) => _observable.cancel(subscription);
+  ControlSubscription<double> listen(VoidCallback action) => _observable.listen(action);
 
   @override
-  ObservableValue<U> cast<U>() => this as ObservableValue<U>;
+  void cancel(ControlSubscription<double> subscription) => _observable.cancel(subscription);
 
   @override
   void notify() => _observable.notify();
@@ -152,22 +152,27 @@ mixin ObservableLoopComponent implements LoopComponent, ObservableChannel, Dispo
   final _observable = ControlObservable.empty();
 
   @override
+  dynamic internalData;
+
+  @override
   late String tag = '$runtimeType';
 
   @override
   bool active = true;
 
   @override
-  ControlSubscription subscribe(VoidCallback action, {dynamic args}) => _observable.subscribe(
+  ControlSubscription subscribe(VoidCallback action, {bool current = false, dynamic args}) => _observable.subscribe(
         (_) => action.call(),
-        current: false,
+        current: current,
         args: args,
       );
 
   @override
-  void cancel(ControlSubscription subscription) => _observable.cancel(subscription);
+  ControlSubscription<void> listen(VoidCallback action) => _observable.listen(action);
 
   @override
+  void cancel(ControlSubscription subscription) => _observable.cancel(subscription);
+
   void notify() {
     if (_observable.subCount > 0) {
       _observable.notify();

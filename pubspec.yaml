@@ -1,6 +1,6 @@
 name: loop
 description: "Minimalistic 2D Game & Animation Engine."
-version: 0.0.1+4
+version: 0.0.1+5
 
 environment:
   sdk: '>=3.3.3 <4.0.0'

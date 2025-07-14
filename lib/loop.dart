@@ -51,6 +51,8 @@ part 'src/core/transform_matrix.dart';
 
 part 'src/io/pointer.dart';
 
+part 'src/renderer/big_mesh_solver.dart';
+
 part 'src/renderer/canvas.dart';
 
 part 'src/renderer/skeletal_mesh.dart';

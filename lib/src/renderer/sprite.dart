@@ -91,6 +91,10 @@ class Sprite extends SceneActor {
 
   @override
   void renderComponent(Canvas canvas, Rect rect) {
+    if(kIsWeb && alpha < 1.0){
+      return;
+    }
+
     if (action != null && action!.blend != null && !sequence.atEdge) {
       canvas.drawImageRect(
         asset,
@@ -104,7 +108,8 @@ class Sprite extends SceneActor {
       asset,
       asset.tile(frame, action),
       rect,
-      Paint()..color = Color.fromRGBO(255, 255, 255, alpha),
+      Paint()
+        ..color = Color.fromRGBO(255, 255, 255, alpha),
     );
   }
 }

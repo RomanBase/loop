@@ -36,7 +36,18 @@ class SceneComponent with ObservableLoopComponent {
 
   bool static = false;
 
+  bool _tickActive = false;
+
   void onInit() {}
+
+  void syncAction(VoidCallback callback) {
+    if (_tickActive) {
+      getLoop()?.syncAction(this, callback);
+      return;
+    }
+
+    callback();
+  }
 
   Loop? _initLoop(Loop? scene) {
     assert(_loop == null, 'Can\'t attach to multiple loops');
@@ -102,6 +113,11 @@ class SceneComponent with ObservableLoopComponent {
   }
 
   void attach(LoopComponent component, {dynamic slot}) {
+    if (_tickActive) {
+      getLoop()?.syncAction(component, () => attach(component, slot: slot));
+      return;
+    }
+
     components[slot ?? component.hashCode] = component;
 
     if (component is SceneComponent) {
@@ -110,6 +126,11 @@ class SceneComponent with ObservableLoopComponent {
   }
 
   void detach(LoopComponent component, {dynamic slot}) {
+    if (_tickActive) {
+      getLoop()?.syncAction(component, () => detach(component, slot: slot));
+      return;
+    }
+
     components.remove(slot ?? component.hashCode);
 
     if (component is SceneComponent) {
@@ -126,6 +147,8 @@ class SceneComponent with ObservableLoopComponent {
     _worldMatrix = null;
     _screenMatrix = null;
 
+    _tickActive = true;
+
     components.forEach((key, value) {
       if (value.active) {
         value.tick(dt);
@@ -135,6 +158,8 @@ class SceneComponent with ObservableLoopComponent {
         }
       }
     });
+
+    _tickActive = false;
 
     onTick(dt);
 

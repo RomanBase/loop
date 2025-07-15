@@ -88,22 +88,22 @@ extension SceneComponentDeltaTransform on SceneComponent {
 }
 
 extension SceneComponentDeltaRenderer on SceneColorComponent {
-  DeltaOpacity applyOpacity(double opacity, {double begin = 1.0, Duration duration = const Duration(seconds: 1), bool reset = false}) {
+  DeltaOpacity applyOpacity(double opacity, {double? begin, Duration duration = const Duration(seconds: 1), bool reset = false}) {
     return applyTransform(
       DeltaOpacity(
         duration: duration,
-        begin: begin,
+        begin: begin ?? alpha,
         end: opacity,
       )..onValue = (value) => color = Color.from(alpha: value, red: color.r, green: color.g, blue: color.b),
       reset: reset,
     );
   }
 
-  DeltaColor applyColor(Color color, {Color begin = Colors.white, bool applyAlpha = true, Duration duration = const Duration(seconds: 1), bool reset = false}) {
+  DeltaColor applyColor(Color color, {Color? begin, bool applyAlpha = true, Duration duration = const Duration(seconds: 1), bool reset = false}) {
     return applyTransform(
       DeltaColor(
         duration: duration,
-        begin: begin,
+        begin: begin ?? color,
         end: color,
       )..onValue = (value) => this.color = applyAlpha ? value : Color.from(alpha: this.color.a, red: value.r, green: value.g, blue: value.b),
       reset: reset,

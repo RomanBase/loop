@@ -147,10 +147,10 @@ class Loop with LoopComponent, ObservableLoop, RenderComponent, RenderQueue, Loo
     for (final element in items) {
       if (element.active) {
         element.tick(dt);
-      }
 
-      if (element is RenderComponent) {
-        pushRenderComponent(element);
+        if (element is RenderComponent) {
+          pushRenderComponent(element);
+        }
       }
     }
     _tickActive = false;

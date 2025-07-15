@@ -20,21 +20,7 @@ class ControlLoop with ObservableLoop {
     _ticker = Ticker(_tick);
   }
 
-  static T main<T extends ControlLoop>() {
-    final instance = Control.get<ControlLoop>();
-
-    if (instance != null) {
-      return instance as T;
-    }
-
-    final control = ControlLoop().._register();
-
-    return control as T;
-  }
-
-  void _register() {
-    Control.set<ControlLoop>(value: this);
-  }
+  static ControlLoop global() => Control.use<ControlLoop>(value: () => ControlLoop());
 
   void _tick(Duration elapsed) {
     final tickTime = elapsed - _lastTick;
@@ -203,7 +189,7 @@ mixin LoopLeaf on LoopComponent implements Disposable {
   void mount([ControlLoop? loop]) {
     assert(!isMounted, 'Can\'t use one Scene for multiple Loops');
 
-    _control = loop ?? ControlLoop.main();
+    _control = loop ?? ControlLoop.global();
     _sub = _control?.subscribe(tick);
     _control?.children.add(this);
   }

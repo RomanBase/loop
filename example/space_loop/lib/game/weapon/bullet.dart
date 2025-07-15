@@ -51,7 +51,7 @@ class Bullet extends Sprite with LoopCollisionComponent {
       applyOpacity(
         0.0,
         duration: const Duration(milliseconds: 100),
-      ).onValue = (value) => alpha = value;
+      );
     }
   }
 

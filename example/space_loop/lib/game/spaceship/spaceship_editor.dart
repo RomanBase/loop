@@ -10,7 +10,7 @@ final _random = Random();
 extension _Hook on CoreElement {
   Loop get loop => use<Loop>(
       value: () => Loop()
-        ..mount(ControlLoop.main())
+        ..mount(ControlLoop.global())
         ..attach(Spaceship())
         ..attach(EnemyEmitter()))!;
 

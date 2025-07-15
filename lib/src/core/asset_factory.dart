@@ -13,6 +13,8 @@ class AssetFactory implements Disposable {
 
   dynamic operator [](String asset) => _factory.get(key: asset);
 
+  static AssetFactory global() => Control.use<AssetFactory>(value: () => AssetFactory());
+
   Future<Uint8List> _loadAsset(String path) async {
     final data = await rootBundle.load(path);
     return Uint8List.view(data.buffer);
@@ -43,6 +45,14 @@ class AssetFactory implements Disposable {
 
         return frame.image;
       });
+
+  Future<void> loadImages(Iterable<String> paths) async {
+    for (final path in paths) {
+      await loadImage(path).catchError((err) {
+        printDebug(err);
+      });
+    }
+  }
 
   Future<void> loadFragmentShader(String path, {String? name}) async {
     await ui.FragmentProgram.fromAsset(path).then((value) {

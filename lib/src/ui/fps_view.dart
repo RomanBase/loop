@@ -16,7 +16,7 @@ class FpsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ticker = control ?? ControlLoop.main();
+    final ticker = control ?? ControlLoop.global();
 
     return Align(
       alignment: alignment,

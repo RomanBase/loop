@@ -25,13 +25,13 @@ class SceneViewportState extends State<SceneViewport> {
   Widget build(BuildContext context) => widget.child;
 }
 
-class ViewportBuilder extends StatelessWidget {
+class SceneViewportBuilder extends StatelessWidget {
   final Loop scene;
   final double? width;
   final double? height;
   final double? ratio;
 
-  const ViewportBuilder({
+  const SceneViewportBuilder({
     super.key,
     required this.scene,
     this.width,
@@ -43,7 +43,7 @@ class ViewportBuilder extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constrains) => CustomPaint(
-        painter: ViewportPainter(
+        painter: SceneViewportPainter(
           widget: this,
         ),
         size: (constrains.hasBoundedWidth && constrains.hasBoundedHeight) ? Size(constrains.maxWidth, constrains.maxHeight) : Size.zero,
@@ -52,10 +52,10 @@ class ViewportBuilder extends StatelessWidget {
   }
 }
 
-class ViewportPainter extends CustomPainter {
-  final ViewportBuilder widget;
+class SceneViewportPainter extends CustomPainter {
+  final SceneViewportBuilder widget;
 
-  const ViewportPainter({
+  const SceneViewportPainter({
     required this.widget,
   });
 

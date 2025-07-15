@@ -49,28 +49,6 @@ extension SceneComponentDeltaTransform on SceneComponent {
     );
   }
 
-  DeltaOpacity applyOpacity(double opacity, {double begin = 1.0, Duration duration = const Duration(seconds: 1), bool reset = false}) {
-    return applyTransform(
-      DeltaOpacity(
-        duration: duration,
-        begin: begin,
-        end: opacity,
-      ),
-      reset: reset,
-    );
-  }
-
-  DeltaColor applyColor(Color color, {Color begin = Colors.white, Duration duration = const Duration(seconds: 1), bool reset = false}) {
-    return applyTransform(
-      DeltaColor(
-        duration: duration,
-        begin: begin,
-        end: color,
-      ),
-      reset: reset,
-    );
-  }
-
   DeltaCurve applyTranslateCurve(Offset location, Offset controlPoint, {Offset? begin, Duration duration = const Duration(seconds: 1), bool reset = false}) {
     return applyTransform(
       DeltaCurve(
@@ -106,5 +84,29 @@ extension SceneComponentDeltaTransform on SceneComponent {
         value.setReverse(reverse);
       }
     });
+  }
+}
+
+extension SceneComponentDeltaRenderer on SceneColorComponent {
+  DeltaOpacity applyOpacity(double opacity, {double begin = 1.0, Duration duration = const Duration(seconds: 1), bool reset = false}) {
+    return applyTransform(
+      DeltaOpacity(
+        duration: duration,
+        begin: begin,
+        end: opacity,
+      )..onValue = (value) => color = Color.from(alpha: value, red: color.r, green: color.g, blue: color.b),
+      reset: reset,
+    );
+  }
+
+  DeltaColor applyColor(Color color, {Color begin = Colors.white, bool applyAlpha = true, Duration duration = const Duration(seconds: 1), bool reset = false}) {
+    return applyTransform(
+      DeltaColor(
+        duration: duration,
+        begin: begin,
+        end: color,
+      )..onValue = (value) => this.color = applyAlpha ? value : Color.from(alpha: this.color.a, red: value.r, green: value.g, blue: value.b),
+      reset: reset,
+    );
   }
 }

@@ -15,6 +15,14 @@ mixin RenderComponent on LoopComponent {
   void render(Canvas canvas, Rect rect);
 }
 
+mixin SceneColorComponent on SceneComponent {
+  Color color = Colors.white;
+
+  set alpha(double value) => color = Color.from(alpha: value, red: color.r, green: color.g, blue: color.b);
+
+  double get alpha => color.a;
+}
+
 mixin RenderQueue {
   final _renderQueue = <RenderComponent>[];
 

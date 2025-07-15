@@ -130,7 +130,7 @@ class SceneState extends State<SceneWidget> {
   Widget build(BuildContext context) {
     return widget.build(
       context,
-      ViewportBuilder(
+      SceneViewportBuilder(
         scene: loop,
         width: widget.width ?? viewport?.width,
         height: widget.height ?? viewport?.height,

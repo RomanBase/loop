@@ -12,10 +12,12 @@ import 'package:loop_editor/resources/theme.dart';
 
 final r = Random();
 
-extension _PlaygroundComponent on CoreContext {
-  SceneComponent get c1 => use(key: 'c1', value: () => SceneComponent())!;
+class PlaygroundComponent extends SceneComponent with SceneColorComponent {}
 
-  SceneComponent get c2 => use(key: 'c2', value: () => SceneComponent())!;
+extension _PlaygroundComponent on CoreContext {
+  PlaygroundComponent get c1 => use(key: 'c1', value: () => PlaygroundComponent())!;
+
+  PlaygroundComponent get c2 => use(key: 'c2', value: () => PlaygroundComponent())!;
 
   Loop get scene => use(
       key: 'scene',
@@ -209,7 +211,7 @@ extension _PerformanceHooks on CoreElement {
   SceneComponent operator [](dynamic key) => use(
       key: key,
       value: () {
-        final c = SceneComponent()..tag = 'test';
+        final c = PlaygroundComponent()..tag = 'test';
 
         final d = Duration(milliseconds: 1000 + r.nextInt(9000));
         final x = UITheme.device.width * r.nextDouble();

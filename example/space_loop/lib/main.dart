@@ -48,5 +48,5 @@ class MyApp extends StatelessWidget {
 }
 
 class MainLoop extends ControlLoop with LoopCollisionSubsystem {
-  static MainLoop main() => ControlLoop.main<MainLoop>();
+  static MainLoop main() => ControlLoop.global() as MainLoop;
 }

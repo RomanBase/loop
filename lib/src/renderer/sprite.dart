@@ -43,7 +43,7 @@ class SpriteAction {
   Rect sheet(int index) => Rect.zero;
 }
 
-class Sprite extends SceneActor {
+class Sprite extends SceneActor with SceneColorComponent {
   late ui.Image asset;
   final Map<String, SpriteAction> actions;
 
@@ -52,8 +52,6 @@ class Sprite extends SceneActor {
   int get frame => getComponent<DeltaSequence>()?.value ?? 0;
 
   double get blend => getComponent<DeltaSequence>()?.blend ?? 0.0;
-
-  double alpha = 1.0;
 
   SpriteAction? action;
 
@@ -91,16 +89,12 @@ class Sprite extends SceneActor {
 
   @override
   void renderComponent(Canvas canvas, Rect rect) {
-    if(kIsWeb && alpha < 1.0){
-      return;
-    }
-
     if (action != null && action!.blend != null && !sequence.atEdge) {
       canvas.drawImageRect(
         asset,
         asset.tile(frame + 1, action),
         rect,
-        Paint()..color = Color.fromRGBO(255, 255, 255, blend * alpha),
+        Paint()..color = Color.from(alpha: blend * color.a, red: color.r, green: color.g, blue: color.b),
       );
     }
 
@@ -108,8 +102,7 @@ class Sprite extends SceneActor {
       asset,
       asset.tile(frame, action),
       rect,
-      Paint()
-        ..color = Color.fromRGBO(255, 255, 255, alpha),
+      Paint()..color = color,
     );
   }
 }
